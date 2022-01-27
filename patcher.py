@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from binascii import hexlify, unhexlify
 import struct
-import keystone
+#import keystone
 #import capstone
 from xiaotea import XiaoTea
 
@@ -72,7 +72,7 @@ def FindPattern(data, signature, mask=None, start=None, maxit=None):
 class FirmwarePatcher():
     def __init__(self, data):
         self.data = bytearray(data)
-        self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
+        #self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         #self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
 
     def encrypt(self):
@@ -150,7 +150,8 @@ class FirmwarePatcher():
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
         ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('NOP')[0])
+        #post = bytes(self.ks.asm('NOP')[0])  # geht auch, aber hat ks dependency
+        post = bytes([0x00, 0xbf])
         self.data[ofs:ofs+2] = post
         return [(ofs, pre, post)]
 
@@ -169,12 +170,12 @@ if __name__ == "__main__":
         data = fp.read()
 
     cfw = FirmwarePatcher(data)
-    ret = cfw.remove_charging_mode()
     ret = cfw.motor_start_speed(3)
     ret = cfw.brakelight_mod()
     ret = cfw.speed_plus2()
     ret = cfw.remove_kers()
     ret = cfw.remove_autobrake()
+    ret = cfw.remove_charging_mode()
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
 
