@@ -26,7 +26,8 @@
 
 <p>
     Presets:
-    <button onclick="Preset_Default();">Default</button>
+    <button onclick="Preset_Mi1S();">Mi 1S (default)</button>
+    <button onclick="Preset_MiPro2();">Mi Pro2 (default)</button>
 </p>
 
 <noscript>This website (despite it's look) requires some very simple JavaScript which is embedded in this HTML.</noscript>
@@ -89,10 +90,10 @@
     <li>
     <label><b>(UNTESTED!!!!!) Patch speed control params? </b>
     <input type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);"></label>
-    <p>
-        <label>Speed Current: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
-        <label>Normal Current: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
-        <label>Eco Current: <input name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>&nbsp;mA</label>
+    <p><u>DC Motor Phase Current</u><br />
+        <label>Speed Mode: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
+        <label>Normal Mode: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
+        <label>Eco Mode: <input name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>&nbsp;mA</label>
     </p>
     </li>
 
@@ -116,7 +117,8 @@
 
 <hr>
 <p>
-    All credits go to VooDooShamane (RollerPlausch) for <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">his work</a> on figuring out and testing the offsets!!
+    Credits go to VooDooShamane (RollerPlausch) for <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">his work</a> on figuring out and testing the offsets!
+    Speed control patches for DRV236/DRV304 by dnandha.
 </p>
 <p>
 Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">https://github.com/dnandha/vlt-firmware-patcher</a> <br/>
@@ -209,7 +211,30 @@ Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandh
     }
 
     function Preset_Default() {
+        ChangeForm(forms.BRAKELIGHT_MOD, false);
+        ChangeForm(forms.SPEED_PLUS2, false);
+        ChangeForm(forms.MOTOR_START_SPEED, "5.0", false);
+        ChangeForm(forms.REMOVE_KERS, false);
+        ChangeForm(forms.REMOVE_AUTOBRAKE, false);
+        ChangeForm(forms.REMOVE_CHARGING_MODE, false);
+	ChangeForm(forms.SPEED_PARAMS, false);
+    }
+
+    function Preset_Mi1S() {
+	Preset_Default();
+        ChangeForm(forms.VERSION, "DRV304");
+	ChangeForm(forms.SPEED_AMPERE, "20000");
+	ChangeForm(forms.NORMAL_AMPERE, "15000");
+	ChangeForm(forms.ECO_AMPERE, "7000");
+    }
+
+    function Preset_MiPro2() {
+	Preset_Default();
         ChangeForm(forms.VERSION, "DRV236");
+	ChangeForm(forms.SPEED_PARAMS, false);
+	ChangeForm(forms.SPEED_AMPERE, "25000");
+	ChangeForm(forms.NORMAL_AMPERE, "17000");
+	ChangeForm(forms.ECO_AMPERE, "7000");
     }
 
     function Share() {
