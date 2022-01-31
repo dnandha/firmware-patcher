@@ -85,6 +85,17 @@
     <input type="checkbox" name="remove_charging_mode"></label>
     <p>Fixes issue of scooter going into charge mode with an external battery connected in parallel.</p>
     </li>
+
+    <li>
+    <label><b>(UNTESTED!!!!!) Patch speed control params? </b>
+    <input type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);"></label>
+    <p>
+        <label>Speed: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
+        <label>Normal: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
+        <label>Eco: <input name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>&nbsp;mA</label>
+    </p>
+    </li>
+
 </ul>
 <hr>
 
@@ -121,6 +132,10 @@ Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandh
         "REMOVE_KERS": "remove_kers",
         "REMOVE_AUTOBRAKE": "remove_autobrake",
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
+        "SPEED_PARAMS": "speed_params",
+        "SPEED_AMPERE": "speed_ampere",
+        "NORMAL_AMPERE": "normal_ampere",
+        "ECO_AMPERE": "eco_ampere",
     };
 
     var formValues = Object.values(forms);
