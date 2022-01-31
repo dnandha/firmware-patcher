@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 from binascii import hexlify, unhexlify
 import struct
-#import keystone
+import keystone
 #import capstone
 from xiaotea import XiaoTea
 
@@ -72,7 +72,7 @@ def FindPattern(data, signature, mask=None, start=None, maxit=None):
 class FirmwarePatcher():
     def __init__(self, data):
         self.data = bytearray(data)
-        #self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
+        self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         #self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
 
     def encrypt(self):
@@ -150,10 +150,49 @@ class FirmwarePatcher():
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
         ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+2]
-        #post = bytes(self.ks.asm('NOP')[0])  # geht auch, aber hat ks dependency
-        post = bytes([0x00, 0xbf])
+        post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
         return [(ofs, pre, post)]
+
+    def speed_params(self, eco_ampere, normal_ampere, speed_ampere):
+        ret = []
+        sig = [0x41, 0xF6, 0x58, 0x32, 0x93, 0x42, 0x01, 0xD2]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('MOVW R2, #{:n}'.format(eco_ampere))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append([ofs, pre, post])
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, R0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append([ofs, pre, post])
+
+        sig = [0x44, 0xF2, 0x68, 0x23, 0x9A, 0x42, 0x13, 0xD2]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('MOVW R3, #{:n}'.format(normal_ampere))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append([ofs, pre, post])
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, R0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append([ofs, pre, post])
+
+        sig = [0x46, 0xF2, 0xA8, 0x13, 0x9A, 0x42, 0x01, 0xD2]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('MOVW R3, #{:n}'.format(speed_ampere))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append([ofs, pre, post])
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, R0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append([ofs, pre, post])
+
+        return ret
 
 
 def eprint(*args, **kwargs):
@@ -170,12 +209,13 @@ if __name__ == "__main__":
         data = fp.read()
 
     cfw = FirmwarePatcher(data)
-    ret = cfw.motor_start_speed(3)
-    ret = cfw.brakelight_mod()
-    ret = cfw.speed_plus2()
-    ret = cfw.remove_kers()
-    ret = cfw.remove_autobrake()
-    ret = cfw.remove_charging_mode()
+    #ret = cfw.motor_start_speed(3)
+    #ret = cfw.brakelight_mod()
+    #ret = cfw.speed_plus2()
+    #ret = cfw.remove_kers()
+    #ret = cfw.remove_autobrake()
+    #ret = cfw.remove_charging_mode()
+    ret = cfw.speed_params(12000, 20000, 30000)
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
 
