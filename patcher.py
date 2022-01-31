@@ -156,10 +156,17 @@ class FirmwarePatcher():
 
     def speed_params(self, eco_ampere, normal_ampere, speed_ampere):
         ret = []
-        sig = [0x41, 0xF6, 0x58, 0x32, 0x93, 0x42, 0x01, 0xD2]
+        sig = [0x41, 0xF6, 0x58, None, None, 0x42, 0x01, 0xD2]
         ofs = FindPattern(self.data, sig)
         pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('MOVW R2, #{:n}'.format(eco_ampere))[0])
+        reg = 0
+        if pre[-1] == 0x32:
+            reg = 2  # DRV236
+        elif pre[-1] == 0x33:
+            reg = 3  # DRV304
+        else:
+            raise Exception("invalid firmware file")
+        post = bytes(self.ks.asm('MOVW R{}, #{:n}'.format(reg, eco_ampere))[0])
         self.data[ofs:ofs+4] = post
         ret.append([ofs, pre, post])
         ofs += 4
@@ -168,8 +175,8 @@ class FirmwarePatcher():
         self.data[ofs:ofs+2] = post
         ret.append([ofs, pre, post])
 
-        sig = [0x44, 0xF2, 0x68, 0x23, 0x9A, 0x42, 0x13, 0xD2]
-        ofs = FindPattern(self.data, sig)
+        sig = [0x06, 0xD0, 0x22, 0x8E, None, None, None, 0x23, None, 0x42, 0x13, 0xD2]
+        ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('MOVW R3, #{:n}'.format(normal_ampere))[0])
         self.data[ofs:ofs+4] = post
@@ -180,8 +187,8 @@ class FirmwarePatcher():
         self.data[ofs:ofs+2] = post
         ret.append([ofs, pre, post])
 
-        sig = [0x46, 0xF2, 0xA8, 0x13, 0x9A, 0x42, 0x01, 0xD2]
-        ofs = FindPattern(self.data, sig)
+        sig = [0x12, 0xE0, 0x22, 0x8E, None, None, None, None, None, 0x42, 0x01, 0xD2]
+        ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('MOVW R3, #{:n}'.format(speed_ampere))[0])
         self.data[ofs:ofs+4] = post
@@ -215,7 +222,7 @@ if __name__ == "__main__":
     #ret = cfw.remove_kers()
     #ret = cfw.remove_autobrake()
     #ret = cfw.remove_charging_mode()
-    ret = cfw.speed_params(12000, 20000, 30000)
+    ret = cfw.speed_params(7000, 17000, 25000)
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
 
