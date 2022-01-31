@@ -78,11 +78,11 @@ def patch_firmware():
     speed_params = flask.request.args.get('speed_params', None)
     if speed_params:
         speed_ampere = int(flask.request.args.get('speed_ampere', None))
-        assert speed_ampere >= 0 and speed_ampere <= 10
+        assert speed_ampere >= 0 and speed_ampere <= 65535
         normal_ampere = int(flask.request.args.get('normal_ampere', None))
-        assert normal_ampere >= 0 and normal_ampere <= 10
+        assert normal_ampere >= 0 and normal_ampere <= 65535
         eco_ampere = int(flask.request.args.get('eco_ampere', None))
-        assert eco_ampere >= 0 and eco_ampere <= 10
+        assert eco_ampere >= 0 and eco_ampere <= 65535
         patcher.speed_params(eco_ampere, normal_ampere, speed_ampere)
 
     # make zip file for firmware
@@ -118,4 +118,4 @@ def patch_firmware():
 
 
 if __name__ == '__main__':
-    app.run('0.0.0.0')
+    app.run('0.0.0.0', 5000)
