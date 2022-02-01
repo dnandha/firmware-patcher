@@ -18,14 +18,13 @@
 
 <div class="content">
 <p>
-    Configure your own custom firmware by adjusting the options below.<br>
-    There are safety checks in place to ensure your scooter will not be bricked.<br>
-    Be aware that a higher motor power will shorten the lifetime of your battery and could damage your motor.<br>
-    By default nothing will be patched, enable patches with the "Patch?" checkbox next to them.
+Konfiguriere deine eigene VLT Firmware durch Anpassung der unten stehenden Optionen.<br/>
+Sei gewarnt, dass eine höhere Motorleistung die Lebenszeit deiner Batterie verkürzt und deinen Motor schädigen kann.<br/>
+Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert wird.<br/>
 </p>
 
 <p>
-    Presets:
+    Voreinstellungen:
     <button onclick="Preset_Mi1S();">Mi 1S (default)</button>
     <button onclick="Preset_MiPro2();">Mi Pro2 (default)</button>
 </p>
@@ -36,7 +35,7 @@
 <form action="/cfw">
 <ul>
     <li>
-    <label><b>Base version of your firmware:</b>
+    <label><b>Basis Firmware Version:</b>
     <select name="version">
         <option value="DRV236">2.3.6 (Mi Pro2)</option>
         <option value="DRV304">3.0.4 (Mi 1S)</option>
@@ -44,10 +43,11 @@
     </li>
 
     <li>
-    <label><b>Brakelight Mod</b>
+    <label><b>Bremslicht Mod</b>
         <input name="brakelight_mod" type="checkbox"></label>
     <p>
-        Fixes blinking backlight for GM. The backlight behaves the same as before GM.
+    Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.<br />
+    Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
     </p>
     </li>
 
@@ -55,42 +55,54 @@
     <label><b>22&nbsp;km/h Mod</b>
         <input name="speed_plus2" type="checkbox"></label>
     <p>
-        Increases limit of sport mode to 22&nbsp;km/h, which is within the legal tolerance of "some" countries.
+
+    Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.<br/>
+    Nutzt die Aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf.<br/>
+    Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an.<br/>
+    Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
     </p>
     </li>
 
     <li>
-    <label><b>Deactivate auto-brake (remove hard speed limit of 35&nbsp;km/h):</b>
+    <label><b>Automatisches abbremsen deaktivieren ("Remove 30km/h speed check"):</b>
     <input type="checkbox" name="remove_autobrake"></label>
-    <p>Removes code which checks that the speed is below 34.78&nbsp;km/h (12000/345) and causes scooter to brake.</p>
+    <p>
+    Der Roller bremst bei overspeed nicht mehr automatisch ab und piepst auch nicht.<br />
+    Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt.<br />
+    Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.<br />
     </li>
 
     <li>
-    <label><b>Turn off KERS:</b>
+    <label><b>KERS ausschalten</b>
         <input name="remove_kers" type="checkbox"></label>
     <p>
-        Turns KERS completely off.
-        You will still have recuperative braking when using the brake lever.<br>
+    Rekuperation (KERS) wird beim Ausrollen komplett entfernt.<br />
+    Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
     </p>
     </li>
 
     <li>
-    <label><b>Motor start speed:</b>
+    <label><b>Motor Startgeschwindigkeit:</b>
     <input name="motor_start_speed" type="number" step="0.01" min="0" max="100" value="5.0" disabled>&nbsp;km/h</label>
     <label><input type="checkbox" onchange="CheckForm('motor_start_speed', this);">Patch?</label>
-    <p>Minimum speed in km/h before the engine will start.</p>
+    <p>
+    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.<br />
+    Standard ist 5-Kmh. (0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht)
     </li>
 
     <li>
-    <label><b>Remove charging mode:</b>
+    <label><b>Zusatzakku Fix ("Remove charging mode"):</b>
     <input type="checkbox" name="remove_charging_mode"></label>
-    <p>Fixes issue of scooter going into charge mode with an external battery connected in parallel.</p>
+    <p>
+    Zusatzakku Auflade Fix.<br />
+    Roller fährt, trotz alledem der interne Akku vom Externen geladen wird.
+    </p>
     </li>
 
     <li>
-    <label><b>(UNTESTED!!!!!) Patch speed control params? </b>
+    <label><b>(Ungetestet!!!!!) Leistungsparameter Mod? </b>
     <input type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);"></label>
-    <p><u>DC Motor Phase Current</u><br />
+    <p><u>DC Motor Phasenstrom</u><br />
         <label>Speed Mode: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
         <label>Normal Mode: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
         <label>Eco Mode: <input name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>&nbsp;mA</label>
@@ -101,8 +113,8 @@
 <hr>
 
 <p>
-    Make sure to double check all of your entered values before submitting!<br>
-    <b>I AM RESPONSIBLE FOR THE ENTERED VALUES:</b>
+	Bitte prüfe vor dem Patchen erneut, ob alle gemachten Eingaben passen<br />
+    <b>Patch erstellen:</b>
     <input type="submit" value="Patch!"/>
     <button type="button" onclick="Share();">Share</button>
     <span id="shareConfirmation"></span>
@@ -110,19 +122,19 @@
 </form>
 
 <p>
-    <b><span style="color: red;">&#9888;&nbsp;NEW </span>The tool now makes .zip files with both encrypted and unencrypted firmware and an info.txt inside.</b><br>
-    <b><span style="color: red;">&#9888;&nbsp;NEW </span>Use the following app made by <a href="https://github.com/CamiAlfa">CamiAlfa</a> to flash your modified firmware: <a href="https://play.google.com/store/apps/details?id=com.m365downgrade">m365 DownG</a></b><br>
-    It will automatically chose the correct firmware for your scooter. Don't try to flash the .zip file with the old patched app!
+    <b><span style="color: red;">&#9888;&nbsp;NEW </span>Dieses Tool erstellt eine .zip Datei mit sowohl verschlüsselter als auch entschlüsselter Firmware und einer info.txt.</b><br>
+    <b><span style="color: red;">&#9888;&nbsp;NEW </span>Zum Flashen benutze z.B. von CamiAlfa die App <a href="https://play.google.com/store/apps/details?id=com.m365downgrade">m365 DownG</a></b>.
+    Sie wählt automatisch die korrekte Firmware für deinen Scooter.<br />Bitte nicht die .zip Datei mit alten / gepatchten Apps flashen!
 </p>
 
 <hr>
 <p>
-    Credits go to VooDooShamane (RollerPlausch) for <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">his work</a> on figuring out and testing the offsets!
-    Speed control patches for DRV236/DRV304 by dnandha.
+    Credits an VooDooShamane (RollerPlausch) für <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">seine Arbeit</a> an den Offsets!
+    Leistungsparameter Mod für DRV236/DRV304 von dnandha.
 </p>
 <p>
 Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">https://github.com/dnandha/vlt-firmware-patcher</a> <br/>
-    Based on BotoX m365 firmware patcher: <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">https://github.com/BotoX/xiaomi-m365-firmware-patcher</a>
+    Basiert auf BotoX' m365 Firmware Patcher: <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">https://github.com/BotoX/xiaomi-m365-firmware-patcher</a>
 </div>
 
 <script>
