@@ -35,41 +35,41 @@ Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert 
 <form action="/cfw">
 <ul>
     <li>
-    <label><b>Basis Firmware Version:</b>
-    <select name="version">
-        <option value="DRV236">2.3.6 (Mi Pro2)</option>
-        <option value="DRV304">3.0.4 (Mi 1S)</option>
-    </select></label>
+        <label><b>Basis Firmware Version:</b>
+        <select name="version">
+            <option value="DRV236">2.3.6 (Mi Pro2)</option>
+            <option value="DRV304">3.0.4 (Mi 1S)</option>
+        </select></label>
     </li>
 
     <li>
-    <label><b>Bremslicht Mod</b>
-        <input name="brakelight_mod" type="checkbox"></label>
-    <p>
-    Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.<br />
-    Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
-    </p>
+        <label><b>Bremslicht Mod</b>
+            <input name="brakelight_mod" type="checkbox"></label>
+        <p>
+        Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.<br />
+        Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
+        </p>
     </li>
 
     <li>
-    <label><b>22&nbsp;km/h Mod</b>
-        <input name="speed_plus2" type="checkbox"></label>
-    <p>
+        <label><b>22&nbsp;km/h Mod</b>
+            <input name="speed_plus2" type="checkbox"></label>
+        <p>
 
-    Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.<br/>
-    Nutzt die Aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf.<br/>
-    Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an.<br/>
-    Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
-    </p>
+        Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.<br/>
+        Nutzt die Aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf.<br/>
+        Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an.<br/>
+        Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
+        </p>
     </li>
 
     <li>
-    <label><b>Automatisches abbremsen deaktivieren ("Remove 30km/h speed check"):</b>
-    <input type="checkbox" name="remove_autobrake"></label>
-    <p>
-    Der Roller bremst bei overspeed nicht mehr automatisch ab und piepst auch nicht.<br />
-    Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt.<br />
-    Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.<br />
+        <label><b>Automatisches abbremsen deaktivieren ("Remove 30km/h speed check"):</b>
+        <input type="checkbox" name="remove_autobrake"></label>
+        <p>
+        Der Roller bremst bei overspeed nicht mehr automatisch ab und piepst auch nicht.<br />
+        Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt.<br />
+        Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.<br />
     </li>
 
     <li>
@@ -82,31 +82,41 @@ Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert 
     </li>
 
     <li>
-    <label><b>Motor Startgeschwindigkeit:</b>
-    <input name="motor_start_speed" type="number" step="0.01" min="0" max="100" value="5.0" disabled>&nbsp;km/h</label>
-    <label><input type="checkbox" onchange="CheckForm('motor_start_speed', this);">Patch?</label>
-    <p>
-    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.<br />
-    Standard ist 5-Kmh. (0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht)
+        <label><b>Motor Startgeschwindigkeit:</b>
+        <input name="motor_start_speed" type="number" step="0.01" min="0" max="100" value="5.0" disabled>&nbsp;km/h</label>
+        <label><input type="checkbox" onchange="CheckForm('motor_start_speed', this);"></label>
+        <p>
+        Die Startgeschwindigkeit bei dem der Motor aktiviert wird.<br />
+        Standard ist 5-Kmh. (0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht)
     </li>
 
     <li>
-    <label><b>Zusatzakku Fix ("Remove charging mode"):</b>
-    <input type="checkbox" name="remove_charging_mode"></label>
-    <p>
-    Zusatzakku Auflade Fix.<br />
-    Roller fährt, trotz alledem der interne Akku vom Externen geladen wird.
-    </p>
+        <label><b>Zusatzakku Fix ("Remove charging mode"):</b>
+        <input type="checkbox" name="remove_charging_mode"></label>
+        <p>
+        Zusatzakku Auflade Fix.<br />
+        Roller fährt, trotz alledem der interne Akku vom Externen geladen wird.
+        </p>
     </li>
 
     <li>
-    <label><b>(Ungetestet!!!!!) Leistungsparameter Mod? </b>
-    <input type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);"></label>
-    <p><u>DC Motor Phasenstrom</u><br />
-        <label>Speed Mode: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
-        <label>Normal Mode: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
-        <label>Eco Mode: <input name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>&nbsp;mA</label>
-    </p>
+        <label><b>(Experimental!!) Leistungsparameter Mod:</b>
+        <input type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);"></label>
+        <p>Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen.<br/>
+        Erfolgreich getestet auf Mi Pro2</p>
+        <p><u>DC Motor Phasenstrom</u><br />
+            <label>Speed Mode: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
+            <label>Normal Mode: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
+            <label>Eco Mode: <input name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>&nbsp;mA</label>
+        </p>
+    </li>
+
+    <li>
+        <label><b>(Experimental!!) DPC (linear, register):</b>
+            <input type="checkbox" name="dpc"></label>
+        <p>(UNGETESTET!) Aktiviert die DPC Funktion mit linearer Kurve im Roller.<br/>
+        Aktivierung erfolgt über das Register Flag.
+        </p>
     </li>
 
 </ul>
@@ -130,7 +140,7 @@ Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert 
 <hr>
 <p>
     Credits an VooDooShamane (RollerPlausch) für <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">seine Arbeit</a> an den Offsets!
-    Leistungsparameter Mod für DRV236/DRV304 von dnandha.
+    Leistungsparameter und DPC Mod für DRV236/DRV304 von dnandha.
 </p>
 <p>
 Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">https://github.com/dnandha/vlt-firmware-patcher</a> <br/>
@@ -150,6 +160,7 @@ Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandh
         "SPEED_AMPERE": "speed_ampere",
         "NORMAL_AMPERE": "normal_ampere",
         "ECO_AMPERE": "eco_ampere",
+        "DPC": "dpc",
     };
 
     var formValues = Object.values(forms);
@@ -229,24 +240,25 @@ Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandh
         ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_AUTOBRAKE, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
-	ChangeForm(forms.SPEED_PARAMS, false);
+        ChangeForm(forms.SPEED_PARAMS, false);
+        ChangeForm(forms.DPC, false);
     }
 
     function Preset_Mi1S() {
 	Preset_Default();
         ChangeForm(forms.VERSION, "DRV304");
-	ChangeForm(forms.SPEED_AMPERE, "20000");
-	ChangeForm(forms.NORMAL_AMPERE, "15000");
-	ChangeForm(forms.ECO_AMPERE, "7000");
+        ChangeForm(forms.SPEED_AMPERE, "20000");
+        ChangeForm(forms.NORMAL_AMPERE, "15000");
+        ChangeForm(forms.ECO_AMPERE, "7000");
     }
 
     function Preset_MiPro2() {
 	Preset_Default();
         ChangeForm(forms.VERSION, "DRV236");
-	ChangeForm(forms.SPEED_PARAMS, false);
-	ChangeForm(forms.SPEED_AMPERE, "25000");
-	ChangeForm(forms.NORMAL_AMPERE, "17000");
-	ChangeForm(forms.ECO_AMPERE, "7000");
+        ChangeForm(forms.SPEED_PARAMS, false);
+        ChangeForm(forms.SPEED_AMPERE, "25000");
+        ChangeForm(forms.NORMAL_AMPERE, "17000");
+        ChangeForm(forms.ECO_AMPERE, "7000");
     }
 
     function Share() {

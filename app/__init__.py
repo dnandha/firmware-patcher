@@ -1,15 +1,16 @@
 import flask
 import traceback
-import sys
 import os
 import time
 import io
 import zipfile
 import hashlib
-sys.path.append('..')
+import pathlib
+
 from patcher import FirmwarePatcher
 
 app = flask.Flask(__name__)
+app.config["BINS"] = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), "bins")
 
 
 @app.errorhandler(Exception)
@@ -45,7 +46,7 @@ def patch_firmware():
     if version not in ['DRV236', 'DRV304']:
         return 'Invalid firmware version.', 400
 
-    with open('../bins/{}.bin'.format(version), 'rb') as fp:
+    with open('{}/{}.bin'.format(app.config["BINS"], version), 'rb') as fp:
         patcher = FirmwarePatcher(fp.read())
 
     brakelight_mod = flask.request.args.get('brakelight_mod', None)
@@ -85,6 +86,10 @@ def patch_firmware():
         assert eco_ampere >= 0 and eco_ampere <= 65535
         patcher.speed_params(eco_ampere, normal_ampere, speed_ampere)
 
+    dpc = flask.request.args.get('dpc', None)
+    if dpc:
+        patcher.dpc_linear_register()
+
     # make zip file for firmware
     zip_buffer = io.BytesIO()
     zip_file = zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False)
@@ -115,7 +120,3 @@ def patch_firmware():
     resp.headers['Content-Length'] = len(content)
 
     return resp
-
-
-if __name__ == '__main__':
-    app.run('0.0.0.0', 5000)

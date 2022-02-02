@@ -135,7 +135,7 @@ class FirmwarePatcher():
         sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
         ofs = FindPattern(self.data, sig) + 2
         pre = self.data[ofs:ofs+4]
-        post = bytes([0x4f, 0xf6, 0xff, 0x7c])
+        post = bytes(self.ks.asm('MOVW IP, #0xffff')[0])
         self.data[ofs:ofs+4] = post
         return [(ofs, pre, post)]
 
@@ -201,6 +201,37 @@ class FirmwarePatcher():
 
         return ret
 
+    def dpc_linear_register(self):
+        ret = []
+        sig = [0x25, 0x4a, 0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
+        ofs = FindPattern(self.data, sig) + 6
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append([ofs, pre, post])
+
+        ofs += 2
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append([ofs, pre, post])
+
+        sig = [0xa4, 0xf8, 0xe2, None, 0xa4, 0xf8, 0xf0, None, 0xa4, 0xf8, 0xee, None]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        reg = 0
+        if pre[-1] == 0x70:
+            reg = 7  # DRV236
+        elif pre[-1] == 0x60:
+            reg = 6  # DRV304
+        else:
+            raise Exception("invalid firmware file")
+        post = bytes(self.ks.asm('STRH.W R{}, [R4, #0xEC]'.format(reg))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append([ofs, pre, post])
+
+        return ret
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -222,7 +253,8 @@ if __name__ == "__main__":
     #ret = cfw.remove_kers()
     #ret = cfw.remove_autobrake()
     #ret = cfw.remove_charging_mode()
-    ret = cfw.speed_params(7000, 17000, 25000)
+    #ret = cfw.speed_params(7000, 17000, 25000)
+    ret = cfw.dpc_linear_register()
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
 
