@@ -75,7 +75,6 @@ def patch_firmware():
     if remove_charging_mode:
         patcher.remove_charging_mode()
 
-
     speed_params = flask.request.args.get('speed_params', None)
     if speed_params:
         speed_ampere = int(flask.request.args.get('speed_ampere', None))
@@ -88,7 +87,7 @@ def patch_firmware():
 
     dpc = flask.request.args.get('dpc', None)
     if dpc:
-        patcher.dpc_linear_register()
+        patcher.dpc()
 
     # make zip file for firmware
     zip_buffer = io.BytesIO()

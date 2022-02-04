@@ -201,7 +201,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def dpc_linear_register(self):
+    def dpc(self):
         ret = []
         sig = [0x25, 0x4a, 0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
         ofs = FindPattern(self.data, sig) + 6
@@ -254,7 +254,7 @@ if __name__ == "__main__":
     #ret = cfw.remove_autobrake()
     #ret = cfw.remove_charging_mode()
     #ret = cfw.speed_params(7000, 17000, 25000)
-    ret = cfw.dpc_linear_register()
+    ret = cfw.dpc()
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
 

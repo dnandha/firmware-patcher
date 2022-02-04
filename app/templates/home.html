@@ -103,7 +103,7 @@ Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert 
         <label><b>(Experimental!!) Leistungsparameter Mod:</b>
         <input type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);"></label>
         <p>Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen.<br/>
-        Erfolgreich getestet auf Mi Pro2</p>
+        Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.</p>
         <p><u>DC Motor Phasenstrom</u><br />
             <label>Speed Mode: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
             <label>Normal Mode: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
@@ -112,10 +112,11 @@ Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert 
     </li>
 
     <li>
-        <label><b>(Experimental!!) DPC (linear, register):</b>
+        <label><b>(Experimental!!) DPC:</b>
             <input type="checkbox" name="dpc"></label>
-        <p>(UNGETESTET!) Aktiviert die DPC Funktion mit linearer Kurve im Roller.<br/>
-        Aktivierung erfolgt über das Register Flag.
+        <p>DPC Aktivierung/Deaktivierung erfolgt über eine Register Flag.<br/>
+        Bei Neustart/Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.<br />
+        Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.</p>
         </p>
     </li>
 
