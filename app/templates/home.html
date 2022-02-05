@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="author" content="BotoX">
@@ -7,10 +7,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
 <title>Xiaomi Mi 1S / Pro2 VLT Custom Firmware Toolkit</title>
 </head>
 
-<body>
+<body onload="ChangeVersionText()">
 
 <div class="header">
     <h1>Xiaomi Mi 1S / Pro2 VLT Custom Firmware Toolkit</h1>
@@ -29,14 +31,14 @@ Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert 
     <button onclick="Preset_MiPro2();">Mi Pro2 (default)</button>
 </p>
 
-<noscript>This website (despite it's look) requires some very simple JavaScript which is embedded in this HTML.</noscript>
+<noscript>Diese Webseite benötigt JavaScript.</noscript>
 
 <hr>
-<form action="/cfw">
+<form action="/cfw"  method = "POST" enctype = "multipart/form-data">
 <ul>
     <li>
         <label><b>Basis Firmware Version:</b>
-        <select name="version">
+        <select id="verselect" name="version" onchange="ChangeVersionText()">
             <option value="DRV236">2.3.6 (Mi Pro2)</option>
             <option value="DRV304">3.0.4 (Mi 1S)</option>
         </select></label>
@@ -125,8 +127,8 @@ Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert 
 
 <p>
 	Bitte prüfe vor dem Patchen erneut, ob alle gemachten Eingaben passen<br />
-    <b>Patch erstellen:</b>
-      <input type="file" name="filename">
+	<b><label id="drvselect" for="file">Datei auswählen:</label></b>
+      <input type="file" id="file" name="filename">
       <input type="submit" value="Patch!">
 </p>
 </form>
@@ -233,6 +235,13 @@ Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandh
         }
     }
 
+    function ChangeVersionText(version){
+        var version = document.getElementById("verselect").value;
+        var name = document.getElementById("drvselect").value;
+	document.getElementById("drvselect").innerHTML = `"${version}.bin" auswählen:`;
+    }
+
+
     function Preset_Default() {
         ChangeForm(forms.BRAKELIGHT_MOD, false);
         ChangeForm(forms.SPEED_PLUS2, false);
@@ -246,6 +255,7 @@ Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandh
 
     function Preset_Mi1S() {
 	Preset_Default();
+	ChangeVersionText("DRV304");
         ChangeForm(forms.VERSION, "DRV304");
         ChangeForm(forms.SPEED_AMPERE, "20000");
         ChangeForm(forms.NORMAL_AMPERE, "15000");
@@ -254,57 +264,12 @@ Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandh
 
     function Preset_MiPro2() {
 	Preset_Default();
+	ChangeVersionText("DRV236");
         ChangeForm(forms.VERSION, "DRV236");
         ChangeForm(forms.SPEED_PARAMS, false);
         ChangeForm(forms.SPEED_AMPERE, "25000");
         ChangeForm(forms.NORMAL_AMPERE, "17000");
         ChangeForm(forms.ECO_AMPERE, "7000");
-    }
-
-    function Share() {
-        var url = location.protocol + '//' + location.host;
-        var firstParam = true;
-
-        function getSeparator() {
-            if (firstParam) {
-                firstParam = false;
-                return '?';
-            }
-
-            return '&';
-        }
-
-        for (var i = 0; i < formValues.length; i++) {
-            var form = formValues[i];
-
-            var formValue = GetFormValue(form);
-            var patchCheckbox = GetPatchCheckBox(form);
-
-            if (patchCheckbox) {
-                if (patchCheckbox.checked) {
-                    url += getSeparator() + form + '=' + formValue;
-                }
-            } else if (typeof formValue === 'boolean') {
-                if (formValue) {
-                    url += getSeparator() + form + '=on';
-                }
-            } else {
-                url += getSeparator() + form + '=' + formValue;
-            }
-        }
-
-        var textArea = document.createElement("textarea");
-
-        textArea.value = url;
-        document.body.appendChild(textArea);
-
-        textArea.focus();
-        textArea.select();
-
-        document.execCommand('copy');
-        document.getElementById('shareConfirmation').innerText = 'Copied!';
-
-        document.body.removeChild(textArea);
     }
 </script>
 
