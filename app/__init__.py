@@ -10,7 +10,7 @@ import pathlib
 from patcher import FirmwarePatcher
 
 app = flask.Flask(__name__)
-app.config["BINS"] = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), "bins")
+app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(pathlib.Path(__file__).parent.absolute()), 'bin')
 
 
 @app.errorhandler(Exception)
@@ -45,6 +45,10 @@ def patch_firmware():
     version = flask.request.args.get('version', None)
     if version not in ['DRV236', 'DRV304']:
         return 'Invalid firmware version.', 400
+
+    f = flask.request.files['filename']
+    f.save(f.filename)
+    print("file saved")
 
     with open('{}/{}.bin'.format(app.config["BINS"], version), 'rb') as fp:
         patcher = FirmwarePatcher(fp.read())
