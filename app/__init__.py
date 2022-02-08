@@ -90,6 +90,14 @@ def patch_firmware():
     if dpc:
         patcher.dpc()
 
+    wheelsize = flask.request.form.get('wheelsize', None)
+    if wheelsize is not None:
+        wheelsize = float(wheelsize)
+        assert wheelsize >= 0 and wheelsize <= 100
+        # 8.5" ~ 21.5cm
+        mult = wheelsize/21.5
+        patcher.wheel_speed_const(mult)
+
     # make zip file for firmware
     zip_buffer = io.BytesIO()
     zip_file = zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False)
