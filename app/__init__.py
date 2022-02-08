@@ -35,7 +35,7 @@ def dated_url_for(endpoint, **values):
 
 @app.route('/')
 def home():
-    return flask.render_template('patcher.html')
+    return flask.render_template('home.html')
 
 
 @app.route('/cfw', methods = ['POST'])

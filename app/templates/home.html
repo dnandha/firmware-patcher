@@ -6,7 +6,7 @@
 <meta name="description" content="Xiaomi Mi 1S / Pro2 VLT Custom Firmware Toolkit">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='newstyle.css') }}">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
 <title>Xiaomi Mi 1S / Pro2 VLT Custom Firmware Toolkit</title>
@@ -14,139 +14,207 @@
 
 <body onload="ChangeVersionText()">
 
-<div class="header">
-    <h1>Xiaomi Mi 1S / Pro2 VLT Custom Firmware Toolkit</h1>
-</div>
-
-<div class="content">
-<p>
-Konfiguriere deine eigene VLT Firmware durch Anpassung der unten stehenden Optionen.<br/>
-Sei gewarnt, dass eine höhere Motorleistung die Lebenszeit deiner Batterie verkürzt und deinen Motor schädigen kann.<br/>
-Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert wird.<br/>
-</p>
-
-<p>
-    Voreinstellungen:
-    <button onclick="Preset_Mi1S();">Mi 1S (default)</button>
-    <button onclick="Preset_MiPro2();">Mi Pro2 (default)</button>
-</p>
-
 <noscript>Diese Webseite benötigt JavaScript.</noscript>
 
-<hr>
-<form action="/cfw"  method = "POST" enctype = "multipart/form-data">
-<ul>
-    <li>
-        <label><b>Basis Firmware Version:</b>
-        <select id="verselect" name="version" onchange="ChangeVersionText()">
-            <option value="DRV236">2.3.6 (Mi Pro2)</option>
-            <option value="DRV304">3.0.4 (Mi 1S)</option>
-        </select></label>
-    </li>
+<div class="container">
+    <div class="row"><div class="col">
+        <h1>VLT Firmwares für Mi 1S / Pro2</h1>
+    </div></div>
 
-    <li>
-        <label><b>Bremslicht Mod</b>
-            <input name="brakelight_mod" type="checkbox"></label>
-        <p>
-        Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.<br />
-        Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
-        </p>
-    </li>
+    <div class="row"><div class="col">
+        Konfiguriere deine eigene VLT Firmware durch Anpassung der unten stehenden Optionen.
+        Sei gewarnt, dass eine höhere Motorleistung die Lebenszeit deiner Batterie verkürzt und deinen Motor schädigen kann. Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert wird.<br/>
+    </div></div>
 
-    <li>
-        <label><b>22&nbsp;km/h Mod</b>
-            <input name="speed_plus2" type="checkbox"></label>
-        <p>
+    <div class="row">
+        <div class="col-sm-4">
+            Voreinstellungen:
+        </div>
+        <div class="col">
+            <button onclick="Preset_Mi1S();">Mi 1S (default)</button>
+            <button onclick="Preset_MiPro2();">Mi Pro2 (default)</button>
+        </div>
+    </div>
 
-        Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.<br/>
-        Nutzt die Aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf.<br/>
-        Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an.<br/>
-        Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
-        </p>
-    </li>
+    <hr>
+    <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
+    <div class="card text-center">
+        <div class="card-header"><b>Basis Firmware Version</b></div>
 
-    <li>
-        <label><b>Automatisches abbremsen deaktivieren ("Remove 30km/h speed check"):</b>
-        <input type="checkbox" name="remove_autobrake"></label>
-        <p>
-        Der Roller bremst bei overspeed nicht mehr automatisch ab und piepst auch nicht.<br />
-        Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt.<br />
-        Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.<br />
-    </li>
+        <div class="card-body">
+            <select class="form-select" id="verselect" name="version" onchange="ChangeVersionText()">
+                <option value="DRV236">2.3.6 (Mi Pro2)</option>
+                <option value="DRV304">3.0.4 (Mi 1S)</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-group">
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" id="brakelight_mod" name="brakelight_mod" type="checkbox">
+                <label class="form-check-label"><b>Bremslicht Mod</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.
+                    Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
+                </div>
+            </div>
+        </div>
 
-    <li>
-    <label><b>KERS ausschalten</b>
-        <input name="remove_kers" type="checkbox"></label>
-    <p>
-    Rekuperation (KERS) wird beim Ausrollen komplett entfernt.<br />
-    Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
-    </p>
-    </li>
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" name="speed_plus2" type="checkbox">
+                <label class="form-check-label"><b>22&nbsp;km/h Mod</b></label>
+            </div>
 
-    <li>
-        <label><b>Motor Startgeschwindigkeit:</b>
-        <input name="motor_start_speed" type="number" step="0.01" min="0" max="100" value="5.0" disabled>&nbsp;km/h</label>
-        <label><input type="checkbox" onchange="CheckForm('motor_start_speed', this);"></label>
-        <p>
-        Die Startgeschwindigkeit bei dem der Motor aktiviert wird.<br />
-        Standard ist 5-Kmh. (0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht)
-    </li>
+            <div class="card-body">
+                Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.
+                Nutzt die Aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf. Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an. Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
+            </div>
+        </div>
+    </div>
+    <div class="card-group">
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="remove_autobrake">
+                <label class="form-check-label"><b>Automatisches abbremsen deaktivieren</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title"><i>Remove 30km/h speed check</i></div>
+                <div class="card-text">
+                    Der Roller bremst bei overspeed nicht mehr automatisch ab und piepst auch nicht.
+                    Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt. Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.
+                </div>
+            </div>
+        </div>
 
-    <li>
-        <label><b>Zusatzakku Fix ("Remove charging mode"):</b>
-        <input type="checkbox" name="remove_charging_mode"></label>
-        <p>
-        Zusatzakku Auflade Fix.<br />
-        Roller fährt, trotz alledem der interne Akku vom Externen geladen wird.
-        </p>
-    </li>
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" name="remove_kers" type="checkbox">
+                <label class="form-check-label"><b>KERS ausschalten</b></label>
+            </div>
+            <div class="card-body">
+                Rekuperation (KERS) wird beim Ausrollen komplett entfernt.
+                Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
+            </div>
+        </div>
 
-    <li>
-        <label><b>(Experimental!!) Leistungsparameter Mod:</b>
-        <input type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);"></label>
-        <p>Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen.<br/>
-        Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.</p>
-        <p><u>DC Motor Phasenstrom</u><br />
-            <label>Speed Mode: <input name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>&nbsp;mA</label><br>
-            <label>Normal Mode: <input name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>&nbsp;mA</label><br>
-            <label>Eco Mode: <input name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>&nbsp;mA</label>
-        </p>
-    </li>
+    </div>
+    <div class="card-group">
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
+                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title input-group">
+                    <input class="form-control" name="motor_start_speed" type="number" step="0.1" min="0" max="10" value="5.0" disabled>
+                    <span class="input-group-text">km/h</span>
+                </div>
+                <div class="card-text">
+                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
+                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
+                </div>
+            </div>
+        </div>
 
-    <li>
-        <label><b>(Experimental!!) DPC:</b>
-            <input type="checkbox" name="dpc"></label>
-        <p>DPC Aktivierung/Deaktivierung erfolgt über eine Register Flag.<br/>
-        Bei Neustart/Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.<br />
-        Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.</p>
-        </p>
-    </li>
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="remove_charging_mode">
+                <label class="form-check-label"><b>Zusatzakku Fix</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title"><i>Remove charging mode</i></div>
+                <div class="card-text">
+                    Zusatzakku Auflade Fix.
+                    Roller fährt, trotz alledem der interne Akku vom Externen geladen wird.
+                </div>
+            </div>
+        </div>
 
-</ul>
-<hr>
+    </div>
+    <div class="card-group">
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="dpc">
+                <label class="form-check-label"><b>DPC (Experimental!)</b></label>
+            </div>
 
-<p>
-	Bitte prüfe vor dem Patchen erneut, ob alle gemachten Eingaben passen<br />
-	<b><label id="drvselect" for="file">Datei auswählen:</label></b>
-      <input type="file" id="file" name="filename">
-      <input type="submit" value="Patch!">
-</p>
-</form>
+            <div class="card-body">
+                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
+                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
 
-<p>
-    <b><span style="color: red;">&#9888;&nbsp;NEW </span>Dieses Tool erstellt eine .zip Datei mit sowohl verschlüsselter als auch entschlüsselter Firmware und einer info.txt.</b><br>
-    <b><span style="color: red;">&#9888;&nbsp;NEW </span>Zum Flashen benutze z.B. von CamiAlfa die App <a href="https://play.google.com/store/apps/details?id=com.m365downgrade">m365 DownG</a></b>.
-    Sie wählt automatisch die korrekte Firmware für deinen Scooter.<br />Bitte nicht die .zip Datei mit alten / gepatchten Apps flashen!
-</p>
+                Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.
+            </div>
+        </div>
 
-<hr>
-<p>
-    Credits an VooDooShamane (RollerPlausch) für <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">seine Arbeit</a> an den Offsets!
-    Leistungsparameter und DPC Mod für DRV236/DRV304 von NandTek.
-</p>
-<p>
-Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">https://github.com/dnandha/vlt-firmware-patcher</a> <br/>
-    Basiert auf BotoX' m365 Firmware Patcher: <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">https://github.com/BotoX/xiaomi-m365-firmware-patcher</a>
+        <div class="card text-center">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);">
+                <label class="form-check-label"><b>Nennstrom / DC Phasenstrom (Experimental!)</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    <div class="row">
+                        <div class="col">
+                            <label class="form-check-label">Speed Mode (mA):</label>
+                            <input class="form-control" name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>
+                        </div>
+                        <div class="col">
+                            <label class="form-check-label">Normal Mode (mA):</label>
+                            <input class="form-control" name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>
+                        </div>
+                        <div class="col">
+                            <label class="form-check-label">Eco Mode (mA):</label>
+                            <input class="form-control" name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-text">
+                    Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen.
+
+                    Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+
+    <div class="row">
+        <div class="col-sm-4">
+            Achtung: Bitte prüfe vor dem Patchen erneut, ob alle gemachten Eingaben passen!!<br />
+        </div>
+        <div class="col">
+            <b><label id="drvselect" for="file">Datei auswählen:</label></b>
+              <input type="file" id="file" name="filename">
+          <input type="submit" value="Patch!">
+        </div>
+    </div>
+
+    </form>
+
+    <div class="row">
+        <div class="col">
+            <b><span style="color: red;">&#9888;&nbsp;NEW </span>Dieses Tool erstellt eine .zip Datei mit sowohl verschlüsselter als auch entschlüsselter Firmware und einer info.txt.</b><br>
+            <b><span style="color: red;">&#9888;&nbsp;NEW </span>Zum Flashen benutze z.B. von CamiAlfa die App <a href="https://play.google.com/store/apps/details?id=com.m365downgrade">m365 DownG</a></b>.
+            Sie wählt automatisch die korrekte Firmware für deinen Scooter. Bitte nicht die .zip Datei mit alten / gepatchten Apps flashen!
+        </div>
+    </div>
+
+    <hr>
+    <div class="row">
+        <div class="col">
+            Credits an VooDooShamane (RollerPlausch) für <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">seine Arbeit</a> an den Offsets!
+            Leistungsparameter und DPC Mod für DRV236/DRV304 von NandTek.
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Mi 1S / Pro2 VLT Firmware Patcher by dnandha: <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">https://github.com/dnandha/vlt-firmware-patcher</a> <br/>
+            Basiert auf BotoX' m365 Firmware Patcher: <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">https://github.com/BotoX/xiaomi-m365-firmware-patcher</a>
+        </div>
+    </div>
 </div>
 
 <script>
