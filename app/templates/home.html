@@ -99,8 +99,8 @@
             </div>
             <div class="card-body">
                 <div class="card-title input-group">
-                    <input class="form-control" name="motor_start_speed" type="number" step="0.1" min="0" max="10" value="5" disabled>
-                    <span class="input-group-text">km/h</span>
+                    <input class="form-range" name="motor_start_speed" type="range" step="0.1" min="0" max="10" value="5" onchange="OnSliderChange('motorss_value', this.value)" oninput="OnSliderChange('motorss_value', this.value)" disabled>
+                    <span class="input-group-text"><div id="motorss_value">5</div>&nbsp;km/h</span>
                 </div>
                 <div class="card-text">
                     Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
@@ -147,8 +147,8 @@
 
             <div class="card-body">
                 <div class="card-title input-group">
-                    <input class="form-range" name="wheelsize" type="range" step="0.1" min="10" max="50" value="21.5" disabled oninput=wheelsizeChange()>
-                    <span class="input-group-text"><div name="wheelsize_value">5</div>&nbsp;cm</span>
+                    <input class="form-range" name="wheelsize" type="range" step="0.1" min="1" max="50" value="21.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled>
+                    <span class="input-group-text"><div id="wheelsize_value">21.5</div>&nbsp;cm</span>
                 </div>
                 <div class="card-text">
                     UNGETESTET!!
@@ -166,9 +166,10 @@
             <div class="card-body">
                 <div class="card-title">
                     <div class="row">
-                        <div class="col">
-                            <label class="form-check-label">Speed Mode (mA):</label>
-                            <input class="form-control" name="speed_ampere" type="number" step="1" min="0" max="30000" value="25000" disabled>
+                        <div class="col input-group">
+                            <label class="form-check-label">Speed Mode:</label>
+                            <input class="form-range" name="speed_ampere" type="range" step="1" min="0" max="30000" value="25000" oninput="OnSliderChange('speed_ampere_value', this.value)" onchange="OnSliderChange('speed_ampere_value', this.value)" disabled>
+			    <span class="input-group-text"><div id="speed_ampere_value">25000</div>&nbsp;mA</span>
                         </div>
                         <div class="col" hidden>
                             <label class="form-check-label">Normal Mode (mA):</label>
@@ -181,7 +182,7 @@
                     </div>
                 </div>
                 <div class="card-text">
-                    Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen. Bitte nicht über 30A gehen, da sonst die Batterie Schaden nimmt!
+                    Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen.
 
                     Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.
                 </div>
@@ -281,6 +282,11 @@
 
             ChangeForm(tmp[0], tmp[1], true);
         }
+    }
+
+    function OnSliderChange(elname, value) {
+        var ws_val = document.getElementById(elname);
+	ws_val.innerHTML = value;
     }
 
     function GetForm(name) {
