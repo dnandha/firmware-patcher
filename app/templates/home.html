@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='newstyle.css') }}">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
 
 <title>Xiaomi Mi 1S / Pro2 VLT Custom Firmware Toolkit</title>
 </head>
@@ -41,7 +41,7 @@
     <div class="card-group">
         <div class="card text-center">
             <div class="card-header">
-                <input class="form-check-input" id="brakelight_mod" name="brakelight_mod" type="checkbox">
+                <input class="form-check-input" name="brakelight_mod" type="checkbox">
                 <label class="form-check-label"><b>Bremslicht Mod</b></label>
             </div>
             <div class="card-body">
@@ -99,7 +99,7 @@
             </div>
             <div class="card-body">
                 <div class="card-title input-group">
-                    <input class="form-control" name="motor_start_speed" type="number" step="0.1" min="0" max="10" value="5.0" disabled>
+                    <input class="form-control" name="motor_start_speed" type="number" step="0.1" min="0" max="10" value="5" disabled>
                     <span class="input-group-text">km/h</span>
                 </div>
                 <div class="card-text">
@@ -147,8 +147,8 @@
 
             <div class="card-body">
                 <div class="card-title input-group">
-                    <input class="form-control" name="wheelsize" type="number" step="0.1" min="10" max="50" value="21.5" disabled>
-                    <span class="input-group-text">cm</span>
+                    <input class="form-range" name="wheelsize" type="range" step="0.1" min="10" max="50" value="21.5" disabled oninput=wheelsizeChange()>
+                    <span class="input-group-text"><div name="wheelsize_value">5</div>&nbsp;cm</span>
                 </div>
                 <div class="card-text">
                     UNGETESTET!!
@@ -168,20 +168,20 @@
                     <div class="row">
                         <div class="col">
                             <label class="form-check-label">Speed Mode (mA):</label>
-                            <input class="form-control" name="speed_ampere" type="number" step="1" min="0" max="65535" value="25000" disabled>
+                            <input class="form-control" name="speed_ampere" type="number" step="1" min="0" max="30000" value="25000" disabled>
                         </div>
-                        <div class="col">
+                        <div class="col" hidden>
                             <label class="form-check-label">Normal Mode (mA):</label>
-                            <input class="form-control" name="normal_ampere" type="number" step="1" min="0" max="65535" value="17000" disabled>
+                            <input class="form-control" name="normal_ampere" type="number" step="1" min="0" max="30000" value="17000" disabled>
                         </div>
-                        <div class="col">
+                        <div class="col" hidden>
                             <label class="form-check-label">Eco Mode (mA):</label>
-                            <input class="form-control" name="eco_ampere" type="number" step="1" min="0" max="65535" value="7000" disabled>
+                            <input class="form-control" name="eco_ampere" type="number" step="1" min="0" max="30000" value="7000" disabled>
                         </div>
                     </div>
                 </div>
                 <div class="card-text">
-                    Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen.
+                    Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen. Bitte nicht über 30A gehen, da sonst die Batterie Schaden nimmt!
 
                     Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.
                 </div>
@@ -207,8 +207,12 @@
         </div>
         <div class="col">
             <b><label id="drvselect" for="file">Datei auswählen:</label></b>
+
               <input type="file" id="file" name="filename">
           <input type="submit" value="Patch!">
+
+            <input class="form-check-input" name="testzip" type="checkbox">
+            <label class="form-check-label"><b>TESTZIP</b></label>
         </div>
     </div>
 
@@ -340,7 +344,7 @@
     function Preset_Default() {
         ChangeForm(forms.BRAKELIGHT_MOD, false);
         ChangeForm(forms.SPEED_PLUS2, false);
-        ChangeForm(forms.MOTOR_START_SPEED, "5.0", false);
+        ChangeForm(forms.MOTOR_START_SPEED, "5", false);
         ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_AUTOBRAKE, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
@@ -360,7 +364,6 @@
     function Preset_MiPro2() {
         Preset_Default();
         //ChangeForm(forms.VERSION, "DRV236");
-        ChangeForm(forms.SPEED_PARAMS, false);
         ChangeForm(forms.SPEED_AMPERE, "25000");
         ChangeForm(forms.NORMAL_AMPERE, "17000");
         ChangeForm(forms.ECO_AMPERE, "7000");

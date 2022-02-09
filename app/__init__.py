@@ -38,7 +38,7 @@ def home():
     return flask.render_template('home.html')
 
 
-@app.route('/cfw', methods = ['POST'])
+@app.route('/cfw', methods=['POST'])
 def patch_firmware():
     version = flask.request.form.get('version', None)
     if version not in ['DRV236', 'DRV304']:
@@ -47,34 +47,65 @@ def patch_firmware():
     f = flask.request.files['filename']
     if f.filename != f'{version}.bin':
         return 'Falsche oder keine Datei ausgewählt.', 400
+    data = f.read()
 
-    patcher = FirmwarePatcher(f.read())
+    testzip = flask.request.form.get('testzip', None)
+
+    # make zip file for firmware
+    zip_buffer = io.BytesIO()
+    zip_file = zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False)
+
+    patcher = FirmwarePatcher(data)
 
     brakelight_mod = flask.request.form.get('brakelight_mod', None)
     if brakelight_mod:
         patcher.brakelight_mod()
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.brakelight_mod()
+            zip_file.writestr(f'VLT{version}_brakelight.bin', tpatcher.data)
 
     speed_plus2 = flask.request.form.get('speed_plus2', None)
     if speed_plus2:
         patcher.speed_plus2()
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.speed_plus2()
+            zip_file.writestr(f'VLT{version}_22kmh.bin', tpatcher.data)
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:
         patcher.remove_autobrake()
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.remove_autobrake()
+            zip_file.writestr(f'VLT{version}_nobrake.bin', tpatcher.data)
 
     remove_kers = flask.request.form.get('remove_kers', None)
     if remove_kers:
         patcher.remove_kers()
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.remove_kers()
+            zip_file.writestr(f'VLT{version}_nokers.bin', tpatcher.data)
 
     motor_start_speed = flask.request.form.get('motor_start_speed', None)
     if motor_start_speed is not None:
         motor_start_speed = float(motor_start_speed)
         assert motor_start_speed >= 0 and motor_start_speed <= 100
         patcher.motor_start_speed(motor_start_speed)
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.motor_start_speed(motor_start_speed)
+            zip_file.writestr(f'VLT{version}_motorss.bin', tpatcher.data)
 
     remove_charging_mode = flask.request.form.get('remove_charging_mode', None)
     if remove_charging_mode:
         patcher.remove_charging_mode()
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.remove_charging_mode()
+            zip_file.writestr(f'VLT{version}_nocharging.bin', tpatcher.data)
 
     speed_params = flask.request.form.get('speed_params', None)
     if speed_params:
@@ -85,22 +116,29 @@ def patch_firmware():
         eco_ampere = int(flask.request.form.get('eco_ampere', None))
         assert eco_ampere >= 0 and eco_ampere <= 65535
         patcher.speed_params(eco_ampere, normal_ampere, speed_ampere)
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.speed_params(eco_ampere, normal_ampere, speed_ampere)
+            zip_file.writestr(f'VLT{version}_ampere.bin', tpatcher.data)
 
     dpc = flask.request.form.get('dpc', None)
     if dpc:
         patcher.dpc()
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.dpc()
+            zip_file.writestr(f'VLT{version}_dpc.bin', tpatcher.data)
 
     wheelsize = flask.request.form.get('wheelsize', None)
     if wheelsize is not None:
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
-        # 8.5" ~ 21.5cm
-        mult = wheelsize/21.5
+        mult = wheelsize/21.5  # 8.5" ~ 21.5cm
         patcher.wheel_speed_const(mult)
-
-    # make zip file for firmware
-    zip_buffer = io.BytesIO()
-    zip_file = zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False)
+        if testzip:
+            tpatcher = FirmwarePatcher(data)
+            tpatcher.wheel_speed_const(mult)
+            zip_file.writestr(f'VLT{version}_wheelsize.bin', tpatcher.data)
 
     zip_file.writestr('FIRM.bin', patcher.data)
     md5 = hashlib.md5()
