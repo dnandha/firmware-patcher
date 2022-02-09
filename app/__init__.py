@@ -133,7 +133,7 @@ def patch_firmware():
     if wheelsize is not None:
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
-        mult = wheelsize/21.5  # 8.5" ~ 21.5cm
+        mult = wheelsize/8.5  # 8.5" is default
         patcher.wheel_speed_const(mult)
         if testzip:
             tpatcher = FirmwarePatcher(data)
