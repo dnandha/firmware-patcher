@@ -112,9 +112,9 @@
                 <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
             </div>
             <div class="card-body">
-                <div class="card-title input-group">
-                    <input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled>
-		    <span class="input-group-text"><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button>&nbsp;<div id="mss_value">5</div>&nbsp;km/h&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button></span>
+                <div class="card-title">
+			<div>km/h</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
                 </div>
                 <div class="card-text">
                     Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
@@ -158,9 +158,10 @@
             </div>
 
             <div class="card-body">
-                <div class="card-title input-group">
-                    <input class="form-range" name="wheelsize" type="range" step="0.1" min="1" max="50" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled>
-                    <span class="input-group-text"><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button>&nbsp;<div id="wheelsize_value">8.5</div>&nbsp;"&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button></span>
+                <div class="card-title center-block">
+			<div>Zoll</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button><input class="form-range" name="wheelsize" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button></span><div id="wheelsize_value">8.5</div>
+
                 </div>
                 <div class="card-text">
                     Getestet mit 10 Zoll Reifen an 1S. Geschwindigkeit okay, Anzugsverhalten prüfen.
@@ -178,10 +179,11 @@
             <div class="card-body">
                 <div class="card-title">
                     <div class="row">
-                        <div class="col input-group">
+                        <div class="col center-block">
                             <label class="form-check-label">Speed Mode:</label>
-                            <input class="form-range" name="speed_ampere" type="range" step="500" min="0" max="30000" value="25000" oninput="OnSliderChange('speed_ampere_value', this.value)" onchange="OnSliderChange('speed_ampere_value', this.value)" disabled>
-			    <span class="input-group-text"><button type="button" class="btn btn-primary" onclick="SliderUp('speed_ampere', 'speed_ampere_value')">+</button>&nbsp;<div id="speed_ampere_value">25000</div>&nbsp;mA&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('speed_ampere', 'speed_ampere_value')">-</button></span>
+				<div>mA</div>
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('speed_ampere', 'speed_ampere_value')">-</button><input class="form-range" name="speed_ampere" type="range" step="500" min="0" max="30000" value="25000" onchange="OnSliderChange('speed_ampere_value', this.value)" oninput="OnSliderChange('speed_ampere_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('speed_ampere', 'speed_ampere_value')">+</button></span><div id="speed_ampere_value">25000</div>
+
                         </div>
                         <div class="col" hidden>
                             <label class="form-check-label">Normal Mode (mA):</label>
