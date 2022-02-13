@@ -139,6 +139,13 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         return [(ofs, pre, post)]
 
+    def motor_start_speed(self, kmh):
+        val = struct.pack('<H', int(kmh * 345))
+        sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
+        ofs = FindPattern(self.data, sig) + 2
+        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        return [(ofs, pre, post)]
+
     def remove_charging_mode(self):
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
         ofs = FindPattern(self.data, sig) + 4
@@ -147,21 +154,22 @@ class FirmwarePatcher():
         self.data[ofs:ofs+2] = post
         return [(ofs, pre, post)]
 
-    def motor_start_speed(self, kmh, wheelratio=1., const=345):
+    def wheel_speed_const(self, factor, def1=345, def2=1725):
         ret = []
 
-        if wheelratio != 1.:
-            val = struct.pack('<H', int(const/wheelratio))
-            sig = [0xB4, 0xF9, None, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x48, 0x43]
-            ofs = FindPattern(self.data, sig) + 4
-            pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
-            self.data[ofs:ofs+4] = post
-            ret.append([ofs, pre, post])
+        val1 = struct.pack('<H', int(def1/factor))
+        val2 = struct.pack('<H', int(def2*factor))
 
-        val = struct.pack('<H', int(kmh * const * wheelratio))
+        sig = [0xB4, 0xF9, None, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x48, 0x43]
+        ofs = FindPattern(self.data, sig) + 4
+        pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
+        self.data[ofs:ofs+4] = post
+        ret.append([ofs, pre, post])
+
         sig = [0x28, 0x48, 0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62, 0x27, 0x4F]
         ofs = FindPattern(self.data, sig) + 4
-        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        pre, post = PatchImm(self.data, ofs, 4, val2, MOVW_T3_IMM)
+        self.data[ofs:ofs+4] = post
         ret.append([ofs, pre, post])
 
         return ret
@@ -261,14 +269,16 @@ if __name__ == "__main__":
         data = fp.read()
 
     cfw = FirmwarePatcher(data)
-    ret = cfw.brakelight_mod()
-    ret = cfw.speed_plus2()
-    ret = cfw.remove_kers()
-    ret = cfw.remove_autobrake()
-    ret = cfw.remove_charging_mode()
-    ret = cfw.motor_start_speed(3., wheelratio=12./8.5)  # wheelratio = new_wheel_size / old_wheel_size
-    ret = cfw.speed_params(7000, 17000, 27000)
-    ret = cfw.dpc()
+    #ret = cfw.motor_start_speed(3)
+    #ret = cfw.brakelight_mod()
+    #ret = cfw.speed_plus2()
+    #ret = cfw.remove_kers()
+    #ret = cfw.remove_autobrake()
+    #ret = cfw.remove_charging_mode()
+    #mult = 9.9/8.5  # new while size / old wheel size
+    #ret = cfw.wheel_speed_const(mult)
+    ret = cfw.speed_params(7000, 17000, 25000)
+    #ret = cfw.dpc()
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
 

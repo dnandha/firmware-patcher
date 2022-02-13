@@ -168,7 +168,7 @@
                     <div class="row">
                         <div class="col input-group">
                             <label class="form-check-label">Speed Mode:</label>
-                            <input class="form-range" name="speed_ampere" type="range" step="100" min="0" max="30000" value="25000" oninput="OnSliderChange('speed_ampere_value', this.value)" onchange="OnSliderChange('speed_ampere_value', this.value)" disabled>
+                            <input class="form-range" name="speed_ampere" type="range" step="1" min="0" max="30000" value="25000" oninput="OnSliderChange('speed_ampere_value', this.value)" onchange="OnSliderChange('speed_ampere_value', this.value)" disabled>
 			    <span class="input-group-text"><div id="speed_ampere_value">25000</div>&nbsp;mA</span>
                         </div>
                         <div class="col" hidden>
@@ -212,8 +212,8 @@
               <input type="file" id="file" name="filename">
           <input type="submit" value="Patch!">
 
-            <input class="form-check-input" name="testzip" type="checkbox" hidden>
-            <label class="form-check-label" hidden><b>TESTZIP</b></label>
+            <input class="form-check-input" name="testzip" type="checkbox">
+            <label class="form-check-label"><b>TESTZIP</b></label>
         </div>
     </div>
 
