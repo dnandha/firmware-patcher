@@ -35,7 +35,7 @@
         <div class="col">
             <select class="form-select" id="modeselect" onchange="ChangeMode()">
                 <option value="default">Empfohlen</option>
-                <option value="custom">Benutzerdefiniert</option>
+                <option value="custom">Erweitert</option>
             </select>
         </div>
     </div>
@@ -108,18 +108,13 @@
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
-                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
+                <input class="form-check-input" type="checkbox" name="dpc">
+                <label class="form-check-label"><b>DPC</b></label>
             </div>
+
             <div class="card-body">
-                <div class="card-title">
-			<div>km/h</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
-                </div>
-                <div class="card-text">
-                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
-                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
-                </div>
+                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
+                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
             </div>
         </div>
 
@@ -141,13 +136,18 @@
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dpc">
-                <label class="form-check-label"><b>DPC</b></label>
+                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
+                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
             </div>
-
             <div class="card-body">
-                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
-                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+                <div class="card-title">
+			<div>km/h</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
+                </div>
+                <div class="card-text">
+                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
+                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
+                </div>
             </div>
         </div>
 
@@ -253,7 +253,7 @@
 	    <div class="col">
 		<h4 class="text-start">Disclaimer</h3>
 		<p class="text-md">
-		    Mi 1S / Pro2 VLT Firmware Patcher by NandTek (dnandha): <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">Link zu GitHub</a> <br/>
+		    VLT Firmware Patcher by NandTek (dnandha): <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">Link zu GitHub</a> <br/>
 		    Basiert auf BotoX' m365 Firmware Patcher: <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">Link zu GitHub</a>
 		</p>
 	    </div>
