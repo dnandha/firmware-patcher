@@ -154,7 +154,7 @@ class FirmwarePatcher():
         self.data[ofs:ofs+2] = post
         return [(ofs, pre, post)]
 
-    def wheel_speed_const(self, factor, def1=345, def2=1725):
+    def wheel_speed_const(self, factor, def1=345, def2=1387):
         ret = []
 
         val1 = struct.pack('<H', int(def1/factor))
@@ -166,7 +166,7 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         ret.append([ofs, pre, post])
 
-        sig = [0x28, 0x48, 0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62, 0x27, 0x4F]
+        sig = [0x60, 0x60, 0x60, 0x68, 0x40, 0xF2, 0x6B, 0x51, 0x48, 0x43]
         ofs = FindPattern(self.data, sig) + 4
         pre, post = PatchImm(self.data, ofs, 4, val2, MOVW_T3_IMM)
         self.data[ofs:ofs+4] = post
@@ -269,15 +269,15 @@ if __name__ == "__main__":
         data = fp.read()
 
     cfw = FirmwarePatcher(data)
-    #ret = cfw.motor_start_speed(3)
+    ret = cfw.motor_start_speed(4)
     #ret = cfw.brakelight_mod()
     #ret = cfw.speed_plus2()
     #ret = cfw.remove_kers()
     #ret = cfw.remove_autobrake()
     #ret = cfw.remove_charging_mode()
-    #mult = 9.9/8.5  # new while size / old wheel size
-    #ret = cfw.wheel_speed_const(mult)
-    ret = cfw.speed_params(7000, 17000, 25000)
+    mult = 10./8.5  # new while size / old wheel size
+    ret = cfw.wheel_speed_const(mult)
+    #ret = cfw.speed_params(7000, 17000, 25000)
     #ret = cfw.dpc()
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
