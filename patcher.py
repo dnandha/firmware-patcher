@@ -140,7 +140,7 @@ class FirmwarePatcher():
         return [(ofs, pre, post)]
 
     def motor_start_speed(self, kmh):
-        val = struct.pack('<H', int(kmh * 345))
+        val = struct.pack('<H', round(kmh * 345))
         sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
         ofs = FindPattern(self.data, sig) + 2
         pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
@@ -157,8 +157,8 @@ class FirmwarePatcher():
     def wheel_speed_const(self, factor, def1=345, def2=1387):
         ret = []
 
-        val1 = struct.pack('<H', int(def1/factor))
-        val2 = struct.pack('<H', int(def2*factor))
+        val1 = struct.pack('<H', round(def1/factor))
+        val2 = struct.pack('<H', round(def2*factor))
 
         sig = [0xB4, 0xF9, None, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x48, 0x43]
         ofs = FindPattern(self.data, sig) + 4
