@@ -5,7 +5,7 @@ import time
 import io
 import zipfile
 import hashlib
-import pathlib
+
 
 from patcher import FirmwarePatcher
 
@@ -45,9 +45,11 @@ def patch_firmware():
         return 'Ungültige Firmware Version.', 400
 
     f = flask.request.files['filename']
-    if f.filename != f'{version}.bin':
-        return 'Falsche oder keine Datei ausgewählt.', 400
+
     data = f.read()
+    md5 = hashlib.md5(data).hexdigest()
+    if md5 not in ['194df3966443d8a913b47006119d45d9', '682fc3b89122ff0a21ebe2fa3ada4908']:
+        return 'Falsche oder keine Datei ausgewählt.', 400
 
     # make zip file for firmware
     zip_buffer = io.BytesIO()
