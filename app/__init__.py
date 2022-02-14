@@ -48,7 +48,8 @@ def patch_firmware():
 
     data = f.read()
     md5 = hashlib.md5(data).hexdigest()
-    if md5 not in ['194df3966443d8a913b47006119d45d9', '682fc3b89122ff0a21ebe2fa3ada4908']:
+    if (version == 'DRV236' and md5 != '194df3966443d8a913b47006119d45d9')\
+        or (version == 'DRV304' and md5 != '682fc3b89122ff0a21ebe2fa3ada4908'):
         return 'Falsche oder keine Datei ausgewählt.', 400
 
     # make zip file for firmware
