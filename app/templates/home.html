@@ -42,16 +42,6 @@
 
     <hr>
     <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
-    <div class="card text-center m-1">
-        <div class="card-header"><b>Basis Firmware Version</b></div>
-
-        <div class="card-body">
-            <select class="form-select" id="verselect" name="version" onchange="ChangeVersion()">
-                <option value="DRV236">2.3.6 (Mi Pro2)</option>
-                <option value="DRV304">3.0.4 (Mi 1S)</option>
-            </select>
-        </div>
-    </div>
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
@@ -108,13 +98,18 @@
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dpc">
-                <label class="form-check-label"><b>DPC</b></label>
+                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
+                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
             </div>
-
             <div class="card-body">
-                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
-                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+                <div class="card-title">
+			<div>km/h</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
+                </div>
+                <div class="card-text">
+                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
+                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
+                </div>
             </div>
         </div>
 
@@ -131,26 +126,8 @@
                 </div>
             </div>
         </div>
-
     </div>
     <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
-                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-			<div>km/h</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
-                </div>
-                <div class="card-text">
-                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
-                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
-                </div>
-            </div>
-        </div>
-
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
@@ -168,60 +145,27 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="card-group">
-        <div class="card text-center m-1 border-warning custom" hidden>
+        <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="speed_params" onchange="CheckForm('speed_ampere', this); CheckForm('normal_ampere', this); CheckForm('eco_ampere', this);">
-                <label class="form-check-label"><b>Nennstrom (Experimental)</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-                    <div class="row">
-                        <div class="col center-block">
-                            <label class="form-check-label">Speed Mode:</label>
-				<div>mA</div>
-				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('speed_ampere', 'speed_ampere_value')">-</button><input class="form-range" name="speed_ampere" type="range" step="500" min="0" max="30000" value="25000" onchange="OnSliderChange('speed_ampere_value', this.value)" oninput="OnSliderChange('speed_ampere_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('speed_ampere', 'speed_ampere_value')">+</button></span><div id="speed_ampere_value">25000</div>
-
-                        </div>
-                        <div class="col" hidden>
-                            <label class="form-check-label">Normal Mode (mA):</label>
-                            <input class="form-control" name="normal_ampere" type="number" step="1" min="0" max="30000" value="17000" disabled>
-                        </div>
-                        <div class="col" hidden>
-                            <label class="form-check-label">Eco Mode (mA):</label>
-                            <input class="form-control" name="eco_ampere" type="number" step="1" min="0" max="30000" value="7000" disabled>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-text">
-                    Achtung: Aktuell wird nur der Wert für den Speed Mode übernommen.
-
-                    Erfolgreich getestet auf Mi Pro2. Mi 1S noch nicht getestet.
-                </div>
-            </div>
-        </div>
-
-        <div class="card text-center border-danger text-danger" hidden>
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="speed_limit">
-                <label class="form-check-label"><b>Speedlimit (NICHT IMPLEMENTIERT)</b></label>
+                <input class="form-check-input" type="checkbox" name="dpc">
+                <label class="form-check-label"><b>DPC</b></label>
             </div>
 
             <div class="card-body">
-                NICHT IMPLEMENTIERT
+                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
+                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
             </div>
         </div>
     </div>
+
     <hr>
-
     <div class="row">
         <div class="col-sm-4">
             Achtung: Bitte prüfe vor dem Patchen erneut, ob alle gemachten Eingaben passen!!<br />
         </div>
         <div class="col">
-            <b><label id="drvselect" class="custom-file-label" for="file">Datei auswählen:</label></b>
+            <b><label id="drvselect" class="custom-file-label" for="file">Vanilla Datei auswählen (DRV236 für Pro2 / DRV304 für 1S):</label></b>
 
               <input type="file" id="file" class="custom-file-input" name="filename">
           <input type="submit" value="Patch!">
@@ -270,10 +214,6 @@
         "REMOVE_KERS": "remove_kers",
         "REMOVE_AUTOBRAKE": "remove_autobrake",
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
-        "SPEED_PARAMS": "speed_params",
-        "SPEED_AMPERE": "speed_ampere",
-        "NORMAL_AMPERE": "normal_ampere",
-        "ECO_AMPERE": "eco_ampere",
         "DPC": "dpc",
         "WHEELSIZE": "wheelsize",
     };
@@ -379,19 +319,7 @@
     }
 
     function OnLoad(){
-	    ChangeVersion();
 	    ChangeMode();
-    }
-
-    function ChangeVersion(){
-        var version = document.getElementById("verselect").value
-        if (version === "DRV236") {
-            Preset_MiPro2();
-        } else if (version === "DRV304") {
-            Preset_Mi1S();
-        }
-
-        document.getElementById("drvselect").innerHTML = `"${version}.bin" auswählen:`;
     }
 
     function ChangeMode(){
@@ -414,27 +342,10 @@
         ChangeForm(forms.SPEED_PLUS2, true);
         ChangeForm(forms.MOTOR_START_SPEED, "3", true);
         ChangeForm(forms.REMOVE_AUTOBRAKE, true);
-        ChangeForm(forms.DPC, true);
+        ChangeForm(forms.DPC, false);
         ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
-        ChangeForm(forms.SPEED_PARAMS, false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
-    }
-
-    function Preset_Mi1S() {
-        //Preset_Default();
-        //ChangeForm(forms.VERSION, "DRV304");
-        ChangeForm(forms.SPEED_AMPERE, "20000");
-        ChangeForm(forms.NORMAL_AMPERE, "15000");
-        ChangeForm(forms.ECO_AMPERE, "7000");
-    }
-
-    function Preset_MiPro2() {
-        //Preset_Default();
-        //ChangeForm(forms.VERSION, "DRV236");
-        ChangeForm(forms.SPEED_AMPERE, "25000");
-        ChangeForm(forms.NORMAL_AMPERE, "17000");
-        ChangeForm(forms.ECO_AMPERE, "7000");
     }
 </script>
 

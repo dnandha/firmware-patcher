@@ -40,16 +40,15 @@ def home():
 
 @app.route('/cfw', methods=['POST'])
 def patch_firmware():
-    version = flask.request.form.get('version', None)
-    if version not in ['DRV236', 'DRV304']:
-        return 'Ungültige Firmware Version.', 400
-
     f = flask.request.files['filename']
 
     data = f.read()
     md5 = hashlib.md5(data).hexdigest()
-    if (version == 'DRV236' and md5 != '194df3966443d8a913b47006119d45d9')\
-        or (version == 'DRV304' and md5 != '682fc3b89122ff0a21ebe2fa3ada4908'):
+    if md5 == '194df3966443d8a913b47006119d45d9':
+        version = "DRV236"
+    elif md5 == '682fc3b89122ff0a21ebe2fa3ada4908':
+        version = "DRV304"
+    else:
         return 'Falsche oder keine Datei ausgewählt.', 400
 
     # make zip file for firmware

@@ -174,55 +174,6 @@ class FirmwarePatcher():
 
         return ret
 
-    def speed_params(self, eco_ampere, normal_ampere, speed_ampere):
-        ret = []
-
-        # TODO: changing eco/normal doesn't seem to have an effect
-        #sig = [0x41, 0xF6, 0x58, None, None, 0x42, 0x01, 0xD2]
-        #ofs = FindPattern(self.data, sig)
-        #pre = self.data[ofs:ofs+4]
-        #reg = 0
-        #if pre[-1] == 0x32:
-        #    reg = 2  # DRV236
-        #elif pre[-1] == 0x33:
-        #    reg = 3  # DRV304
-        #else:
-        #    raise Exception("invalid firmware file")
-        #post = bytes(self.ks.asm('MOVW R{}, #{:n}'.format(reg, eco_ampere))[0])
-        #self.data[ofs:ofs+4] = post
-        #ret.append([ofs, pre, post])
-        #ofs += 4
-        #pre = self.data[ofs:ofs+2]
-        #post = bytes(self.ks.asm('CMP R0, R0')[0])
-        #self.data[ofs:ofs+2] = post
-        #ret.append([ofs, pre, post])
-
-        #sig = [0x06, 0xD0, 0x22, 0x8E, None, None, None, 0x23, None, 0x42, 0x13, 0xD2]
-        #ofs = FindPattern(self.data, sig) + 4
-        #pre = self.data[ofs:ofs+4]
-        #post = bytes(self.ks.asm('MOVW R3, #{:n}'.format(normal_ampere))[0])
-        #self.data[ofs:ofs+4] = post
-        #ret.append([ofs, pre, post])
-        #ofs += 4
-        #pre = self.data[ofs:ofs+2]
-        #post = bytes(self.ks.asm('CMP R0, R0')[0])
-        #self.data[ofs:ofs+2] = post
-        #ret.append([ofs, pre, post])
-
-        sig = [0x12, 0xE0, 0x22, 0x8E, None, None, None, None, None, 0x42, 0x01, 0xD2]
-        ofs = FindPattern(self.data, sig) + 4
-        pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('MOVW R3, #{:n}'.format(speed_ampere))[0])
-        self.data[ofs:ofs+4] = post
-        ret.append([ofs, pre, post])
-        ofs += 4
-        pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('CMP R0, R0')[0])
-        self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
-
-        return ret
-
     def dpc(self):
         ret = []
         sig = [0x25, 0x4a, 0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
@@ -269,15 +220,15 @@ if __name__ == "__main__":
         data = fp.read()
 
     cfw = FirmwarePatcher(data)
-    ret = cfw.motor_start_speed(4)
+    #ret = cfw.motor_start_speed(4)
     #ret = cfw.brakelight_mod()
     #ret = cfw.speed_plus2()
     #ret = cfw.remove_kers()
     #ret = cfw.remove_autobrake()
     #ret = cfw.remove_charging_mode()
-    mult = 10./8.5  # new while size / old wheel size
-    ret = cfw.wheel_speed_const(mult)
-    #ret = cfw.speed_params(7000, 17000, 25000)
+    #mult = 10./8.5  # new while size / old wheel size
+    #ret = cfw.wheel_speed_const(mult)
+    ret = cfw.speed_params(7000, 17000, 30000)
     #ret = cfw.dpc()
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
