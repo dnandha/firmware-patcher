@@ -83,19 +83,6 @@
             </div>
         </div>
 
-        <div class="card text-center m-1 custom" hidden>
-            <div class="card-header">
-                <input class="form-check-input" name="remove_kers" type="checkbox">
-                <label class="form-check-label"><b>KERS ausschalten</b></label>
-            </div>
-            <div class="card-body">
-                Rekuperation (KERS) wird beim Ausrollen komplett entfernt.
-                Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
-            </div>
-        </div>
-
-    </div>
-    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
@@ -112,6 +99,19 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
+        <div class="card text-center m-1 custom" hidden>
+            <div class="card-header">
+                <input class="form-check-input" name="remove_kers" type="checkbox">
+                <label class="form-check-label"><b>KERS ausschalten</b></label>
+            </div>
+            <div class="card-body">
+                Rekuperation (KERS) wird beim Ausrollen komplett entfernt.
+                Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
+            </div>
+        </div>
+
 
         <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
@@ -127,6 +127,36 @@
             </div>
         </div>
     </div>
+    <div class="card-group">
+        <div class="card text-center m-1 custom" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="dpc">
+                <label class="form-check-label"><b>DPC</b></label>
+            </div>
+
+            <div class="card-body">
+                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
+                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+            </div>
+        </div>
+
+        <div class="card text-center m-1 border-warning custom">
+            <div class="card-header">
+                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
+                <label class="form-check-label"><b>Ausschaltzeit</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+			<div>Sekunden</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
+                </div>
+                <div class="card-text">
+                    Hierbei handelt es sich um die Dauer, die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card-group">
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
@@ -145,40 +175,9 @@
                 </div>
             </div>
         </div>
-
-        <div class="card text-center m-1 custom" hidden>
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dpc">
-                <label class="form-check-label"><b>DPC</b></label>
-            </div>
-
-            <div class="card-body">
-                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
-                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
-            </div>
-        </div>
-    </div>
-
-    <div class="card-group">
-        <div class="card text-center m-1 border-warning custom">
-            <div class="card-header">
-                <input class="form-check-input" name="shutdown_time" type="checkbox" onchange="CheckForm('shutdown_time', this);">
-                <label class="form-check-label"><b>Ausschaltzeit</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-			<div>s</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
-                </div>
-                <div class="card-text">
-                    Hierbei handelt es sich um die Dauer, die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
-                </div>
-            </div>
-        </div>
-
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="remove_charging_mode">
+                <input class="form-check-input" type="checkbox" name="thirtyamps">
                 <label class="form-check-label"><b>30 Ampere Speed Mode</b></label>
             </div>
             <div class="card-body">

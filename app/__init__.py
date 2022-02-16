@@ -114,7 +114,7 @@ def patch_firmware():
 
     thirtyamps = flask.request.form.get('thirtyamps', None)
     if thirtyamps:
-        patcher.ampere(thirtyamps)
+        patcher.ampere(30000)
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
