@@ -1,3 +1,21 @@
+# VLT Firmware Patcher
+# Copyright (C) 2022 Daljeet Nandha
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/web/app.py
+
 import flask
 import traceback
 import os
@@ -83,16 +101,6 @@ def patch_firmware():
     if remove_charging_mode:
         patcher.remove_charging_mode()
 
-    speed_params = flask.request.form.get('speed_params', None)
-    if speed_params:
-        speed_ampere = int(flask.request.form.get('speed_ampere', None))
-        assert speed_ampere >= 0 and speed_ampere <= 65535
-        normal_ampere = int(flask.request.form.get('normal_ampere', None))
-        assert normal_ampere >= 0 and normal_ampere <= 65535
-        eco_ampere = int(flask.request.form.get('eco_ampere', None))
-        assert eco_ampere >= 0 and eco_ampere <= 65535
-        patcher.speed_params(eco_ampere, normal_ampere, speed_ampere)
-
     dpc = flask.request.form.get('dpc', None)
     if dpc:
         patcher.dpc()
@@ -103,6 +111,16 @@ def patch_firmware():
         assert wheelsize >= 0 and wheelsize <= 100
         mult = wheelsize/8.5  # 8.5" is default
         patcher.wheel_speed_const(mult)
+
+    thirtyamps = flask.request.form.get('thirtyamps', None)
+    if thirtyamps:
+        patcher.ampere(thirtyamps)
+
+    shutdown_time = flask.request.form.get('shutdown_time', None)
+    if shutdown_time is not None:
+        shutdown_time = float(shutdown_time)
+        assert shutdown_time >= 0 and shutdown_time <= 5
+        patcher.shutdown_time(shutdown_time)
 
     zip_file.writestr('FIRM.bin', patcher.data)
     md5 = hashlib.md5()

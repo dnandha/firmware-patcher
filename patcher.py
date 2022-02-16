@@ -1,3 +1,21 @@
+# VLT Firmware Patcher
+# Copyright (C) 2022 Daljeet Nandha
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Structure based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
+
 #!/usr/bin/python3
 from binascii import hexlify, unhexlify
 import struct
@@ -155,26 +173,56 @@ class FirmwarePatcher():
         return [(ofs, pre, post)]
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
+        '''
+        Patch by NandTek
+        Bigger wheels need special treatment
+        '''
         ret = []
 
         val1 = struct.pack('<H', round(def1/factor))
         val2 = struct.pack('<H', round(def2*factor))
 
+        sig = [0x95, 0xF8, 0x43, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x01, 0x28]
+        ofs = FindPattern(self.data, sig) + 4
+        pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
+        ret.append([ofs, pre, post])
+
         sig = [0xB4, 0xF9, None, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x48, 0x43]
         ofs = FindPattern(self.data, sig) + 4
         pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
-        self.data[ofs:ofs+4] = post
         ret.append([ofs, pre, post])
 
         sig = [0x60, 0x60, 0x60, 0x68, 0x40, 0xF2, 0x6B, 0x51, 0x48, 0x43]
         ofs = FindPattern(self.data, sig) + 4
         pre, post = PatchImm(self.data, ofs, 4, val2, MOVW_T3_IMM)
-        self.data[ofs:ofs+4] = post
         ret.append([ofs, pre, post])
 
         return ret
 
+    def ampere(self, speed):
+        '''
+        Patch by NandTek
+        More current <=> more consumption
+        '''
+        ret = []
+
+        sig = [0x12, 0xE0, 0x22, 0x8E, None, None, None, None, None, 0x42, 0x01, 0xD2]
+        ofs = FindPattern(self.data, sig) + 4
+        val = struct.pack('<H', speed)
+        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        ret.append(["amp_speed", ofs, pre, post])
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, R0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["amp_speed_nop", ofs, pre, post])
+
+        return ret
+
     def dpc(self):
+        '''
+        Patch by NandTek
+        '''
         ret = []
         sig = [0x25, 0x4a, 0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
         ofs = FindPattern(self.data, sig) + 6
@@ -205,6 +253,19 @@ class FirmwarePatcher():
 
         return ret
 
+    def shutdown_time(self, seconds):
+        '''
+        Patch by NandTek
+        '''
+        delay = int(seconds * 100)
+        assert delay.bit_length() <= 12, 'bit length overflow'
+        sig = [0x0a, 0x60, 0xb0, 0xf5, 0xfa, 0x7f, 0x08, 0xd9]
+        ofs = FindPattern(self.data, sig) + 2
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('CMP.W R0, #{:n}'.format(delay))[0])
+        self.data[ofs:ofs+4] = post
+        return [(ofs, pre, post)]
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -226,10 +287,11 @@ if __name__ == "__main__":
     #ret = cfw.remove_kers()
     #ret = cfw.remove_autobrake()
     #ret = cfw.remove_charging_mode()
-    #mult = 10./8.5  # new while size / old wheel size
-    #ret = cfw.wheel_speed_const(mult)
-    ret = cfw.speed_params(7000, 17000, 30000)
+    mult = 10./8.5  # new while size / old wheel size
+    ret = cfw.wheel_speed_const(mult)
+    #ret = cfw.speed_params(7000, 17000, 30000)
     #ret = cfw.dpc()
+    #ret = cfw.shutdown_time(2)
     for ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex())
 

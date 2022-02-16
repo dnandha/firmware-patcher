@@ -159,6 +159,34 @@
         </div>
     </div>
 
+    <div class="card-group">
+        <div class="card text-center m-1 border-warning custom">
+            <div class="card-header">
+                <input class="form-check-input" name="shutdown_time" type="checkbox" onchange="CheckForm('shutdown_time', this);">
+                <label class="form-check-label"><b>Ausschaltzeit</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+			<div>s</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
+                </div>
+                <div class="card-text">
+                    Hierbei handelt es sich um die Dauer, die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
+                </div>
+            </div>
+        </div>
+
+        <div class="card text-center m-1 border-warning custom" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="remove_charging_mode">
+                <label class="form-check-label"><b>30 Ampere Speed Mode</b></label>
+            </div>
+            <div class="card-body">
+                Der Nennstrom / DC Phasenstrom für den Speed Mode wird auf 30A (Ampere) gesetzt. Standard sind 20A beim 1S und 25A beim Pro2.
+            </div>
+        </div>
+    </div>
+
     <hr>
     <div class="row">
         <div class="col-sm-4">
@@ -216,6 +244,8 @@
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
         "DPC": "dpc",
         "WHEELSIZE": "wheelsize",
+        "THIRTYAMPS": "thirtyamps",
+        "SHUTDOWN_TIME": "shutdown_time",
     };
 
     var formValues = Object.values(forms);
@@ -346,6 +376,8 @@
         ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
+        ChangeForm(forms.THIRTYAMPS, false);
+        ChangeForm(forms.SHUTDOWN_TIME, "5", false);
     }
 </script>
 
