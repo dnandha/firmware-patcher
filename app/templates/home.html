@@ -16,6 +16,31 @@
 
 <noscript>Diese Webseite benötigt JavaScript.</noscript>
 
+    <div id="disclaimer" class="modal red darken-4 white-text">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="material-icons">warning</i> <a href="8ung.jpg" target="_BLANK">WARNUNG!!</a> Disclaimer</h4>
+            </div>
+            <div class="modal-body">
+                <br /> <b>Haftungsausschluss</b>
+                Ich nehme zur Kenntnis, dass vlt-firmwares.com lediglich Informationen zur Verfügung stellt.
+                <br />
+                Für eventuelle Schäden an Sache oder Person, die sich durch das Einspielen einer veränderten Firmware ergeben, übernehme ich (der Endanwender) die volle Verantwortung.
+                <br />
+                <br />Ich nehme zur Kenntnis, dass durch das Einspielen einer modizifierten Firmware die Betriebserlaubnis des Fahrzeugs erlischt!!
+
+                <br /><br />vlt-firmwares.com steht in keiner Verbindung zu irgendeinem Gerätehersteller. Wichtig: vlt-firmwares.com hostet keine Firmware Dateien! Der Endanwender hat die Option, eine Datei hochzuladen und durch einen Dienst verändern zu lassen. Die Datei selbst wird in keinster Weise zwischengespeichert.
+            </div>
+            <div class="modal-footer red darken-2 white-text">
+                <font size="1"><i>Mit einem Klick auf "Einverstanden" und/oder der Nutzung dieses Dienstes akzeptiere ich (der Endanwender) die Nutzungserklärung.</font>
+                <button type="button" class="btn btn-primary">Einverstanden</button>
+                <button type="button" class="btn btn-secondary">Abbrechen</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
 <div class="container">
     <div class="row"><div class="col center-block text-center">
         <h1>VLT Firmwares für Mi 1S / Pro2</h1>
@@ -132,12 +157,17 @@
         <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="dpc">
-                <label class="form-check-label"><b>DPC</b></label>
+                <label class="form-check-label"><b>DPC (Direct Power Control)</b></label>
             </div>
 
             <div class="card-body">
-                DPC Aktivierung und Deaktivierung erfolgt über eine Register Flag.
-                Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+				
+				Erlaubt das Reaktivieren eines vom Hersteller ursprünglich deaktivierten Fahrmodus (DPC).
+				Dieser bewirkt das der Gashebel ähnlich wie beim Auto reagiert und alle Geschwindigkeitslimits aufgehoben werden.
+				DPC kann per App ein und aus geschaltet werden.
+				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+				Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+
             </div>
         </div>
 
@@ -152,7 +182,7 @@
 			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
                 </div>
                 <div class="card-text">
-                    Hierbei handelt es sich um die Dauer, die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
+                    Hierbei handelt es sich um die Dauer für die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
                 </div>
             </div>
         </div>
@@ -182,7 +212,9 @@
                 <label class="form-check-label"><b>30 Ampere Speed Mode</b></label>
             </div>
             <div class="card-body">
-                Der Nennstrom / DC Phasenstrom für den Speed Mode wird auf 30A (Ampere) gesetzt. Standard sind 20A beim 1S und 25A beim Pro2.
+                Der Nennstrom / DC Phasenstrom für den Speed Mode wird auf 30A (Ampere) gesetzt. Standard sind 20A beim 1S und 25A beim Pro2.<br> 
+				Ermöglicht ein stabileres halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser"<br>
+				<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite und ab circa 10% Akku wird die Endgeschwindigkeit stark gedrosselt.</span>
             </div>
         </div>
     </div>
@@ -349,6 +381,7 @@
     }
 
     function OnLoad(){
+        var myModal = new bootstrap.Modal(document.getElementById('disclaimer'))
 	    ChangeMode();
     }
 
