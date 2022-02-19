@@ -82,16 +82,17 @@
         </div>
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dpc">
-                <label class="form-check-label"><b>DPC (Direct Power Control)</b></label>
+                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
+                <label class="form-check-label"><b>Ausschaltzeit</b></label>
             </div>
-
             <div class="card-body">
-				Erlaubt das Reaktivieren eines vom Hersteller ursprünglich deaktivierten Fahrmodus (DPC).
-				Dieser bewirkt das der Gashebel ähnlich wie beim Auto reagiert und alle Geschwindigkeitslimits aufgehoben werden.
-				DPC kann per App ein und aus geschaltet werden.
-				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
-				Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+                <div class="card-title">
+			<div>Sekunden</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
+                </div>
+                <div class="card-text">
+                    Hierbei handelt es sich um die Dauer für die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
+                </div>
             </div>
         </div>
     </div>
@@ -149,27 +150,32 @@
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
-                <label class="form-check-label"><b>Ausschaltzeit</b></label>
+                <input class="form-check-input" type="checkbox" name="dpc">
+                <label class="form-check-label"><b>DPC (Direct Power Control)</b></label>
+            </div>
+
+            <div class="card-body">
+				Erlaubt das Reaktivieren eines vom Hersteller ursprünglich deaktivierten Fahrmodus (DPC).
+				Dieser bewirkt das der Gashebel ähnlich wie beim Auto reagiert und alle Geschwindigkeitslimits aufgehoben werden.
+				DPC kann per App ein und aus geschaltet werden.
+				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+				Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+            </div>
+        </div>
+        <div class="card text-center m-1">
+            <div class="card-header">
+                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
+                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-			<div>Sekunden</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
+			<div>km/h</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
                 </div>
                 <div class="card-text">
-                    Hierbei handelt es sich um die Dauer für die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
+                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
+                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
                 </div>
-            </div>
-        </div>
-        <div class="card text-center m-1 custom" hidden>
-            <div class="card-header">
-                <input class="form-check-input" name="remove_kers" type="checkbox">
-                <label class="form-check-label"><b>KERS ausschalten</b></label>
-            </div>
-            <div class="card-body">
-                Rekuperation (KERS) wird beim Ausrollen komplett entfernt.
-                Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
             </div>
         </div>
     </div>
@@ -187,20 +193,14 @@
                 </div>
             </div>
         </div>
-        <div class="card text-center m-1">
+        <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
-                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
+                <input class="form-check-input" name="remove_kers" type="checkbox">
+                <label class="form-check-label"><b>KERS ausschalten</b></label>
             </div>
             <div class="card-body">
-                <div class="card-title">
-			<div>km/h</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
-                </div>
-                <div class="card-text">
-                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
-                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
-                </div>
+                Rekuperation (KERS) wird beim Ausrollen komplett entfernt.
+                Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
             </div>
         </div>
     </div>
