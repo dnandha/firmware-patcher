@@ -375,18 +375,18 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    ret.extend(vlt.ltgm())
-    ret.extend(vlt.motor_start_speed(4))
+    ret.extend(vlt.ltgm())  # do this first
     ret.extend(vlt.brakelight_mod())
+    ret.extend(vlt.dpc())
+    ret.extend(vlt.shutdown_time(2))
+    ret.extend(vlt.motor_start_speed(4))
+    ret.extend(vlt.wheel_speed_const(mult))
     ret.extend(vlt.speed_plus2())
     ret.extend(vlt.speed_plus2(True))
+    ret.extend(vlt.ampere(30000))
     ret.extend(vlt.remove_kers())
     ret.extend(vlt.remove_autobrake())
     ret.extend(vlt.remove_charging_mode())
-    ret.extend(vlt.wheel_speed_const(mult))
-    ret.extend(vlt.ampere(30000))
-    ret.extend(vlt.dpc())
-    ret.extend(vlt.shutdown_time(2))
     for desc, ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex(), desc)
 

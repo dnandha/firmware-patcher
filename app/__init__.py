@@ -75,6 +75,10 @@ def patch_firmware():
 
     patcher = FirmwarePatcher(data)
 
+    ltgm = flask.request.form.get('ltgm', None)
+    if ltgm:
+        patcher.ltgm()
+
     brakelight_mod = flask.request.form.get('brakelight_mod', None)
     if brakelight_mod:
         patcher.brakelight_mod()
@@ -82,6 +86,10 @@ def patch_firmware():
     speed_plus2 = flask.request.form.get('speed_plus2', None)
     if speed_plus2:
         patcher.speed_plus2()
+
+    speed_plus2_global = flask.request.form.get('speed_plus2_global', None)
+    if speed_plus2_global:
+        patcher.speed_plus2(True)
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:

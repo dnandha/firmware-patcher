@@ -67,6 +67,58 @@
     <hr>
     <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
     <div class="card-group">
+        <div class="card text-center m-1 border-warning custom" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="ltgm">
+                <label class="form-check-label"><b>LTGM</b></label>
+            </div>
+
+            <div class="card-body">
+                Lite Touch GM gibt direkte Kontrolle über die "German Flag" in der Firmware.
+				LTGM kann per App ein und aus geschaltet werden.
+				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+				Bei Neustart bzw. Ausschalten des Rollers wird LTGM ebenfalls zurückgesetzt.
+            </div>
+        </div>
+        <div class="card text-center m-1" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="dpc">
+                <label class="form-check-label"><b>DPC (Direct Power Control)</b></label>
+            </div>
+
+            <div class="card-body">
+				Erlaubt das Reaktivieren eines vom Hersteller ursprünglich deaktivierten Fahrmodus (DPC).
+				Dieser bewirkt das der Gashebel ähnlich wie beim Auto reagiert und alle Geschwindigkeitslimits aufgehoben werden.
+				DPC kann per App ein und aus geschaltet werden.
+				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+				Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
+            </div>
+        </div>
+    </div>
+    <div class="card-group">
+        <div class="card text-center m-1">
+            <div class="card-header">
+                <input class="form-check-input" name="speed_plus2" type="checkbox">
+                <label class="form-check-label"><b>22&nbsp;km/h Mod</b></label>
+            </div>
+
+            <div class="card-body">
+                Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.
+                Nutzt die aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf. Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an. Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
+            </div>
+        </div>
+        <div class="card text-center m-1 border-warning custom">
+            <div class="card-header">
+                <input class="form-check-input" name="speed_plus2_global" type="checkbox">
+                <label class="form-check-label"><b>22&nbsp;km/h Mod</b></label>
+            </div>
+
+            <div class="card-body">
+                Hebt das Geschwindigkeits Limit des GLOBALEN Sport Modus auf 27Kmh an.
+            </div>
+        </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="brakelight_mod" type="checkbox">
@@ -82,19 +134,6 @@
 
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" name="speed_plus2" type="checkbox">
-                <label class="form-check-label"><b>22&nbsp;km/h Mod</b></label>
-            </div>
-
-            <div class="card-body">
-                Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.
-                Nutzt die Aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf. Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an. Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
-            </div>
-        </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="remove_autobrake">
                 <label class="form-check-label"><b>Automatisches abbremsen deaktivieren</b></label>
             </div>
@@ -106,25 +145,23 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
-                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
+                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
+                <label class="form-check-label"><b>Ausschaltzeit</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-			<div>km/h</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
+			<div>Sekunden</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
                 </div>
                 <div class="card-text">
-                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
-                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
+                    Hierbei handelt es sich um die Dauer für die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group">
         <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" name="remove_kers" type="checkbox">
@@ -135,8 +172,8 @@
                 Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
             </div>
         </div>
-
-
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="remove_charging_mode">
@@ -150,37 +187,19 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dpc">
-                <label class="form-check-label"><b>DPC (Direct Power Control)</b></label>
-            </div>
-
-            <div class="card-body">
-				
-				Erlaubt das Reaktivieren eines vom Hersteller ursprünglich deaktivierten Fahrmodus (DPC).
-				Dieser bewirkt das der Gashebel ähnlich wie beim Auto reagiert und alle Geschwindigkeitslimits aufgehoben werden.
-				DPC kann per App ein und aus geschaltet werden.
-				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
-				Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
-
-            </div>
-        </div>
-
-        <div class="card text-center m-1 border-warning custom">
-            <div class="card-header">
-                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
-                <label class="form-check-label"><b>Ausschaltzeit</b></label>
+                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
+                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-			<div>Sekunden</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
+			<div>km/h</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
                 </div>
                 <div class="card-text">
-                    Hierbei handelt es sich um die Dauer für die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
+                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
+                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
                 </div>
             </div>
         </div>
@@ -266,13 +285,15 @@
 <script>
     var forms = {
         "VERSION": "version",
+        "LTGM": "ltgm",
+        "DPC": "dpc",
         "BRAKELIGHT_MOD": "brakelight_mod",
         "SPEED_PLUS2": "speed_plus2",
+        "SPEED_PLUS2_GLOBAL": "speed_plus2_global",
         "MOTOR_START_SPEED": "motor_start_speed",
         "REMOVE_KERS": "remove_kers",
         "REMOVE_AUTOBRAKE": "remove_autobrake",
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
-        "DPC": "dpc",
         "WHEELSIZE": "wheelsize",
         "THIRTYAMPS": "thirtyamps",
         "SHUTDOWN_TIME": "shutdown_time",
@@ -380,9 +401,9 @@
 
     function OnLoad(){
         var warning = new bootstrap.Modal(document.getElementById('disclaimer'));
-	warning.show();
+	    warning.show();
 
-	ChangeMode();
+	    ChangeMode();
     }
 
     function ChangeMode(){
@@ -411,16 +432,18 @@
     }
 
     function Preset_Default() {
+        ChangeForm(forms.LTGM, false);
+        ChangeForm(forms.DPC, true);
         ChangeForm(forms.BRAKELIGHT_MOD, true);
         ChangeForm(forms.SPEED_PLUS2, true);
+        ChangeForm(forms.SPEED_PLUS2_GLOBAL, false);
         ChangeForm(forms.MOTOR_START_SPEED, "3", true);
         ChangeForm(forms.REMOVE_AUTOBRAKE, true);
-        ChangeForm(forms.DPC, false);
         ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
         ChangeForm(forms.THIRTYAMPS, false);
-        ChangeForm(forms.SHUTDOWN_TIME, "5", false);
+        ChangeForm(forms.SHUTDOWN_TIME, "1.5", true);
     }
 </script>
 
