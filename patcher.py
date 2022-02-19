@@ -100,32 +100,40 @@ class FirmwarePatcher():
     def brakelight_mod(self):
         ret = []
 
-        sig = [0xA1, 0x79, 0x01, 0x29]
+        sig = [0x01, 0x29, None, 0xd0, 0xa1, 0x79, 0x01, 0x29]
         ofs = FindPattern(self.data, sig)
         pre = self.data[ofs:ofs+2]
         post = bytes([int(x, 0) for x in ['0x00', '0x21']])
         self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
+        ret.append(["blm", ofs, pre, post])
 
-        sig = [0x90, 0xf8, 0x43, 0x00, 0x00, 0x28]
+        sig = [0x90, 0xf8, None, None, 0x00, 0x28, None, 0xd1]
         ofs = FindPattern(self.data, sig) + 4
 
         pre = self.data[ofs:ofs+2]
         post = bytes([int(x, 0) for x in ['0x08', '0x28']])
         self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
+        ret.append(["blm", ofs, pre, post])
 
         return ret
 
-    def speed_plus2(self):
+    def speed_plus2(self, global_=False):
         ret = []
 
-        sig = [0x95, 0xf8, 0x34, 0x20, 0x14, 0x21, 0x4f, 0xf4, 0x96, 0x70]
-        ofs = FindPattern(self.data, sig) + 4
-        pre = self.data[ofs:ofs+2]
-        post = bytes([int(x, 0) for x in ['0x16', '0x21']])
-        self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
+        if global_:
+            sig = [0x01, 0x2b, 0x01, 0xd0, 0x19, 0x23, 0x09, 0xe0, 0x61, 0x84]
+            ofs = FindPattern(self.data, sig) + 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes([int(x, 0) for x in ['0x1b', '0x23']])
+            self.data[ofs:ofs+2] = post
+            ret.append(["spt_us", ofs, pre, post])
+        else:
+            sig = [0x95, 0xf8, 0x34, 0x20, 0x14, 0x21, 0x4f, 0xf4, 0x96, 0x70]
+            ofs = FindPattern(self.data, sig) + 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes([int(x, 0) for x in ['0x16', '0x21']])
+            self.data[ofs:ofs+2] = post
+            ret.append(["spt_de", ofs, pre, post])
 
         return ret
 
@@ -137,7 +145,7 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+2]
         post = bytes([int(x, 0) for x in ['0x01', '0x20']])
         self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
+        ret.append(["no_kers", ofs, pre, post])
 
         ofs += 0x142
 
@@ -145,7 +153,7 @@ class FirmwarePatcher():
         assert pre[0] == 0x49 and pre[1] == 0x42
         post = bytes([int(x, 0) for x in ['0xff', '0x21']])
         self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
+        ret.append(["no_kers", ofs, pre, post])
 
         return ret
 
@@ -155,14 +163,14 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('MOVW IP, #0xffff')[0])
         self.data[ofs:ofs+4] = post
-        return [(ofs, pre, post)]
+        return [("no_autobrake", ofs, pre, post)]
 
     def motor_start_speed(self, kmh):
         val = struct.pack('<H', round(kmh * 345))
         sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
         ofs = FindPattern(self.data, sig) + 2
         pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
-        return [(ofs, pre, post)]
+        return [("mss", ofs, pre, post)]
 
     def remove_charging_mode(self):
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
@@ -170,7 +178,7 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
-        return [(ofs, pre, post)]
+        return [("no_charge", ofs, pre, post)]
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
         '''
@@ -182,20 +190,18 @@ class FirmwarePatcher():
         val1 = struct.pack('<H', round(def1/factor))
         val2 = struct.pack('<H', round(def2*factor))
 
-        sig = [0x95, 0xF8, 0x43, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x01, 0x28]
-        ofs = FindPattern(self.data, sig) + 4
-        pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
-        ret.append([ofs, pre, post])
-
         sig = [0xB4, 0xF9, None, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x48, 0x43]
         ofs = FindPattern(self.data, sig) + 4
         pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
-        ret.append([ofs, pre, post])
+        ret.append(["wheel_speed_const_0", ofs, pre, post])
+        ofs -= 0x18
+        pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
+        ret.append(["wheel_speed_const_1", ofs, pre, post])
 
         sig = [0x60, 0x60, 0x60, 0x68, 0x40, 0xF2, 0x6B, 0x51, 0x48, 0x43]
         ofs = FindPattern(self.data, sig) + 4
         pre, post = PatchImm(self.data, ofs, 4, val2, MOVW_T3_IMM)
-        ret.append([ofs, pre, post])
+        ret.append(["wheel_other_const", ofs, pre, post])
 
         return ret
 
@@ -229,13 +235,13 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
+        ret.append(["dpc_nop", ofs, pre, post])
 
         ofs += 2
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
-        ret.append([ofs, pre, post])
+        ret.append(["dpc_nop", ofs, pre, post])
 
         sig = [0xa4, 0xf8, 0xe2, None, 0xa4, 0xf8, 0xf0, None, 0xa4, 0xf8, 0xee, None]
         ofs = FindPattern(self.data, sig) + 4
@@ -249,7 +255,7 @@ class FirmwarePatcher():
             raise Exception("invalid firmware file")
         post = bytes(self.ks.asm('STRH.W R{}, [R4, #0xEC]'.format(reg))[0])
         self.data[ofs:ofs+4] = post
-        ret.append([ofs, pre, post])
+        ret.append(["dpc_reset", ofs, pre, post])
 
         return ret
 
@@ -264,7 +270,91 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('CMP.W R0, #{:n}'.format(delay))[0])
         self.data[ofs:ofs+4] = post
-        return [(ofs, pre, post)]
+        return [("shutdown", ofs, pre, post)]
+
+    def ltgm(self):
+        '''
+        Patch by NandTek + Voodoo
+        '''
+        ret = []
+        sig = [0x02, 0xd5, 0x90, 0xf8, 0x43, 0x10, None, 0xb3]
+        ofs = FindPattern(self.data, sig) + 2
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R1,[R0,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm11", ofs, pre, post])
+        sig = [0x90, 0xf8, 0x43, 0x00, 0x00, 0x28, None, None, 0x20, 0x7e]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R0,[R0,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm10", ofs, pre, post])
+        sig = [0x2d, 0x4a, 0x92, 0xf8, 0x43, 0x20, 0x00, 0xe0]
+        ofs = FindPattern(self.data, sig) + 2
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R2,[R2,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm9", ofs, pre, post])
+        sig = [0x17, 0x48, 0x90, 0xf8, 0x43, 0x00, 0x58, 0xb9]
+        ofs = FindPattern(self.data, sig) + 2
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R0,[R0,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm8", ofs, pre, post])
+        sig = [0x85, 0xf8, 0x40, 0x60, 0x95, 0xf8, 0x43, 0x10, 0xe9, 0xb1]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R1,[R5,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm7", ofs, pre, post])
+        sig = [0x85, 0xf8, 0x40, 0x60, 0x95, 0xf8, 0x43, 0x10, 0x49, 0xb1]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R1,[R5,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm6", ofs, pre, post])
+        sig = [0x00, 0xe0, 0xe3, 0x85, 0x95, 0xf8, 0x43, 0x30]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R3,[R5,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm5", ofs, pre, post])
+        ofs += 0x16
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R3,[R5,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm4", ofs, pre, post])
+        sig = [None, 0x65, 0x95, 0xf8, 0x43, None, None, 0xb9]
+        ofs = FindPattern(self.data, sig) + 2
+        pre = self.data[ofs:ofs+4]
+        reg = -1
+        if pre[-1] == 0x0:
+            reg = 0
+        elif pre[-1] == 0x10:
+            reg = 1
+        else:
+            raise Exception("invalid firmware file")
+        post = bytes(self.ks.asm('LDRB.W R{},[R5,#0x13a]'.format(reg))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm3", ofs, pre, post])
+        ofs += 0xe
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R{},[R5,#0x13a]'.format(reg))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm2", ofs, pre, post])
+        sig = [0xa0, 0x85, 0x95, 0xf8, 0x43, 0x00, 0x40, 0xf2, 0x59, 0x11]
+        ofs = FindPattern(self.data, sig) + 2
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRB.W R0,[R5,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm1", ofs, pre, post])
+        sig = [None, 0x2b, None, 0xd1, 0x81, 0xf8, 0x43, 0x20, None, 0x78]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('STRB.W R2,[R1,#0x13a]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm0", ofs, pre, post])
+        return ret
 
 
 def eprint(*args, **kwargs):
@@ -280,24 +370,28 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'rb') as fp:
         data = fp.read()
 
-    cfw = FirmwarePatcher(data)
-    #ret = cfw.motor_start_speed(4)
-    #ret = cfw.brakelight_mod()
-    #ret = cfw.speed_plus2()
-    #ret = cfw.remove_kers()
-    #ret = cfw.remove_autobrake()
-    #ret = cfw.remove_charging_mode()
     mult = 10./8.5  # new while size / old wheel size
-    ret = cfw.wheel_speed_const(mult)
-    #ret = cfw.speed_params(7000, 17000, 30000)
-    #ret = cfw.dpc()
-    #ret = cfw.shutdown_time(2)
-    for ofs, pre, post in ret:
-        print(hex(ofs), pre.hex(), post.hex())
+
+    vlt = FirmwarePatcher(data)
+
+    ret = []
+    ret.extend(vlt.ltgm())
+    ret.extend(vlt.motor_start_speed(4))
+    ret.extend(vlt.brakelight_mod())
+    ret.extend(vlt.speed_plus2())
+    ret.extend(vlt.speed_plus2(True))
+    ret.extend(vlt.remove_kers())
+    ret.extend(vlt.remove_autobrake())
+    ret.extend(vlt.remove_charging_mode())
+    ret.extend(vlt.wheel_speed_const(mult))
+    ret.extend(vlt.ampere(30000))
+    ret.extend(vlt.dpc())
+    ret.extend(vlt.shutdown_time(2))
+    for desc, ofs, pre, post in ret:
+        print(hex(ofs), pre.hex(), post.hex(), desc)
 
     # Don't flash encrypted firmware to scooter running firmware < 1.4.1
-    #cfw.encrypt()
+    #vlt.encrypt()
 
     with open(sys.argv[2], 'wb') as fp:
-        fp.write(cfw.data)
-
+        fp.write(vlt.data)
