@@ -21,7 +21,6 @@ from binascii import hexlify, unhexlify
 import struct
 import keystone
 #import capstone
-from xiaotea import XiaoTea
 
 # https://web.eecs.umich.edu/~prabal/teaching/eecs373-f10/readings/ARMv7-M_ARM.pdf
 MOVW_T3_IMM = [*[None]*5, 11, *[None]*6, 15, 14, 13, 12, None, 10, 9, 8, *[None]*4, 7, 6, 5, 4, 3, 2, 1, 0]
@@ -92,10 +91,6 @@ class FirmwarePatcher():
         self.data = bytearray(data)
         self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         #self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
-
-    def encrypt(self):
-        cry = XiaoTea()
-        self.data = cry.encrypt(self.data)
 
     def brakelight_mod(self):
         ret = []
@@ -398,9 +393,6 @@ if __name__ == "__main__":
     ret.extend(vlt.remove_charging_mode())
     for desc, ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex(), desc)
-
-    # Don't flash encrypted firmware to scooter running firmware < 1.4.1
-    #vlt.encrypt()
 
     with open(sys.argv[2], 'wb') as fp:
         fp.write(vlt.data)
