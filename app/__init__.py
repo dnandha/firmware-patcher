@@ -150,7 +150,6 @@ def patch_firmware():
     return flask.send_file(
         mem,
         as_attachment=True,
-        direct_passthrough=True,
         attachment_filename=f.filename,
         mimetype='text/plain'
     )
