@@ -47,7 +47,7 @@
     <div class="row"><div class="col">
 	    <p class="text">
 		Konfiguriere deine eigene VLT Firmware durch Anpassung der unten stehenden Optionen.
-		Sei gewarnt, dass eine höhere Motorleistung die Lebenszeit deiner Batterie verkürzt und deinen Motor schädigen kann. Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert wird.<br/>
+		Hier nochmals die Warnung, dass durch das Einspielen einer angepassten Firmware die Betriebserlaubnis des Fahrzeugs erlischt! Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert wird.<br/>
 	    </p>
     </div></div>
 
@@ -57,7 +57,7 @@
         </div>
         <div class="col">
             <select class="form-select" id="modeselect" onchange="ChangeMode()">
-                <option value="default">Empfohlen</option>
+                <option value="default">Basis</option>
                 <option value="custom">Erweitert</option>
                 <option value="custom-dev">Experimentell</option>
             </select>
@@ -67,17 +67,16 @@
     <hr>
     <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
     <div class="card-group">
-        <div class="card text-center m-1 border-warning custom" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="ltgm">
-                <label class="form-check-label"><b>LTGM</b></label>
+                <input class="form-check-input" name="brakelight_mod" type="checkbox">
+                <label class="form-check-label"><b>Bremslicht Mod</b></label>
             </div>
-
             <div class="card-body">
-                Lite Touch GM gibt direkte Kontrolle über die "German Flag" in der Firmware.
-				LTGM kann per App ein und aus geschaltet werden.
-				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
-				Bei Neustart bzw. Ausschalten des Rollers wird LTGM ebenfalls zurückgesetzt.
+                <div class="card-text">
+                    Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.
+                    Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
+                </div>
             </div>
         </div>
         <div class="card text-center m-1">
@@ -122,14 +121,15 @@
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" name="brakelight_mod" type="checkbox">
-                <label class="form-check-label"><b>Bremslicht Mod</b></label>
+                <input class="form-check-input" type="checkbox" name="ltgm">
+                <label class="form-check-label"><b>LTGM</b></label>
             </div>
+
             <div class="card-body">
-                <div class="card-text">
-                    Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.
-                    Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
-                </div>
+                Lite Touch GM gibt direkte Kontrolle über die Regionskennung in der Firmware.
+				LTGM kann per App ein und ausgeschaltet werden.
+				Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+				Bei Neustart bzw. Ausschalten des Rollers wird LTGM ebenfalls zurückgesetzt.
             </div>
         </div>
 
@@ -157,8 +157,8 @@
             <div class="card-body">
 				Erlaubt das Reaktivieren eines vom Hersteller ursprünglich deaktivierten Fahrmodus (DPC).
 				Dieser bewirkt das der Gashebel ähnlich wie beim Auto reagiert und alle Geschwindigkeitslimits aufgehoben werden.
-				DPC kann per App ein und aus geschaltet werden.
-				Empfohlene App zum ein und aus schalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+				DPC kann per App ein und ausgeschaltet werden.
+				Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
 				Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
             </div>
         </div>
@@ -256,7 +256,7 @@
         <div class="col">
             <b><span style="color: red;">&#9888;&nbsp;NEW </span>Dieses Tool erstellt eine .zip Datei mit sowohl verschlüsselter als auch entschlüsselter Firmware und einer info.txt.</b><br>
             <b><span style="color: red;">&#9888;&nbsp;NEW </span>Zum Flashen der erstellten .zip Datei benutze z.B. von CamiAlfa die App <a href="https://play.google.com/store/apps/details?id=com.m365downgrade">m365 DownG</a></b>.
-            Sie wählt automatisch die korrekte Firmware für deinen Scooter. Bitte nicht die .zip Datei mit alten / gepatchten Apps flashen!
+            Sie wählt automatisch die korrekte Firmware für deinen Scooter. Bitte nicht die .zip Datei mit unbekannten Apps flashen!
         </div>
     </div>
 
@@ -431,17 +431,17 @@
 
     function Preset_Default() {
         ChangeForm(forms.LTGM, false);
-        ChangeForm(forms.DPC, true);
-        ChangeForm(forms.BRAKELIGHT_MOD, true);
-        ChangeForm(forms.SPEED_PLUS2, true);
+        ChangeForm(forms.DPC, false);
+        ChangeForm(forms.BRAKELIGHT_MOD, false);
+        ChangeForm(forms.SPEED_PLUS2, false);
         ChangeForm(forms.SPEED_PLUS2_GLOBAL, false);
-        ChangeForm(forms.MOTOR_START_SPEED, "3", true);
-        ChangeForm(forms.REMOVE_AUTOBRAKE, true);
+        ChangeForm(forms.MOTOR_START_SPEED, "5", false);
+        ChangeForm(forms.REMOVE_AUTOBRAKE, false);
         ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
         ChangeForm(forms.THIRTYAMPS, false);
-        ChangeForm(forms.SHUTDOWN_TIME, "1.5", true);
+        ChangeForm(forms.SHUTDOWN_TIME, "5.0", false);
     }
 </script>
 
