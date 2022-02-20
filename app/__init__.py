@@ -165,15 +165,7 @@ def patch_firmware():
     md5 = hashlib.md5()
     md5.update(patcher.data)
 
-    patcher.encrypt()
-    zip_file.writestr('FIRM.bin.enc', patcher.data)
-    md5e = hashlib.md5()
-    md5e.update(patcher.data)
-
-    info_txt = 'dev: {};\nnam: {};\nenc: B;\ntyp: DRV;\nmd5: {};\nmd5e: {};\n'.format(
-        model, version, md5.hexdigest(), md5e.hexdigest())
-
-    zip_file.writestr('info.txt', info_txt.encode())
+    #zip_file.writestr('info.txt', info_txt.encode())
     zip_file.comment = flask.request.url.encode()
     zip_file.close()
     zip_buffer.seek(0)
