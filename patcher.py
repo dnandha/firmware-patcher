@@ -350,13 +350,19 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         ret.append(["ltgm0", ofs, pre, post])
 
-        # reset patch
-        sig = [0x01, 0x29, 0x07, 0xd0, 0x02, 0x29, 0x10, 0xd1, 0x0a, 0xe0]
-        ofs = FindPattern(self.data, sig) + 4
-        pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('STRB.W R6,[R5,#0x13a]')[0])
-        self.data[ofs:ofs+4] = post
-        ret.append(["ltgm-1", ofs, pre, post])
+    def mode_reset(self, reset_lgtm=True):
+        '''
+        Patch by NandTek
+        Reset register flag while switching from speed to eco mode
+        '''
+        ret = []
+        if reset_lgtm:
+            sig = [0x01, 0x29, 0x07, 0xd0, 0x02, 0x29, 0x10, 0xd1, 0x0a, 0xe0]
+            ofs = FindPattern(self.data, sig) + 4
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('STRB.W R6,[R5,#0x13a]')[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["ltgm-1", ofs, pre, post])
 
         return ret
 
