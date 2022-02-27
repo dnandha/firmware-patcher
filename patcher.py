@@ -269,7 +269,7 @@ class FirmwarePatcher():
 
     def ltgm(self):
         '''
-        Patch by NandTek, supported by Voodoo
+        Patch by NandTek + Voodoo
         '''
         ret = []
         sig = [0x02, 0xd5, 0x90, 0xf8, 0x43, 0x10, None, 0xb3]
