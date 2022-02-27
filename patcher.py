@@ -353,6 +353,7 @@ class FirmwarePatcher():
     def mode_reset(self, reset_lgtm=True):
         '''
         Patch by NandTek
+        Reset register flag while switching from speed to eco mode
         '''
         ret = []
         if reset_lgtm:
