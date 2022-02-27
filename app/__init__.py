@@ -139,9 +139,12 @@ def patch_firmware():
     mem.write(patcher.data)
     mem.seek(0)
 
+    #r = flask.Response(mem, mimetype="application/octet-stream")
+    #r.headers['Content-Length'] = mem.getbuffer().nbytes
+    #r.headers['Content-Disposition'] = "attachment; filename={}".format(f.filename)
     return flask.send_file(
         mem,
         as_attachment=True,
+        mimetype='application/octet-stream',
         attachment_filename=f.filename,
-        mimetype='text/plain'
     )
