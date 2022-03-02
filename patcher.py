@@ -115,18 +115,27 @@ class FirmwarePatcher():
     def speed_plus2(self, global_=False):
         ret = []
 
+        sig = [0x95, 0xf8, 0x34, None, None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
+        ofs = FindPattern(self.data, sig) + 4
         if global_:
-            sig = [0x01, 0x2b, 0x01, 0xd0, 0x19, 0x23, 0x09, 0xe0, 0x61, 0x84]
-            ofs = FindPattern(self.data, sig) + 4
-            pre = self.data[ofs:ofs+2]
-            post = bytes([int(x, 0) for x in ['0x1b', '0x23']])
-            self.data[ofs:ofs+2] = post
-            ret.append(["spt_us", ofs, pre, post])
+            try:
+                # 216 / 304
+                sig = [0x01, 0x2b, 0x01, 0xd0, 0x19, 0x23, 0x09, 0xe0, 0x61, 0x84]
+                ofs = FindPattern(self.data, sig) + 4
+                pre = self.data[ofs:ofs+2]
+                post = bytes([int(x, 0) for x in ['0x1b', '0x23']])
+                self.data[ofs:ofs+2] = post
+                ret.append(["spt_us", ofs, pre, post])
+            except SignatureException:
+                # for 316 this moved to the top and 'movs' became 'mov.w'
+                ofs += 0xa
+                pre = self.data[ofs:ofs+4]
+                post = bytes(self.ks.asm('MOV.W R8, #0x1b')[0])
+                self.data[ofs:ofs+4] = post
+                ret.append(["spt_us", ofs, pre, post])
         else:
-            sig = [0x95, 0xf8, 0x34, 0x20, 0x14, 0x21, 0x4f, 0xf4, 0x96, 0x70]
-            ofs = FindPattern(self.data, sig) + 4
             pre = self.data[ofs:ofs+2]
-            post = bytes([int(x, 0) for x in ['0x16', '0x21']])
+            post = bytes(self.ks.asm('MOVS R1, #0x16')[0])
             self.data[ofs:ofs+2] = post
             ret.append(["spt_de", ofs, pre, post])
 
@@ -207,16 +216,32 @@ class FirmwarePatcher():
         '''
         ret = []
 
-        sig = [0x12, 0xE0, 0x22, 0x8E, None, None, None, None, None, 0x42, 0x01, 0xD2]
-        ofs = FindPattern(self.data, sig) + 4
         val = struct.pack('<H', speed)
-        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
-        ret.append(["amp_speed", ofs, pre, post])
-        ofs += 4
+
+        sig = [0x13, 0xD2, None, 0x85, None, 0xE0, None, 0x8E]
+        ofs = FindPattern(self.data, sig) + 8
         pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('CMP R0, R0')[0])
-        self.data[ofs:ofs+2] = post
-        ret.append(["amp_speed_nop", ofs, pre, post])
+        if pre[0] <= 0x46 and pre[1] >= 0xf2:
+            # DRV216 / 304
+            pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+            ret.append(["amp_speed", ofs, pre, post])
+
+            ofs += 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('CMP R0, R0')[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["amp_speed_nop", ofs, pre, post])
+        else:
+            # DRV316
+            post = bytes(self.ks.asm('CMP R0, R0')[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["amp_speed_nop", ofs, pre, post])
+
+            # moved up to speed limits section
+            sig = [None, 0x21, 0x4f, 0xf4, 0x96, 0x70, 0x44, 0xf6, 0x20, 0x62]
+            ofs = FindPattern(self.data, sig) + 6
+            pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+            ret.append(["amp_speed", ofs, pre, post])
 
         return ret
 
@@ -243,7 +268,7 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+4]
         reg = 0
         if pre[-1] == 0x70:
-            reg = 7  # DRV236
+            reg = 7  # DRV236 / 316
         elif pre[-1] == 0x60:
             reg = 6  # DRV304
         else:
@@ -308,24 +333,34 @@ class FirmwarePatcher():
         post = bytes(self.ks.asm('LDRB.W R1,[R5,#0x13a]')[0])
         self.data[ofs:ofs+4] = post
         ret.append(["ltgm6", ofs, pre, post])
-        sig = [0x00, 0xe0, 0xe3, 0x85, 0x95, 0xf8, 0x43, 0x30]
+
+        # different in 316: r12 instead of r3
+        sig = [0x00, 0xe0, None, 0x85, 0x95, 0xf8, 0x43, None]
         ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('LDRB.W R3,[R5,#0x13a]')[0])
+        reg = -1
+        if pre[-1] == 0x30:  # 236 / 304
+            reg = 3
+        elif pre[-1] == 0xc0:  # 316
+            reg = 12
+        else:
+            raise Exception("invalid firmware file")
+        post = bytes(self.ks.asm('LDRB.W R{},[R5,#0x13a]'.format(reg))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["ltgm5", ofs, pre, post])
-        ofs += 0x16
+        ofs += 0x16 if reg==3 else 0x1c
         pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('LDRB.W R3,[R5,#0x13a]')[0])
+        post = bytes(self.ks.asm('LDRB.W R{},[R5,#0x13a]'.format(reg))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["ltgm4", ofs, pre, post])
+
         sig = [None, 0x65, 0x95, 0xf8, 0x43, None, None, 0xb9]
         ofs = FindPattern(self.data, sig) + 2
         pre = self.data[ofs:ofs+4]
         reg = -1
-        if pre[-1] == 0x0:
+        if pre[-1] == 0x0:  # 236 / 316
             reg = 0
-        elif pre[-1] == 0x10:
+        elif pre[-1] == 0x10:  # 304
             reg = 1
         else:
             raise Exception("invalid firmware file")
@@ -337,18 +372,32 @@ class FirmwarePatcher():
         post = bytes(self.ks.asm('LDRB.W R{},[R5,#0x13a]'.format(reg))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["ltgm2", ofs, pre, post])
-        sig = [0xa0, 0x85, 0x95, 0xf8, 0x43, 0x00, 0x40, 0xf2, 0x59, 0x11]
-        ofs = FindPattern(self.data, sig) + 2
-        pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('LDRB.W R0,[R5,#0x13a]')[0])
-        self.data[ofs:ofs+4] = post
-        ret.append(["ltgm1", ofs, pre, post])
+
+        try:
+            # removed in 314 (power reduction)
+            sig = [0xa0, 0x85, 0x95, 0xf8, 0x43, 0x00, 0x40, 0xf2, 0x59, 0x11]
+            ofs = FindPattern(self.data, sig) + 2
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('LDRB.W R0,[R5,#0x13a]')[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["ltgm1", ofs, pre, post])
+        except SignatureException:
+            # added in 314 (extra check to decrease speed limit)
+            sig = [0x82, 0x80, 0x95, 0xf8, 0x43, 0x20, 0x01, 0x2a, 0x0d, 0xd0]
+            ofs = FindPattern(self.data, sig) + 2
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('LDRB.W R2,[R5,#0x13a]')[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["ltgm1", ofs, pre, post])
+
         sig = [None, 0x2b, None, 0xd1, 0x81, 0xf8, 0x43, 0x20, None, 0x78]
         ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('STRB.W R2,[R1,#0x13a]')[0])
         self.data[ofs:ofs+4] = post
         ret.append(["ltgm0", ofs, pre, post])
+
+        return ret
 
     def mode_reset(self, reset_lgtm=True):
         '''
