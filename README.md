@@ -16,7 +16,7 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * Phase Current (Speed Mode)
 * Motor start speed
 * No KERS
-* No Ccarging fix
+* No Charging fix
 * Remove 30km/h speed check
 * Wheelsize
 * Shutdown time
