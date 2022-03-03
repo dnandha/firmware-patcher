@@ -186,7 +186,7 @@ class FirmwarePatcher():
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
         '''
-        Patch by NandTek
+        Mod by NandTek
         Bigger wheels need special treatment
         '''
         ret = []
@@ -214,7 +214,7 @@ class FirmwarePatcher():
 
     def ampere(self, speed):
         '''
-        Patch by NandTek
+        Mod by NandTek
         More current <=> more consumption
         '''
         ret = []
@@ -250,7 +250,7 @@ class FirmwarePatcher():
 
     def dpc(self):
         '''
-        Patch by NandTek
+        Mod by NandTek
         '''
         ret = []
         sig = [0x25, 0x4a, 0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
@@ -284,7 +284,7 @@ class FirmwarePatcher():
 
     def shutdown_time(self, seconds):
         '''
-        Patch by NandTek
+        Mod by NandTek
         '''
         delay = int(seconds * 100)
         assert delay.bit_length() <= 12, 'bit length overflow'
@@ -297,8 +297,7 @@ class FirmwarePatcher():
 
     def ltgm(self):
         '''
-        Patch by NandTek + Voodoo
-
+        Mod by NandTek + Voodoo
         Brute-force address replacement
         '''
         ret = []
@@ -330,7 +329,7 @@ class FirmwarePatcher():
     def mode_reset(self, reset_lgtm=True):
         '''
         Patch by NandTek
-        Reset register flag while switching from speed to eco mode
+        Reset register flag when toggling speed -> eco
         '''
         ret = []
         if reset_lgtm:
