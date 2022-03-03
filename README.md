@@ -4,6 +4,25 @@ Project originally started by VooDooShamane (RP): [his original work](https://ro
 
 I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/BotoX/xiaomi-m365-firmware-patcher).
 
+## Supported DRVs
+* DRV236
+* DRV247
+* DRV309
+* DRV319
+
+## Available Mods
+* Brakelight
+* +2 km/h Speed Limit (DE/US)
+* Phase Current (Speed Mode)
+* Motor start speed
+* No KERS
+* No Ccarging fix
+* Remove 30km/h speed check
+* Wheelsize
+* Shutdown time
+* DPC (register)
+* LTGM (register)
+
 ## Instructions
 1. `FLASK_APP=app/__init__.py`
 2. `flask run` to start the flask app
