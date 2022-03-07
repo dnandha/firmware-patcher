@@ -198,8 +198,16 @@ class FirmwarePatcher():
         '''
         ret = []
 
-        sig = [0x01, 0x29, None, 0xd0, 0x90, 0xf8, 0x34, 0x10, 0x01, 0x29]
-        ofs = FindPattern(self.data, sig) + 8
+        sig = [0x01, 0x29, None, 0xd0, 0xa1, 0x79, 0x01, 0x29]
+        ofs = FindPattern(self.data, sig) + 6
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R1, #0xff')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["blm_throttle", ofs, pre, post])
+
+        #sig = [0x01, 0x29, None, 0xd0, 0x90, 0xf8, 0x34, 0x10, 0x01, 0x29]
+        #ofs = FindPattern(self.data, sig) + 8
+        ofs += 8
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('CMP R1, #0xff')[0])
         self.data[ofs:ofs+2] = post
@@ -496,8 +504,8 @@ if __name__ == "__main__":
     ret.extend(vlt.ltgm())
     #ret.extend(vlt.reset_blinky())
     ret.extend(vlt.brakelight_mod())
-    #ret.extend(vlt.dpc())
-    #ret.extend(vlt.shutdown_time(2))
+    ret.extend(vlt.dpc())
+    ret.extend(vlt.shutdown_time(2))
     #ret.extend(vlt.motor_start_speed(3))
     #ret.extend(vlt.wheel_speed_const(mult))
     #ret.extend(vlt.speed_limit(22))
