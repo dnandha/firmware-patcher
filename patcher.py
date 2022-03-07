@@ -371,7 +371,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def mode_reset(self, reset_lgtm=True):
+    def reset_mode(self, reset_lgtm=True):
         '''
         Mod by NandTek
         Reset register flag when toggling speed -> eco
@@ -384,6 +384,30 @@ class FirmwarePatcher():
             post = bytes(self.ks.asm('STRB.W R6,[R5,#0x13a]')[0])
             self.data[ofs:ofs+4] = post
             ret.append(["ltgm-1", ofs, pre, post])
+
+        return ret
+
+    def reset_blinky(self, reset_lgtm=True):
+        '''
+        WIP: Does not work
+
+        Mod by NandTek
+        Reset register flag
+        '''
+        ret = []
+
+        sig = [None, 0x4c, 0x00, 0x25, 0x61, 0x79, 0x01, 0x29, None, 0xd0]
+        ofs = FindPattern(self.data, sig) + 8
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('BNE #0x10')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["reset_blinky", ofs, pre, post])
+
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R1, #0x0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["reset_blinky", ofs, pre, post])
 
         return ret
 
@@ -470,17 +494,18 @@ if __name__ == "__main__":
     ret = []
     #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
     ret.extend(vlt.ltgm())
+    #ret.extend(vlt.reset_blinky())
     ret.extend(vlt.brakelight_mod())
-    ret.extend(vlt.dpc())
-    ret.extend(vlt.shutdown_time(2))
-    ret.extend(vlt.motor_start_speed(3))
-    ret.extend(vlt.wheel_speed_const(mult))
-    ret.extend(vlt.speed_limit(22))
-    ret.extend(vlt.speed_limit_global(27))
-    ret.extend(vlt.ampere(32000))
-    ret.extend(vlt.remove_kers())
-    ret.extend(vlt.remove_autobrake())
-    ret.extend(vlt.remove_charging_mode())
+    #ret.extend(vlt.dpc())
+    #ret.extend(vlt.shutdown_time(2))
+    #ret.extend(vlt.motor_start_speed(3))
+    #ret.extend(vlt.wheel_speed_const(mult))
+    #ret.extend(vlt.speed_limit(22))
+    #ret.extend(vlt.speed_limit_global(27))
+    #ret.extend(vlt.ampere(32000))
+    #ret.extend(vlt.remove_kers())
+    #ret.extend(vlt.remove_autobrake())
+    #ret.extend(vlt.remove_charging_mode())
     for desc, ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex(), desc)
 
