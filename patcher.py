@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Structure based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
+# Based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
 
 #!/usr/bin/python3
 from binascii import hexlify, unhexlify
@@ -92,56 +92,10 @@ class FirmwarePatcher():
         self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         #self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
 
-    def brakelight_mod(self):
-        ret = []
-
-        sig = [0x01, 0x29, None, 0xd0, 0xa1, 0x79, 0x01, 0x29]
-        ofs = FindPattern(self.data, sig) + 4
-        pre = self.data[ofs:ofs+2]
-        post = bytes([int(x, 0) for x in ['0x00', '0x21']])
-        self.data[ofs:ofs+2] = post
-        ret.append(["blm", ofs, pre, post])
-
-        sig = [0x90, 0xf8, None, None, 0x00, 0x28, None, 0xd1]
-        ofs = FindPattern(self.data, sig) + 4
-
-        pre = self.data[ofs:ofs+2]
-        post = bytes([int(x, 0) for x in ['0x08', '0x28']])
-        self.data[ofs:ofs+2] = post
-        ret.append(["blm", ofs, pre, post])
-
-        return ret
-
-    def speed_plus2(self, global_=False):
-        ret = []
-
-        sig = [0x95, 0xf8, 0x34, None, None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
-        ofs = FindPattern(self.data, sig) + 4
-        if global_:
-            try:
-                # 216 / 304
-                sig = [0x01, 0x2b, 0x01, 0xd0, 0x19, 0x23, 0x09, 0xe0, 0x61, 0x84]
-                ofs = FindPattern(self.data, sig) + 4
-                pre = self.data[ofs:ofs+2]
-                post = bytes([int(x, 0) for x in ['0x1b', '0x23']])
-                self.data[ofs:ofs+2] = post
-                ret.append(["spt_us", ofs, pre, post])
-            except SignatureException:
-                # for 316 this moved to the top and 'movs' became 'mov.w'
-                ofs += 0xa
-                pre = self.data[ofs:ofs+4]
-                post = bytes(self.ks.asm('MOV.W R8, #0x1b')[0])
-                self.data[ofs:ofs+4] = post
-                ret.append(["spt_us", ofs, pre, post])
-        else:
-            pre = self.data[ofs:ofs+2]
-            post = bytes(self.ks.asm('MOVS R1, #0x16')[0])
-            self.data[ofs:ofs+2] = post
-            ret.append(["spt_de", ofs, pre, post])
-
-        return ret
-
     def remove_kers(self):
+        '''
+        Mod by Voodoo
+        '''
         ret = []
 
         sig = [0x01, 0x40, 0x0a, 0x20, 0x3c, 0xe0, 0x00, 0x88]
@@ -162,6 +116,9 @@ class FirmwarePatcher():
         return ret
 
     def remove_autobrake(self):
+        '''
+        Mod by Voodoo
+        '''
         sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
         ofs = FindPattern(self.data, sig) + 2
         pre = self.data[ofs:ofs+4]
@@ -169,20 +126,108 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         return [("no_autobrake", ofs, pre, post)]
 
-    def motor_start_speed(self, kmh):
-        val = struct.pack('<H', round(kmh * 345))
-        sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
-        ofs = FindPattern(self.data, sig) + 2
-        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
-        return [("mss", ofs, pre, post)]
-
     def remove_charging_mode(self):
+        '''
+        Mod by Voodoo
+        '''
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
         ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
         return [("no_charge", ofs, pre, post)]
+
+    def speed_limit(self, kmh):
+        '''
+        Mod by Voodoo (22km/h mod), Adjusted by NandTek
+        '''
+        ret = []
+
+        val = hex(kmh)
+
+        sig = [0x95, 0xf8, 0x34, None, None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('MOVS R1, #{}'.format(val))[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["spt_de", ofs, pre, post])
+
+        return ret
+
+    def speed_limit_global(self, kmh):
+        '''
+        Mod by NandTek
+        '''
+        ret = []
+
+        val = hex(kmh)
+        try:
+            # 216 / 304
+            sig = [0x01, 0x2b, 0x01, 0xd0, 0x19, 0x23, 0x09, 0xe0, 0x61, 0x84]
+            ofs = FindPattern(self.data, sig) + 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('MOVS R3, #{}'.format(val))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["spt_us", ofs, pre, post])
+        except SignatureException:
+            # for 316 this moved to the top and 'movs' became 'mov.w'
+            sig = [0x95, 0xf8, 0x34, None, None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
+            ofs = FindPattern(self.data, sig) + 0xe
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('MOV.W R8, #{}'.format(val))[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["spt_us", ofs, pre, post])
+
+        return ret
+
+    def motor_start_speed(self, kmh):
+        '''
+        Mod by Voodoo, Fixed by NandTek
+        Stops blinky
+        '''
+        val = struct.pack('<H', round(kmh * 345))
+        sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
+        ofs = FindPattern(self.data, sig) + 2
+        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        return [("mss", ofs, pre, post)]
+
+    def brakelight_mod(self, no_bl_pedo=False):
+        '''
+        Mod by Voodoo, Fixed by NandTek
+        Stops blinky
+        '''
+        ret = []
+
+        sig = [0x01, 0x29, None, 0xd0, 0x90, 0xf8, 0x34, 0x10, 0x01, 0x29]
+        ofs = FindPattern(self.data, sig) + 8
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R1, #0xff')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["blm_pedo", ofs, pre, post])
+
+        sig = [0x90, 0xf8, None, None, 0x00, 0x28, None, 0xd1]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, #0xff')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["blm_glob", ofs, pre, post])
+
+        if no_bl_pedo:  # no backlight in pedestrian mode (untested)
+            sig = [None, 0xb3, 0x90, 0xf8, 0x34, None, 0x01, None, None, 0xd0]
+            ofs = FindPattern(self.data, sig) + 6
+            pre = self.data[ofs:ofs+2]
+            reg = -1
+            if pre[-1] == 0x28:
+                reg = 0
+            elif pre[-1] == 0x29:
+                reg = 1
+            else:
+                raise Exception("invalid firmware file")
+            post = bytes(self.ks.asm('CMP R{}, #0xff'.format(reg))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["blm_pedo_bl", ofs, pre, post])
+
+        return ret
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
         '''
@@ -297,7 +342,7 @@ class FirmwarePatcher():
 
     def ltgm(self):
         '''
-        Mod by NandTek + Voodoo
+        Mod by Voodoo + NandTek
         Brute-force address replacement
         '''
         ret = []
@@ -328,7 +373,7 @@ class FirmwarePatcher():
 
     def mode_reset(self, reset_lgtm=True):
         '''
-        Patch by NandTek
+        Mod by NandTek
         Reset register flag when toggling speed -> eco
         '''
         ret = []
@@ -339,6 +384,68 @@ class FirmwarePatcher():
             post = bytes(self.ks.asm('STRB.W R6,[R5,#0x13a]')[0])
             self.data[ofs:ofs+4] = post
             ret.append(["ltgm-1", ofs, pre, post])
+
+        return ret
+
+    def speedlimit_mod(self):
+        '''
+        WIP: NEED FIXING
+
+        Mod by NandTek
+        Allow setting drive and speed mode speed limits by register
+        '''
+        ret = []
+
+        sig = [0x00, 0xe0, 0xe3, 0x85, 0x95, 0xf8, 0x43, 0x30]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRH.W R1,[R9,#0xE4]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["sl_speed", ofs, pre, post])
+        ofs += 8
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, R0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["sl_speed_cmp", ofs, pre, post])
+
+        sig = [0x08, 0xe0, 0xe3, 0x85, 0x95, 0xf8, 0x43, 0x30]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('LDRH.W R1,[R9,#0xE6]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["sl_drive", ofs, pre, post])
+        ofs += 8
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, R0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["sl_drive_cmp", ofs, pre, post])
+
+        sig = [0xe2, 0x65, 0x60, 0x85, 0xa8, 0x7f, 0x20, 0xb1]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R1,#0x0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["sl_reset_cmp", ofs, pre, post])
+        ofs += 2
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('BNE #0xc')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["sl_reset_bne", ofs, pre, post])
+        ofs += 2
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('STRH.W R3,[R9,#0xE4]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["sl_reset_speed", ofs, pre, post])
+        ofs += 4
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('STRH.W R3,[R9,#0xE6]')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["sl_reset_drive", ofs, pre, post])
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('STRH R3, [R4,#0x22]')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["sl_reset_def", ofs, pre, post])
 
         return ret
 
@@ -361,15 +468,16 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
+    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
     ret.extend(vlt.ltgm())
     ret.extend(vlt.brakelight_mod())
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(2))
-    ret.extend(vlt.motor_start_speed(4))
+    ret.extend(vlt.motor_start_speed(3))
     ret.extend(vlt.wheel_speed_const(mult))
-    ret.extend(vlt.speed_plus2())
-    ret.extend(vlt.speed_plus2(True))
-    ret.extend(vlt.ampere(30000))
+    ret.extend(vlt.speed_limit(22))
+    ret.extend(vlt.speed_limit_global(27))
+    ret.extend(vlt.ampere(32000))
     ret.extend(vlt.remove_kers())
     ret.extend(vlt.remove_autobrake())
     ret.extend(vlt.remove_charging_mode())

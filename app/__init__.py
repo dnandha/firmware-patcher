@@ -87,12 +87,12 @@ def patch_firmware():
         speed_plus2 = flask.request.form.get('speed_plus2', None)
         if speed_plus2:
             print("spt")
-            patcher.speed_plus2()
+            patcher.speed_limit(22)
 
         speed_plus2_global = flask.request.form.get('speed_plus2_global', None)
         if speed_plus2_global:
             print("sptg")
-            patcher.speed_plus2(True)
+            patcher.speed_limit_global(27)
 
         remove_autobrake = flask.request.form.get('remove_autobrake', None)
         if remove_autobrake:
