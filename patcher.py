@@ -137,6 +137,22 @@ class FirmwarePatcher():
         self.data[ofs:ofs+2] = post
         return [("no_charge", ofs, pre, post)]
 
+    def current_raising_coeff(self, coeff):
+        '''
+        Mod by NandTek
+        '''
+        ret = []
+
+        val = hex(coeff)
+        sig = [0x95, 0xf8, 0x34, None, None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
+        ofs = FindPattern(self.data, sig) + 6
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('MOV.W R0, #{}'.format(val))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["crc", ofs, pre, post])
+
+        return ret
+
     def speed_limit(self, kmh):
         '''
         Mod by Voodoo (22km/h mod), Adjusted by NandTek
@@ -501,7 +517,7 @@ if __name__ == "__main__":
 
     ret = []
     #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    ret.extend(vlt.ltgm())
+    ret.extend(vlt.ltgm())  # do this first
     #ret.extend(vlt.reset_blinky())
     ret.extend(vlt.brakelight_mod())
     ret.extend(vlt.dpc())
@@ -510,10 +526,12 @@ if __name__ == "__main__":
     #ret.extend(vlt.wheel_speed_const(mult))
     #ret.extend(vlt.speed_limit(22))
     #ret.extend(vlt.speed_limit_global(27))
-    #ret.extend(vlt.ampere(32000))
+    ret.extend(vlt.ampere(32000))
     #ret.extend(vlt.remove_kers())
     #ret.extend(vlt.remove_autobrake())
     #ret.extend(vlt.remove_charging_mode())
+
+    ret.extend(vlt.current_raising_coeff(300))  # do this last
     for desc, ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex(), desc)
 
