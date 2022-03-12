@@ -94,7 +94,6 @@ class FirmwarePatcher():
 
     def remove_kers(self):
         '''
-        Mod by Voodoo
         '''
         ret = []
 
@@ -117,7 +116,6 @@ class FirmwarePatcher():
 
     def remove_autobrake(self):
         '''
-        Mod by Voodoo
         '''
         sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
         ofs = FindPattern(self.data, sig) + 2
@@ -128,7 +126,6 @@ class FirmwarePatcher():
 
     def remove_charging_mode(self):
         '''
-        Mod by Voodoo
         '''
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
         ofs = FindPattern(self.data, sig) + 4
@@ -139,7 +136,6 @@ class FirmwarePatcher():
 
     def current_raising_coeff(self, coeff):
         '''
-        Mod by NandTek
         '''
         ret = []
 
@@ -155,7 +151,6 @@ class FirmwarePatcher():
 
     def speed_limit(self, kmh):
         '''
-        Mod by Voodoo (22km/h mod), Adjusted by NandTek
         '''
         ret = []
 
@@ -172,7 +167,6 @@ class FirmwarePatcher():
 
     def speed_limit_global(self, kmh):
         '''
-        Mod by NandTek
         '''
         ret = []
 
@@ -198,7 +192,6 @@ class FirmwarePatcher():
 
     def motor_start_speed(self, kmh):
         '''
-        Mod by Voodoo, Fixed by NandTek
         '''
         val = struct.pack('<H', round(kmh * 345))
         sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
@@ -208,7 +201,6 @@ class FirmwarePatcher():
 
     def brakelight_mod(self, no_bl_pedo=False):
         '''
-        Mod by Voodoo, Fixed by NandTek
         Stops blinky
         '''
         ret = []
@@ -254,7 +246,6 @@ class FirmwarePatcher():
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
         '''
-        Mod by NandTek
         Bigger wheels need special treatment
         '''
         ret = []
@@ -282,7 +273,6 @@ class FirmwarePatcher():
 
     def ampere(self, speed):
         '''
-        Mod by NandTek
         More current <=> more consumption
         '''
         ret = []
@@ -318,7 +308,6 @@ class FirmwarePatcher():
 
     def dpc(self):
         '''
-        Mod by NandTek
         '''
         ret = []
         sig = [0x25, 0x4a, 0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
@@ -352,7 +341,6 @@ class FirmwarePatcher():
 
     def shutdown_time(self, seconds):
         '''
-        Mod by NandTek
         '''
         delay = int(seconds * 200)
         assert delay.bit_length() <= 12, 'bit length overflow'
@@ -365,7 +353,6 @@ class FirmwarePatcher():
 
     def ltgm(self):
         '''
-        Mod by Voodoo + NandTek
         Brute-force address replacement
         '''
         ret = []
@@ -403,7 +390,6 @@ class FirmwarePatcher():
 
     def reset_mode(self, reset_lgtm=True):
         '''
-        Mod by NandTek
         Reset register flag when toggling speed -> eco
         '''
         ret = []
@@ -419,7 +405,6 @@ class FirmwarePatcher():
 
     def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=True, gm=True, dpc=True):
         '''
-        Mod by NandTek
         Set / Reset with Throttle + Brake
         '''
         ret = []
@@ -472,7 +457,6 @@ class FirmwarePatcher():
         '''
         WIP: NEED FIXING
 
-        Mod by NandTek
         Allow setting drive and speed mode speed limits by register
         '''
         ret = []
@@ -549,7 +533,7 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    ret.extend(vlt.relight_mod())  # must come first
+    ret.extend(vlt.relight_mod(reset=True, gm=True, dpc=True))  # must come first
     #ret.extend(vlt.brakelight_mod())  # not compatible with blinding light
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(1))
