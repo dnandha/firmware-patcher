@@ -260,7 +260,7 @@ class FirmwarePatcher():
 
         ofs -= 0x18
         pre = self.data[ofs+2:ofs+4]
-        if pre[0] == 0x59 and pre[1] == 0x11: # not in 247
+        if pre[0] == 0x59 and pre[1] == 0x11:  # not in 247
             pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
             ret.append(["wheel_speed_const_1", ofs, pre, post])
 
@@ -432,9 +432,13 @@ class FirmwarePatcher():
         self.data[ofs:ofs+len(post)] = post
         ret.append(["rl_payload", ofs, pre, self.data[ofs:ofs+54]])
 
+        addr = 0x78
+        if ofs == base_addr:  # DRV304
+            addr += 0x8
+
         # main mod
         asm = f"""
-        LDR     R6, 0x80
+        LDR     R6, {hex(addr)}
         LDRB.W  R1, [R6, #0x278]
         CMP     R1, #{hex(throttle_pos)}
         BCC     0x14
