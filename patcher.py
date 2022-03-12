@@ -199,7 +199,6 @@ class FirmwarePatcher():
     def motor_start_speed(self, kmh):
         '''
         Mod by Voodoo, Fixed by NandTek
-        Stops blinky
         '''
         val = struct.pack('<H', round(kmh * 345))
         sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
@@ -355,7 +354,7 @@ class FirmwarePatcher():
         '''
         Mod by NandTek
         '''
-        delay = int(seconds * 100)
+        delay = int(seconds * 200)
         assert delay.bit_length() <= 12, 'bit length overflow'
         sig = [0x0a, 0x60, 0xb0, 0xf5, 0xfa, 0x7f, 0x08, 0xd9]
         ofs = FindPattern(self.data, sig) + 2
@@ -378,20 +377,27 @@ class FirmwarePatcher():
                     ofs = FindPattern(self.data, sig)
                     pre = self.data[ofs:ofs+4]
                     reg_dst = pre[-1]>>4
-                    post = bytes(self.ks.asm('LDRB.W R{},[R{},#0x13a]'.format(reg_dst, reg_src))[0])
+                    post = bytes(self.ks.asm('LDRH.W R{},[R{},#0x13a]'.format(reg_dst, reg_src))[0])
                     self.data[ofs:ofs+4] = post
                     ret.append(["ltgm_read", ofs, pre, post])
                 except SignatureException:
                     break
 
-        sig = [0x81, 0xf8, 0x43, None]  # strb.w
-        ofs = FindPattern(self.data, sig)
-        pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('STRB.W R{},[R1,#0x13a]'.format(pre[-1]>>4))[0])
-        self.data[ofs:ofs+4] = post
-        ret.append(["ltgm_write", ofs, pre, post])
+        for reg_src in range(6):
+            while True:
+                try:
+                    sig = self.ks.asm('STRB.W R0,[R{},#0x43]'.format(reg_src))[0]
+                    sig[-1] = None  # blank out dst register
+                    ofs = FindPattern(self.data, sig)
+                    pre = self.data[ofs:ofs+4]
+                    reg_dst = pre[-1]>>4
+                    post = bytes(self.ks.asm('STRH.W R{},[R{},#0x13a]'.format(reg_dst, reg_src))[0])
+                    self.data[ofs:ofs+4] = post
+                    ret.append(["ltgm_write", ofs, pre, post])
+                except SignatureException:
+                    break
 
-        assert len(ret) == 12
+        assert len(ret) in [11, 12], len(ret)
 
         return ret
 
@@ -405,33 +411,60 @@ class FirmwarePatcher():
             sig = [0x01, 0x29, 0x07, 0xd0, 0x02, 0x29, 0x10, 0xd1, 0x0a, 0xe0]
             ofs = FindPattern(self.data, sig) + 4
             pre = self.data[ofs:ofs+4]
-            post = bytes(self.ks.asm('STRB.W R6,[R5,#0x13a]')[0])
+            post = bytes(self.ks.asm('STRH.W R6,[R5,#0x13a]')[0])
             self.data[ofs:ofs+4] = post
             ret.append(["ltgm-1", ofs, pre, post])
 
         return ret
 
-    def reset_blinky(self, reset_lgtm=True):
+    def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=True, gm=True, dpc=True):
         '''
-        WIP: Does not work
-
         Mod by NandTek
-        Reset register flag
+        Set / Reset with Throttle + Brake
         '''
         ret = []
 
-        sig = [None, 0x4c, 0x00, 0x25, 0x61, 0x79, 0x01, 0x29, None, 0xd0]
-        ofs = FindPattern(self.data, sig) + 8
-        pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('BNE #0x10')[0])
-        self.data[ofs:ofs+2] = post
-        ret.append(["reset_blinky", ofs, pre, post])
+        sig = [0x90, 0xf8, None, None, 0x00, 0x28, None, 0xd1]
+        ofs = FindPattern(self.data, sig)
 
-        ofs += 4
-        pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('CMP R1, #0x0')[0])
-        self.data[ofs:ofs+2] = post
-        ret.append(["reset_blinky", ofs, pre, post])
+        base_addr = 0x732
+        addr = 0x34 + (ofs-base_addr)
+
+        # smash stuff
+        pre = self.data[ofs:ofs+54]
+        post = bytes(self.ks.asm('NOP')[0] * 25
+                     + self.ks.asm('POP.W {R4, R5, R6, PC}')[0])
+        assert len(post) == 54, len(post)
+        self.data[ofs:ofs+54] = post
+
+        # and fill it with live
+        asm = "MOVS R4,#0x1\n"
+        if gm:
+            asm += "STRB.W R{}, [R0, #0x43]\n".format(4 if reset else 5)  # R4=1
+        if dpc:
+            asm += "STRH.W R{}, [R0, #0x132]\n".format(5 if reset else 4)  # R5=0
+        post = bytes(self.ks.asm(asm)[0])
+        self.data[ofs:ofs+len(post)] = post
+        ret.append(["rl_payload", ofs, pre, self.data[ofs:ofs+54]])
+
+        # main mod
+        asm = f"""
+        LDR     R6, 0x80
+        LDRB.W  R1, [R6, #0x278]
+        CMP     R1, #{hex(throttle_pos)}
+        BCC     0x14
+        LDRB.W  R1, [R6, #0x279]
+        CMP     R1, #{hex(brake_pos)}
+        BCS     {hex(addr)}
+        NOP
+        """
+        sig = [None, 0x4c, 0x00, 0x25, 0x61, 0x79, 0x01, 0x29, None, 0xd0]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+20]
+        post = bytes(self.ks.asm(asm)[0])
+        assert len(post) == 20, len(post)
+        self.data[ofs:ofs+20] = post
+        ret.append(["rl_hook", ofs, pre, post])
 
         return ret
 
@@ -516,22 +549,21 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    ret.extend(vlt.ltgm())  # do this first
-    #ret.extend(vlt.reset_blinky())
-    ret.extend(vlt.brakelight_mod())
+    ret.extend(vlt.relight_mod())  # must come first
+    #ret.extend(vlt.brakelight_mod())  # not compatible with blinding light
     ret.extend(vlt.dpc())
-    ret.extend(vlt.shutdown_time(2))
+    ret.extend(vlt.shutdown_time(1))
     #ret.extend(vlt.motor_start_speed(3))
     #ret.extend(vlt.wheel_speed_const(mult))
     #ret.extend(vlt.speed_limit(22))
     #ret.extend(vlt.speed_limit_global(27))
-    ret.extend(vlt.ampere(32000))
+    #ret.extend(vlt.ampere(32000))
     #ret.extend(vlt.remove_kers())
     #ret.extend(vlt.remove_autobrake())
     #ret.extend(vlt.remove_charging_mode())
-
-    ret.extend(vlt.current_raising_coeff(300))  # do this last
+    #ret.extend(vlt.current_raising_coeff(300))  # do this last
+    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
+    ret.extend(vlt.ltgm())
     for desc, ofs, pre, post in ret:
         print(hex(ofs), pre.hex(), post.hex(), desc)
 
