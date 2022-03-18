@@ -19,15 +19,13 @@
 import flask
 import traceback
 import os
-import time
 import io
-import zipfile
-import hashlib
 
 
 from patcher import FirmwarePatcher
 
 app = flask.Flask(__name__)
+
 
 @app.errorhandler(Exception)
 def handle_bad_request(e):
@@ -67,74 +65,85 @@ def patch_firmware():
     mem = io.BytesIO()
 
     patcher = FirmwarePatcher(data)
-    md5 = hashlib.md5(data).hexdigest()
-    if md5 in ['194df3966443d8a913b47006119d45d9', '682fc3b89122ff0a21ebe2fa3ada4908']:
-        ltgm = flask.request.form.get('ltgm', None)
-        if ltgm:
-            print("ltgm")
-            patcher.ltgm()
 
-        dpc = flask.request.form.get('dpc', None)
-        if dpc:
-            print("dpc")
-            patcher.dpc()
+    dpc = flask.request.form.get('dpc', None)
+    if dpc:
+        print("dpc")
+        patcher.dpc()
 
-        brakelight_mod = flask.request.form.get('brakelight_mod', None)
-        if brakelight_mod:
-            print("blm")
-            patcher.brakelight_mod()
+    brakelight_mod = flask.request.form.get('brakelight_mod', None)
+    if brakelight_mod:
+        print("blm")
+        patcher.brakelight_mod()
 
-        speed_plus2 = flask.request.form.get('speed_plus2', None)
-        if speed_plus2:
-            print("spt")
-            patcher.speed_limit(22)
+    speed_plus2 = flask.request.form.get('speed_plus2', None)
+    if speed_plus2:
+        print("spt")
+        patcher.speed_limit(22)
 
-        speed_plus2_global = flask.request.form.get('speed_plus2_global', None)
-        if speed_plus2_global:
-            print("sptg")
-            patcher.speed_limit_global(27)
+    speed_plus2_global = flask.request.form.get('speed_plus2_global', None)
+    if speed_plus2_global:
+        print("sptg")
+        patcher.speed_limit_global(27)
 
-        remove_autobrake = flask.request.form.get('remove_autobrake', None)
-        if remove_autobrake:
-            print("ra")
-            patcher.remove_autobrake()
+    remove_autobrake = flask.request.form.get('remove_autobrake', None)
+    if remove_autobrake:
+        print("ra")
+        patcher.remove_autobrake()
 
-        remove_kers = flask.request.form.get('remove_kers', None)
-        if remove_kers:
-            print("rk")
-            patcher.remove_kers()
+    remove_kers = flask.request.form.get('remove_kers', None)
+    if remove_kers:
+        print("rk")
+        patcher.remove_kers()
 
-        motor_start_speed = flask.request.form.get('motor_start_speed', None)
-        if motor_start_speed is not None:
-            print("mss", motor_start_speed)
-            motor_start_speed = float(motor_start_speed)
-            assert motor_start_speed >= 0 and motor_start_speed <= 100
-            patcher.motor_start_speed(motor_start_speed)
+    motor_start_speed = flask.request.form.get('motor_start_speed', None)
+    if motor_start_speed is not None:
+        print("mss", motor_start_speed)
+        motor_start_speed = float(motor_start_speed)
+        assert motor_start_speed >= 0 and motor_start_speed <= 100
+        patcher.motor_start_speed(motor_start_speed)
 
-        remove_charging_mode = flask.request.form.get('remove_charging_mode', None)
-        if remove_charging_mode:
-            print("rc")
-            patcher.remove_charging_mode()
+    remove_charging_mode = flask.request.form.get('remove_charging_mode', None)
+    if remove_charging_mode:
+        print("rc")
+        patcher.remove_charging_mode()
 
-        wheelsize = flask.request.form.get('wheelsize', None)
-        if wheelsize is not None:
-            print("ws", wheelsize)
-            wheelsize = float(wheelsize)
-            assert wheelsize >= 0 and wheelsize <= 100
-            mult = wheelsize/8.5  # 8.5" is default
-            patcher.wheel_speed_const(mult)
+    wheelsize = flask.request.form.get('wheelsize', None)
+    if wheelsize is not None:
+        print("ws", wheelsize)
+        wheelsize = float(wheelsize)
+        assert wheelsize >= 0 and wheelsize <= 100
+        mult = wheelsize/8.5  # 8.5" is default
+        patcher.wheel_speed_const(mult)
 
-        thirtyamps = flask.request.form.get('thirtyamps', None)
-        if thirtyamps:
-            print("amp")
-            patcher.ampere(30000)
+    thirtyamps = flask.request.form.get('thirtyamps', None)
+    if thirtyamps:
+        print("amp")
+        patcher.ampere(30000)
 
-        shutdown_time = flask.request.form.get('shutdown_time', None)
-        if shutdown_time is not None:
-            print("st", shutdown_time)
-            shutdown_time = float(shutdown_time)
-            assert shutdown_time >= 0 and shutdown_time <= 5
-            patcher.shutdown_time(shutdown_time)
+    crc_1000 = flask.request.form.get('crc_1000', None)
+    if crc_1000:
+        print("crc1000")
+        patcher.current_raising_coeff(1000)
+
+    shutdown_time = flask.request.form.get('shutdown_time', None)
+    if shutdown_time is not None:
+        print("st", shutdown_time)
+        shutdown_time = float(shutdown_time)
+        assert shutdown_time >= 0 and shutdown_time <= 5
+        patcher.shutdown_time(shutdown_time)
+
+    cc_delay = flask.request.form.get('cc_delay', None)
+    if cc_delay is not None:
+        print("ccd", cc_delay)
+        cc_delay = float(cc_delay)
+        assert cc_delay >= 0 and cc_delay <= 5
+        patcher.cc_delay(cc_delay)
+
+    ltgm = flask.request.form.get('ltgm', None)
+    if ltgm:
+        print("ltgm")
+        patcher.ltgm()
 
     mem.write(patcher.data)
     mem.seek(0)

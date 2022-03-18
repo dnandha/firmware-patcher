@@ -86,7 +86,7 @@
             <div class="card-body">
                 <div class="card-title">
 			<div>Sekunden</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">5</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="3" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">3</div>
                 </div>
                 <div class="card-text">
                     Hierbei handelt es sich um die Dauer für die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
@@ -104,16 +104,6 @@
             <div class="card-body">
                 Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.
                 Nutzt die aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf. Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an. Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
-            </div>
-        </div>
-        <div class="card text-center m-1 border-warning custom">
-            <div class="card-header">
-                <input class="form-check-input" name="speed_plus2_global" type="checkbox">
-                <label class="form-check-label"><b>27&nbsp;km/h Mod (Global)</b></label>
-            </div>
-
-            <div class="card-body">
-                Hebt das Geschwindigkeits Limit des GLOBALEN Sport Modus auf 27Kmh an.
             </div>
         </div>
     </div>
@@ -138,29 +128,14 @@
                 <label class="form-check-label"><b>Automatisches abbremsen deaktivieren</b></label>
             </div>
             <div class="card-body">
-                <div class="card-title"><i>Remove 30km/h speed check</i></div>
                 <div class="card-text">
-                    Der Roller bremst bei overspeed nicht mehr automatisch ab und piepst auch nicht.
+                    Der Roller bremst nicht mehr automatisch ab und piepst auch nicht.
                     Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt. Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.
                 </div>
             </div>
         </div>
     </div>
     <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dpc">
-                <label class="form-check-label"><b>DPC (Direct Power Control)</b></label>
-            </div>
-
-            <div class="card-body">
-				Erlaubt das Reaktivieren eines vom Hersteller ursprünglich deaktivierten Fahrmodus (DPC).
-				Dieser bewirkt das der Gashebel ähnlich wie beim Auto reagiert und alle Geschwindigkeitslimits aufgehoben werden.
-				DPC kann per App ein und ausgeschaltet werden.
-				Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
-				Bei Neustart bzw. Ausschalten des Rollers wird DPC ebenfalls zurückgesetzt.
-            </div>
-        </div>
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
@@ -207,6 +182,35 @@
     <div class="card-group">
         <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="cc_unlock">
+                <label class="form-check-label"><b>Tempomat Unlock</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    Schaltet den Tempomat für DE Seriennummern frei.
+                </div>
+            </div>
+        </div>
+        <div class="card text-center m-1 custom" hidden>
+            <div class="card-header">
+                <input class="form-check-input" name="cc_delay" type="checkbox" onchange="CheckForm('cc_delay', this);">
+                <label class="form-check-label"><b>Tempomat Verzögerung</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+			<div>Sekunden</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('cc_delay', 'cc_delay_val')">-</button><input class="form-range" name="cc_delay" type="range" step="0.5" min="1" max="9" value="3" onchange="OnSliderChange('cc_delay_val', this.value)" oninput="OnSliderChange('cc_delay_val', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('cc_delay', 'cc_delay_val')">+</button></span><div id="cc_delay_val">3</div>
+                </div>
+                <div class="card-text">
+                    Hierbei handelt es sich um die Dauer für die man den Gashebel in einer Position halten muss, bis der Tempomat aktiviert wird.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-group">
+        <div class="card text-center m-1 custom" hidden>
+            <div class="card-header">
                 <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
                 <label class="form-check-label"><b>Rad Durchmesser</b></label>
             </div>
@@ -222,6 +226,20 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
+        <div class="card text-center m-1 border-warning custom" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="crc_1000">
+                <label class="form-check-label"><b>CRC 1000</b></label>
+            </div>
+            <div class="card-body">
+                Setzt den Current Raising Coefficient auf 1000. Damit steigt die Beschleunigung, ohne die Stromgrenzwerte des Rollers zu verschieben.
+				<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite.</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="thirtyamps">
@@ -281,16 +299,17 @@
     var forms = {
         "VERSION": "version",
         "LTGM": "ltgm",
-        "DPC": "dpc",
         "BRAKELIGHT_MOD": "brakelight_mod",
         "SPEED_PLUS2": "speed_plus2",
-        "SPEED_PLUS2_GLOBAL": "speed_plus2_global",
         "MOTOR_START_SPEED": "motor_start_speed",
         "REMOVE_KERS": "remove_kers",
         "REMOVE_AUTOBRAKE": "remove_autobrake",
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
+        "CC_UNLOCK": "cc_unlock",
+        "CC_DELAY": "cc_delay",
         "WHEELSIZE": "wheelsize",
         "THIRTYAMPS": "thirtyamps",
+        "CRC_1000": "crc_1000",
         "SHUTDOWN_TIME": "shutdown_time",
     };
 
@@ -428,17 +447,18 @@
 
     function Preset_Default() {
         ChangeForm(forms.LTGM, false);
-        ChangeForm(forms.DPC, false);
         ChangeForm(forms.BRAKELIGHT_MOD, false);
         ChangeForm(forms.SPEED_PLUS2, false);
-        ChangeForm(forms.SPEED_PLUS2_GLOBAL, false);
         ChangeForm(forms.MOTOR_START_SPEED, "5", false);
         ChangeForm(forms.REMOVE_AUTOBRAKE, false);
         ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
+        ChangeForm(forms.CC_UNLOCK, false);
+        ChangeForm(forms.CC_DELAY, "5.0", false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
         ChangeForm(forms.THIRTYAMPS, false);
-        ChangeForm(forms.SHUTDOWN_TIME, "5.0", false);
+        ChangeForm(forms.CRC_1000, false);
+        ChangeForm(forms.SHUTDOWN_TIME, "3.0", false);
     }
 </script>
 
