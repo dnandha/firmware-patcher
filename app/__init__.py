@@ -121,17 +121,22 @@ def patch_firmware():
         print("amp")
         patcher.ampere(30000)
 
-    crc_1000 = flask.request.form.get('crc_1000', None)
-    if crc_1000:
-        print("crc1000")
-        patcher.current_raising_coeff(1000)
-
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
         print("st", shutdown_time)
         shutdown_time = float(shutdown_time)
         assert shutdown_time >= 0 and shutdown_time <= 5
         patcher.shutdown_time(shutdown_time)
+
+    crc_1000 = flask.request.form.get('crc_1000', None)
+    if crc_1000:
+        print("crc1000")
+        patcher.current_raising_coeff(1000)
+
+    cc_unlock = flask.request.form.get('cc_unlock', None)
+    if cc_unlock:
+        print("ccul")
+        patcher.cc_unlock()
 
     cc_delay = flask.request.form.get('cc_delay', None)
     if cc_delay is not None:

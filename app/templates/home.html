@@ -193,13 +193,13 @@
         </div>
         <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" name="cc_delay" type="checkbox" onchange="CheckForm('cc_delay', this);">
+                <input class="form-check-input" name="cc_delay_cb" type="checkbox" onchange="CheckForm('cc_delay', this);">
                 <label class="form-check-label"><b>Tempomat Verzögerung</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
 			<div>Sekunden</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('cc_delay', 'cc_delay_val')">-</button><input class="form-range" name="cc_delay" type="range" step="0.5" min="1" max="9" value="3" onchange="OnSliderChange('cc_delay_val', this.value)" oninput="OnSliderChange('cc_delay_val', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('cc_delay', 'cc_delay_val')">+</button></span><div id="cc_delay_val">3</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('cc_delay', 'cc_delay_val')">-</button><input class="form-range" name="cc_delay" type="range" step="0.5" min="1" max="9" value="5" onchange="OnSliderChange('cc_delay_val', this.value)" oninput="OnSliderChange('cc_delay_val', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('cc_delay', 'cc_delay_val')">+</button></span><div id="cc_delay_val">5</div>
                 </div>
                 <div class="card-text">
                     Hierbei handelt es sich um die Dauer für die man den Gashebel in einer Position halten muss, bis der Tempomat aktiviert wird.
