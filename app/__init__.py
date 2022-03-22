@@ -71,19 +71,28 @@ def patch_firmware():
         print("dpc")
         patcher.dpc()
 
+    relight_mod = flask.request.form.get('relight_mod', None)
     brakelight_mod = flask.request.form.get('brakelight_mod', None)
-    if brakelight_mod:
+    if relight_mod:
+        print("relight")
+        reset = flask.request.form.get('relight_reset', None)
+        dpc = flask.request.form.get('relight_dpc', None)
+        gm = flask.request.form.get('relight_gm', None)
+        beep = flask.request.form.get('relight_beep', None)
+        delay = flask.request.form.get('relight_delay', None)
+        patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep, delay=delay)
+    elif brakelight_mod:
         print("blm")
         patcher.brakelight_mod()
 
     speed_plus2 = flask.request.form.get('speed_plus2', None)
     if speed_plus2:
-        print("spt")
+        print("sp2")
         patcher.speed_limit(22)
 
     speed_plus2_global = flask.request.form.get('speed_plus2_global', None)
     if speed_plus2_global:
-        print("sptg")
+        print("sp2g")
         patcher.speed_limit_global(27)
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)

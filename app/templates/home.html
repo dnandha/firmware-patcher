@@ -252,6 +252,29 @@
             </div>
         </div>
     </div>
+    <div class="card-group">
+        <div class="card text-center m-1 border-warning custom-dev" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="relight_mod">
+                <label class="form-check-label"><b>ReLight Mod</b></label>
+            </div>
+            <div class="card-body">
+                Ersetzt den Code für blinkendes Rücklicht durch Tastenkombinationen: aktuell Bremse+Gas.
+
+                Konfiguriere hier den Effekt:
+                <label class="form-check-label"><b>DPC</b></label>
+                <input class="form-check-input" type="checkbox" name="relight_dpc">
+                <label class="form-check-label"><b>LTGM</b></label>
+                <input class="form-check-input" type="checkbox" name="relight_gm">
+                <label class="form-check-label"><b>Reset (Zurücksetzen statt Setzen)</b></label>
+                <input class="form-check-input" type="checkbox" name="relight_reset">
+                <label class="form-check-label"><b>Piep</b></label>
+                <input class="form-check-input" type="checkbox" name="relight_beep">
+                <label class="form-check-label"><b>1s Verzögerung</b></label>
+                <input class="form-check-input" type="checkbox" name="relight_delay">
+            </div>
+        </div>
+    </div>
 
     <hr>
     <div class="row">
@@ -311,6 +334,13 @@
         "THIRTYAMPS": "thirtyamps",
         "CRC_1000": "crc_1000",
         "SHUTDOWN_TIME": "shutdown_time",
+
+        "RELIGHT_MOD": "relight_mod",
+        "RELIGHT_RESET": "relight_reset",
+        "RELIGHT_GM": "relight_gm",
+        "RELIGHT_DPC": "relight_dpc",
+        "RELIGHT_BEEP": "relight_beep",
+        "RELIGHT_DELAY": "relight_delay",
     };
 
     var formValues = Object.values(forms);
@@ -459,6 +489,13 @@
         ChangeForm(forms.THIRTYAMPS, false);
         ChangeForm(forms.CRC_1000, false);
         ChangeForm(forms.SHUTDOWN_TIME, "3.0", false);
+
+        ChangeForm(forms.RELIGHT_MOD, false);
+        ChangeForm(forms.RELIGHT_RESET, false);
+        ChangeForm(forms.RELIGHT_GM, false);
+        ChangeForm(forms.RELIGHT_DPC, false);
+        ChangeForm(forms.RELIGHT_BEEP, false);
+        ChangeForm(forms.RELIGHT_DELAY, false);
     }
 </script>
 
