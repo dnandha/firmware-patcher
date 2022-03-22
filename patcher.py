@@ -443,8 +443,9 @@ class FirmwarePatcher():
         base_addr = 0x732
         base_ofs = ofs-base_addr
 
-        addr_f = 0x39e
-        addr_f -= 0x10 if base_ofs else 0x0
+        post = bytes(self.ks.asm(asm)[0])
+
+        addr_f = 0xad0 - (base_ofs+ofs)
         if beep:
             asm += "movs r0,#0x1\n"
             asm += f"bl #{addr_f}\n"
@@ -587,7 +588,7 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    ret.extend(vlt.relight_mod(reset=False))  # must come first
+    ret.extend(vlt.relight_mod())  # must come first
     #ret.extend(vlt.brakelight_mod())  # not compatible with relight
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(2))
