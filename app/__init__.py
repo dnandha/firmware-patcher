@@ -74,12 +74,12 @@ def patch_firmware():
     relight_mod = flask.request.form.get('relight_mod', None)
     brakelight_mod = flask.request.form.get('brakelight_mod', None)
     if relight_mod:
-        print("relight")
-        reset = flask.request.form.get('relight_reset', None)
-        dpc = flask.request.form.get('relight_dpc', None)
-        gm = flask.request.form.get('relight_gm', None)
-        beep = flask.request.form.get('relight_beep', None)
-        delay = flask.request.form.get('relight_delay', None)
+        reset = True if flask.request.form.get('relight_reset', '') == 'on' else False
+        dpc = True if flask.request.form.get('relight_dpc', '') == 'on'else False
+        gm = True if flask.request.form.get('relight_gm', '') == 'on'else False
+        beep = True if flask.request.form.get('relight_beep', '') == 'on'else False
+        delay = True if flask.request.form.get('relight_delay', '') == 'on'else False
+        print(f"relight: reset{reset}, dpc{dpc}, gm{gm}, beep{beep}, delay{delay}")
         patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep, delay=delay)
     elif brakelight_mod:
         print("blm")

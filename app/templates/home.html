@@ -228,6 +228,32 @@
         </div>
     </div>
     <div class="card-group">
+        <div class="card text-center m-1 border-warning custom-dev" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="relight_mod">
+                <label class="form-check-label"><b>ReLight Mod</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+			Ersetzt das blinkende Rücklicht durch Tastenkombinationen, aktuell Bremse+Gas.<br />
+			Konfiguriere hier deinen Effekt:
+		</div>
+                <div class="card-text">
+			<input class="form-check-input" type="checkbox" name="relight_dpc">
+			<label class="form-check-label"><b>DPC</b></label><br/>
+			<input class="form-check-input" type="checkbox" name="relight_gm">
+			<label class="form-check-label"><b>LTGM</b></label><br/>
+			<input class="form-check-input" type="checkbox" name="relight_reset">
+			<label class="form-check-label"><b>Reset (Zurücksetzen statt Setzen)</b></label><br/>
+			<input class="form-check-input" type="checkbox" name="relight_beep">
+			<label class="form-check-label"><b>Piep</b></label><br/>
+			<input class="form-check-input" type="checkbox" name="relight_delay">
+			<label class="form-check-label"><b>1s Verzögerung</b></label><br/>
+		</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="crc_1000">
@@ -249,29 +275,6 @@
                 Der Nennstrom / DC Phasenstrom für den Speed Mode wird auf 30A (Ampere) gesetzt. Standard sind 20A beim 1S und 25A beim Pro2.<br> 
 				Ermöglicht ein stabileres halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser"<br>
 				<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite und ab circa 10% Akku wird die Endgeschwindigkeit stark gedrosselt.</span>
-            </div>
-        </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1 border-warning custom-dev" hidden>
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="relight_mod">
-                <label class="form-check-label"><b>ReLight Mod</b></label>
-            </div>
-            <div class="card-body">
-                Ersetzt den Code für blinkendes Rücklicht durch Tastenkombinationen: aktuell Bremse+Gas.
-
-                Konfiguriere hier den Effekt:
-                <label class="form-check-label"><b>DPC</b></label>
-                <input class="form-check-input" type="checkbox" name="relight_dpc">
-                <label class="form-check-label"><b>LTGM</b></label>
-                <input class="form-check-input" type="checkbox" name="relight_gm">
-                <label class="form-check-label"><b>Reset (Zurücksetzen statt Setzen)</b></label>
-                <input class="form-check-input" type="checkbox" name="relight_reset">
-                <label class="form-check-label"><b>Piep</b></label>
-                <input class="form-check-input" type="checkbox" name="relight_beep">
-                <label class="form-check-label"><b>1s Verzögerung</b></label>
-                <input class="form-check-input" type="checkbox" name="relight_delay">
             </div>
         </div>
     </div>
