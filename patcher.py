@@ -220,7 +220,7 @@ class FirmwarePatcher():
         self.data[ofs:ofs+2] = post
         ret.append(["blm_pedo", ofs, pre, post])
 
-        sig = [0x90, 0xf8, None, None, 0x00, 0x28, None, 0xd1]
+        sig = [0x90, 0xf8, None, None, None, 0x28, None, 0xd1]
         ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('CMP R0, #0xff')[0])
@@ -410,7 +410,7 @@ class FirmwarePatcher():
         '''
         ret = []
 
-        sig = [0x90, 0xf8, None, None, 0x00, 0x28, None, 0xd1]
+        sig = [0x90, 0xf8, None, None, None, 0x28, None, 0xd1]
         ofs = FindPattern(self.data, sig)
 
         # smash stuff
@@ -588,8 +588,8 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
+    ret.extend(vlt.brakelight_mod())  # not compatible with relight
     ret.extend(vlt.relight_mod())  # must come first
-    #ret.extend(vlt.brakelight_mod())  # not compatible with relight
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(2))
     ret.extend(vlt.motor_start_speed(3))
