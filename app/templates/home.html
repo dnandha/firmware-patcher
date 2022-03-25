@@ -97,6 +97,22 @@
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
+                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
+                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+			<div>km/h</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
+                </div>
+                <div class="card-text">
+                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
+                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
+                </div>
+            </div>
+        </div>
+        <div class="card text-center m-1">
+            <div class="card-header">
                 <input class="form-check-input" name="speed_plus2" type="checkbox">
                 <label class="form-check-label"><b>22&nbsp;km/h Mod</b></label>
             </div>
@@ -131,24 +147,6 @@
                 <div class="card-text">
                     Der Roller bremst nicht mehr automatisch ab und piepst auch nicht.
                     Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt. Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
-                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-			<div>km/h</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
-                </div>
-                <div class="card-text">
-                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
-                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
                 </div>
             </div>
         </div>
@@ -226,8 +224,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group">
         <div class="card text-center m-1 border-warning custom-dev" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="relight_mod" onchange="CheckForm('relight_dpc', this);">

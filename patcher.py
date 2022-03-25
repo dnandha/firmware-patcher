@@ -388,27 +388,39 @@ class FirmwarePatcher():
 
         return ret
 
-    def reset_mode(self, reset_lgtm=True):
+    def reset_mode(self, reset_lgtm=True, reset_dpc=False):
         '''
         Reset register flag when toggling speed -> eco
         '''
         ret = []
+        sig = [0x01, 0x29, 0x07, 0xd0, 0x02, 0x29, 0x10, 0xd1, 0x0a, 0xe0]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
         if reset_lgtm:
-            sig = [0x01, 0x29, 0x07, 0xd0, 0x02, 0x29, 0x10, 0xd1, 0x0a, 0xe0]
-            ofs = FindPattern(self.data, sig) + 4
-            pre = self.data[ofs:ofs+4]
             post = bytes(self.ks.asm('STRH.W R6,[R5,#0x13a]')[0])
-            self.data[ofs:ofs+4] = post
-            ret.append(["ltgm-1", ofs, pre, post])
+        elif reset_dpc:
+            #post = bytes(self.ks.asm('STRH.W R6,[R5,#0x132]')[0])
+            post = bytes(self.ks.asm('NOP')[0])
+        else:
+            post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["ltgm-1", ofs, pre, post])
 
         return ret
 
     def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=True, gm=True, dpc=True, beep=True, delay=True):
         '''
         Set / Reset with Throttle + Brake
-        ONLY FOR 236/304!
         '''
         ret = []
+
+        addr_table = {
+            # ofs: [beep,  bcs,  ldr,  thrtl]
+            0x662: [0x332, 0x3c, 0x78, 0x274],  # 319
+            0x6de: [0x332, 0x3c, 0x78, 0x278],  # 247
+            0x732: [0x39e, 0x34, 0x80, 0x278],  # 304
+            0x73a: [0x38e, 0x3c, 0x78, 0x278],  # 236
+        }
 
         sig = [0x90, 0xf8, None, None, None, 0x28, None, 0xd1]
         ofs = FindPattern(self.data, sig)
@@ -439,13 +451,7 @@ class FirmwarePatcher():
             asm += "STRH.W R{}, [R0, #0x13a]\n".format(4 if reset else 5)
         if dpc:
             asm += "STRH.W R{}, [R0, #0x132]\n".format(5 if reset else 4)
-
-        base_addr = 0x732
-        base_ofs = ofs-base_addr
-
-        post = bytes(self.ks.asm(asm)[0])
-
-        addr_f = 0xad0 - (base_ofs+ofs)
+        addr_f = addr_table[ofs][0]
         if beep:
             asm += "movs r0,#0x1\n"
             asm += f"bl #{addr_f}\n"
@@ -454,16 +460,14 @@ class FirmwarePatcher():
         self.data[ofs:ofs+len(post)] = post
         ret.append(["rl_payload", ofs, pre, self.data[ofs:ofs+54]])
 
-        addr_b = 0x34 + base_ofs
-        addr_l = 0x80 - base_ofs
-
+        addr_b, addr_l, addr_t = addr_table[ofs][1:4]
         # main mod
         asm = f"""
         LDR     R6, {addr_l}
-        LDRB.W  R1, [R6, #0x278]
+        LDRB.W  R1, [R6, #{addr_t}]
         CMP     R1, #{throttle_pos}
         BCC     0x14
-        LDRB.W  R6, [R6, #0x279]
+        LDRB.W  R6, [R6, #{addr_t+1}]
         CMP     R6, #{brake_pos}
         BCS     {addr_b}
         NOP
@@ -588,22 +592,22 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    ret.extend(vlt.brakelight_mod())  # not compatible with relight
+    #ret.extend(vlt.brakelight_mod())  # not compatible with relight
     ret.extend(vlt.relight_mod())  # must come first
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(2))
     ret.extend(vlt.motor_start_speed(3))
-    #ret.extend(vlt.wheel_speed_const(mult))
-    #ret.extend(vlt.speed_limit(22))
-    #ret.extend(vlt.speed_limit_global(27))
-    #ret.extend(vlt.ampere(30000))
-    #ret.extend(vlt.remove_kers())
-    #ret.extend(vlt.remove_autobrake())
-    #ret.extend(vlt.remove_charging_mode())
-    #ret.extend(vlt.current_raising_coeff(1000))  # do this last
-    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    #ret.extend(vlt.cc_delay(2))
-    #ret.extend(vlt.cc_unlock())
+    ret.extend(vlt.wheel_speed_const(mult))
+    ret.extend(vlt.speed_limit(22))
+    ret.extend(vlt.speed_limit_global(27))
+    ret.extend(vlt.ampere(30000))
+    ret.extend(vlt.remove_kers())
+    ret.extend(vlt.remove_autobrake())
+    ret.extend(vlt.remove_charging_mode())
+    ret.extend(vlt.current_raising_coeff(1000))  # do this last
+    ##ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
+    ret.extend(vlt.cc_delay(2))
+    ret.extend(vlt.cc_unlock())
     ret.extend(vlt.ltgm())
     #ret.extend(vlt.reset_mode())
     for desc, ofs, pre, post in ret:
