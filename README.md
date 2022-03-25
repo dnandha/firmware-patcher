@@ -22,6 +22,10 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * Shutdown time
 * DPC (register)
 * LTGM (register)
+* Current raising coefficient
+* CC delay
+* CC unlock (DE)
+* ReLight
 
 ## Instructions
 1. `FLASK_APP=app/__init__.py`
