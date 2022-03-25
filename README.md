@@ -23,8 +23,8 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * DPC (register)
 * LTGM (register)
 * Current raising coefficient
-* CC delay
-* CC unlock (DE)
+* Cruise Control delay
+* Cruise Control unlock (DE)
 * ReLight
 
 ## Instructions
