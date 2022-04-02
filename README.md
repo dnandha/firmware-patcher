@@ -22,6 +22,10 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * Shutdown time
 * DPC (register)
 * LTGM (register)
+* Current raising coefficient
+* Cruise Control delay
+* Cruise Control unlock (DE)
+* ReLight Mod
 * DKC
 
 ## Instructions
