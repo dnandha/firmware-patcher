@@ -573,6 +573,45 @@ class FirmwarePatcher():
 
         return ret
 
+    def dkc(self):
+        '''
+        '''
+        ret = []
+
+        asm = """
+        nop
+        nop
+        nop
+        nop
+        cmp	r2, #0
+        ble	#0x1e
+        cmp	r2, #1
+        beq	#0x22
+        cmp	r2, #2
+        beq	#0x26
+        cmp	r2, #0x21
+        bgt	#0x26
+        subs	r2, #3
+        movs	r1, r2
+        b	#0x28
+        movs	r1, #6
+        b	#0x28
+        movs	r1, #0xc
+        b	#0x28
+        movs	r1, #0x14
+        muls	r0, r1, r0
+        """
+        sig = bytes.fromhex("e083 b9f8 f620 4946")
+        ofs = FindPattern(self.data, sig) + 6
+        pre = self.data[ofs:ofs+42]
+        post = bytes(self.ks.asm(asm)[0])
+        y = bytes.fromhex("00bf00bf00bf00bf002a08dd012a08d0022a08d0212a06dc033a110004e0062102e00c2100e014214843")
+        assert post == y
+        self.data[ofs:ofs+42] = post
+        ret.append(["dkc", ofs, pre, post])
+
+        return ret
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -592,22 +631,23 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    #ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    ret.extend(vlt.relight_mod())  # must come first
+    ##ret.extend(vlt.brakelight_mod())  # not compatible with relight
+    ret.extend(vlt.relight_mod(beep=False, delay=False))  # must come first
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(2))
     ret.extend(vlt.motor_start_speed(3))
-    ret.extend(vlt.wheel_speed_const(mult))
-    ret.extend(vlt.speed_limit(22))
-    ret.extend(vlt.speed_limit_global(27))
-    ret.extend(vlt.ampere(30000))
-    ret.extend(vlt.remove_kers())
-    ret.extend(vlt.remove_autobrake())
-    ret.extend(vlt.remove_charging_mode())
-    ret.extend(vlt.current_raising_coeff(1000))  # do this last
+    #ret.extend(vlt.wheel_speed_const(mult))
+    #ret.extend(vlt.speed_limit(22))
+    #ret.extend(vlt.speed_limit_global(27))
+    #ret.extend(vlt.ampere(30000))
+    ##ret.extend(vlt.remove_kers())
+    ret.extend(vlt.dkc())
+    #ret.extend(vlt.remove_autobrake())
+    #ret.extend(vlt.remove_charging_mode())
+    #ret.extend(vlt.current_raising_coeff(1000))  # do this last
     ##ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    ret.extend(vlt.cc_delay(2))
-    ret.extend(vlt.cc_unlock())
+    #ret.extend(vlt.cc_delay(2))
+    #ret.extend(vlt.cc_unlock())
     ret.extend(vlt.ltgm())
     #ret.extend(vlt.reset_mode())
     for desc, ofs, pre, post in ret:
