@@ -79,6 +79,9 @@ def patch_firmware():
         gm = True if flask.request.form.get('relight_gm', '') == 'on'else False
         beep = True if flask.request.form.get('relight_beep', '') == 'on'else False
         delay = True if flask.request.form.get('relight_delay', '') == 'on'else False
+        if reset and not dpc and not gm:
+            dpc = True
+            gm = True
         print(f"relight: reset{reset}, dpc{dpc}, gm{gm}, beep{beep}, delay{delay}")
         patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep, delay=delay)
     elif brakelight_mod:
@@ -101,7 +104,11 @@ def patch_firmware():
         patcher.remove_autobrake()
 
     remove_kers = flask.request.form.get('remove_kers', None)
-    if remove_kers:
+    dkc = flask.request.form.get('dkc', None)
+    if dkc:
+        print("dkc")
+        patcher.dkc()
+    elif remove_kers:
         print("rk")
         patcher.remove_kers()
 
