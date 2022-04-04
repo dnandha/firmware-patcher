@@ -13,7 +13,7 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 ## Available Mods
 * Brakelight
 * +2 km/h Speed Limit (DE/US)
-* Phase Current (Speed Mode)
+* Amps / Phase Current (Speed Mode)
 * Motor start speed
 * No KERS
 * No Charging fix

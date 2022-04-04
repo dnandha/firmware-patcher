@@ -274,20 +274,28 @@
         </div>
     </div>
     <div class="card-group">
-        <div class="card text-center m-1 border-warning custom" hidden>
+        <div class="card text-center m-1 border-warning custom-dev" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="moreamps_cb">
-                <label class="form-check-label"><b>Ampere Mod (Speed Modus)</b></label>
+                <input class="form-check-input" name="moreamps_cb" type="checkbox" onchange="CheckForm('moreamps', this);">
+                <label class="form-check-label"><b>Ampere Mod (Speed Mode)</b></label>
             </div>
             <div class="card-body">
-                Auswahl:
-                <select class="form-select" id="moreamps" onchange="ChangeAmps()">
-                    <option value="28000">Pro2 OHNE Zusatzakku</option>
-                    <option value="32000">Pro2 mit Zusatzakku</option>
-                    <option value="24000">1S OHNE Zusatzakku</option>
-                    <option value="30000">1S mit Zusatzakku</option>
-                </select>
-                <div id="amps_description"></div>
+                <div class="row g-3">
+                  <div class="col center-block text-center">
+                    Auswahl:
+                  </div>
+                  <div class="col center-block text-center">
+                    <select class="form-select" name="moreamps" id="moreamps" onchange="ChangeAmps('amps_description', this.value)">
+                      <option value="28000">Pro2 OHNE Zusatzakku</option>
+                      <option value="32000">Pro2 mit Zusatzakku</option>
+                      <option value="24000">1S OHNE Zusatzakku</option>
+                      <option value="30000">1S mit Zusatzakku</option>
+                    </select>
+                  </div>
+                  <div class="col center-block text-center">
+                    <div id="amps_description">Nicht ausgewählt</div>
+                  </div>
+                </div>
 
                 Der Nennstrom / DC Phasenstrom für den Speed Modus wird erhöht. Standard sind 20A beim 1S und 25A beim Pro2.<br> 
 				Ermöglicht ein stabileres Halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser".<br>
@@ -467,15 +475,13 @@
 
     function OnLoad(){
         var warning = new bootstrap.Modal(document.getElementById('disclaimer'));
-	    warning.show();
-
-	    ChangeMode();
-	    ChangeAmps();
+        warning.show();
+    
+        ChangeMode();
     }
 
-    function ChangeAmps() {
-        var amps = document.getElementById("amps_description");
-        var sel = document.getElementById("moreamps").value;
+    function ChangeAmps(div, sel) {
+        var amps = document.getElementById(div);
         switch (sel) {
                 case "24000":
                     amps.innerHTML = "24A (ca. 19A gemessen)";
@@ -489,8 +495,6 @@
                 case "32000":
                     amps.innerHTML = "32A (ca. 25A gemessen)";
                     break;
-                default:
-                    amps.innerHTML = "";
         }
     }
 

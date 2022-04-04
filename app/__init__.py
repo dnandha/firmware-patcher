@@ -133,8 +133,9 @@ def patch_firmware():
         patcher.wheel_speed_const(mult)
 
     moreamps = flask.request.form.get('moreamps', None)
-    if moreamps:
+    if moreamps is not None:
         print("amp", moreamps)
+        moreamps = int(moreamps)
         assert moreamps >= 20000 and moreamps <= 32000
         patcher.ampere(moreamps)
 
