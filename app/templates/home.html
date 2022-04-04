@@ -276,12 +276,21 @@
     <div class="card-group">
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="thirtyamps">
-                <label class="form-check-label"><b>30 Ampere Speed Mode</b></label>
+                <input class="form-check-input" type="checkbox" name="moreamps_cb">
+                <label class="form-check-label"><b>Ampere Mod (Speed Modus)</b></label>
             </div>
             <div class="card-body">
-                Der Nennstrom / DC Phasenstrom für den Speed Mode wird auf 30A (Ampere) gesetzt. Standard sind 20A beim 1S und 25A beim Pro2.<br> 
-				Ermöglicht ein stabileres halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser"<br>
+                Auswahl:
+                <select class="form-select" id="moreamps" onchange="ChangeAmps()">
+                    <option value="28000">Pro2 OHNE Zusatzakku</option>
+                    <option value="32000">Pro2 mit Zusatzakku</option>
+                    <option value="24000">1S OHNE Zusatzakku</option>
+                    <option value="30000">1S mit Zusatzakku</option>
+                </select>
+                <div id="amps_description"></div>
+
+                Der Nennstrom / DC Phasenstrom für den Speed Modus wird erhöht. Standard sind 20A beim 1S und 25A beim Pro2.<br> 
+				Ermöglicht ein stabileres Halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser".<br>
 				<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite und ab circa 10% Akku wird die Endgeschwindigkeit stark gedrosselt.</span>
             </div>
         </div>
@@ -342,7 +351,7 @@
         "CC_UNLOCK": "cc_unlock",
         "CC_DELAY": "cc_delay",
         "WHEELSIZE": "wheelsize",
-        "THIRTYAMPS": "thirtyamps",
+        "MOREAMPS": "moreamps",
         "CRC_1000": "crc_1000",
         "SHUTDOWN_TIME": "shutdown_time",
 
@@ -383,7 +392,7 @@
 
     function OnSliderChange(elname, value) {
         var ws_val = document.getElementById(elname);
-	ws_val.innerHTML = value;
+        ws_val.innerHTML = value;
     }
 
     function Round(value) {
@@ -461,12 +470,34 @@
 	    warning.show();
 
 	    ChangeMode();
+	    ChangeAmps();
+    }
+
+    function ChangeAmps() {
+        var amps = document.getElementById("amps_description");
+        var sel = document.getElementById("moreamps").value;
+        switch (sel) {
+                case "24000":
+                    amps.innerHTML = "24A (ca. 19A gemessen)";
+                    break;
+                case "28000":
+                    amps.innerHTML = "28A (ca. 22A gemessen)";
+                    break;
+                case "30000":
+                    amps.innerHTML = "30A (ca. 23A gemessen)";
+                    break;
+                case "32000":
+                    amps.innerHTML = "32A (ca. 25A gemessen)";
+                    break;
+                default:
+                    amps.innerHTML = "";
+        }
     }
 
     function ChangeMode(){
         Preset_Default();
 
-        var mode = document.getElementById("modeselect").value
+        var mode = document.getElementById("modeselect").value;
         var divs = document.getElementsByClassName("custom");
         for (var i=0; i < divs.length; i++) {
             if (mode === "custom" || mode === "custom-dev") {
@@ -499,7 +530,7 @@
         ChangeForm(forms.CC_UNLOCK, false);
         ChangeForm(forms.CC_DELAY, "5.0", false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
-        ChangeForm(forms.THIRTYAMPS, false);
+        ChangeForm(forms.MOREAMPS, "", false);
         ChangeForm(forms.CRC_1000, false);
         ChangeForm(forms.SHUTDOWN_TIME, "3.0", false);
 

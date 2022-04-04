@@ -132,10 +132,11 @@ def patch_firmware():
         mult = wheelsize/8.5  # 8.5" is default
         patcher.wheel_speed_const(mult)
 
-    thirtyamps = flask.request.form.get('thirtyamps', None)
-    if thirtyamps:
-        print("amp")
-        patcher.ampere(30000)
+    moreamps = flask.request.form.get('moreamps', None)
+    if moreamps:
+        print("amp", moreamps)
+        assert moreamps >= 20000 and moreamps <= 32000
+        patcher.ampere(moreamps)
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
