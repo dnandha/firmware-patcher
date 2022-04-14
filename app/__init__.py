@@ -54,15 +54,8 @@ def home():
     return flask.render_template('home.html')
 
 
-@app.route('/cfw', methods=['POST'])
-def patch_firmware():
-    f = flask.request.files['filename']
-
-    data = f.read()
-    if not len(data) > 0xf:
-        return 'Keine Datei ausgewählt.', 400
-
-    mem = io.BytesIO()
+def patch(data):
+    res = []
 
     patcher = FirmwarePatcher(data)
 
@@ -82,101 +75,119 @@ def patch_firmware():
         if reset and not dpc and not gm:
             dpc = True
             gm = True
-        print(f"relight: reset{reset}, dpc{dpc}, gm{gm}, beep{beep}, delay{delay}")
-        patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep, delay=delay)
+        opts = []
+        if reset:
+            opts += ["Reset"]
+        if dpc:
+            opts += ["DPC"]
+        if gm:
+            opts += ["LTGM"]
+        if beep:
+            opts += ["Piep"]
+        if delay:
+            opts += ["Delay"]
+        opts = " | ".join(opts)
+        res.append((f"Relight Mod: {opts}",
+                    patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep, delay=delay)))
     elif brakelight_mod:
-        print("blm")
-        patcher.brakelight_mod()
+        res.append(("Bremslicht Mod", patcher.brakelight_mod()))
 
     speed_plus2 = flask.request.form.get('speed_plus2', None)
     if speed_plus2:
-        print("sp2")
-        patcher.speed_limit(22)
+        res.append(("22 km/h Mod", patcher.speed_limit(22)))
 
     speed_plus2_global = flask.request.form.get('speed_plus2_global', None)
     if speed_plus2_global:
-        print("sp2g")
-        patcher.speed_limit_global(27)
+        res.append(("27 km/h Mod", patcher.speed_limit_global(27)))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:
-        print("ra")
-        patcher.remove_autobrake()
+        res.append(("Autom. Bremsen deaktivieren", patcher.remove_autobrake()))
 
     remove_kers = flask.request.form.get('remove_kers', None)
     dkc = flask.request.form.get('dkc', None)
     if dkc:
-        print("dkc")
-        patcher.dkc()
+        res.append("D.K.C.", patcher.dkc())
     elif remove_kers:
-        print("rk")
-        patcher.remove_kers()
+        res.append(("KERS ausschalten", patcher.remove_kers()))
 
     motor_start_speed = flask.request.form.get('motor_start_speed', None)
     if motor_start_speed is not None:
-        print("mss", motor_start_speed)
         motor_start_speed = float(motor_start_speed)
         assert motor_start_speed >= 0 and motor_start_speed <= 100
-        patcher.motor_start_speed(motor_start_speed)
+        res.append((f"Motor Startgeschw. {motor_start_speed}km/h",
+                    patcher.motor_start_speed(motor_start_speed)))
 
     remove_charging_mode = flask.request.form.get('remove_charging_mode', None)
     if remove_charging_mode:
-        print("rc")
-        patcher.remove_charging_mode()
+        res.append(("Zusatzakku Fix", patcher.remove_charging_mode()))
 
     wheelsize = flask.request.form.get('wheelsize', None)
     if wheelsize is not None:
-        print("ws", wheelsize)
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
         mult = wheelsize/8.5  # 8.5" is default
-        patcher.wheel_speed_const(mult)
+        res.append((f"Rad Durchmesser {wheelsize}\"", patcher.wheel_speed_const(mult)))
 
     moreamps = flask.request.form.get('moreamps', None)
     if moreamps is not None:
-        print("amp", moreamps)
         moreamps = int(moreamps)
         assert moreamps >= 20000 and moreamps <= 32000
-        patcher.ampere(moreamps)
+        res.append((f"Ampere {moreamps}", patcher.ampere(moreamps)))
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
-        print("st", shutdown_time)
         shutdown_time = float(shutdown_time)
         assert shutdown_time >= 0 and shutdown_time <= 5
-        patcher.shutdown_time(shutdown_time)
+        res.append((f"Ausschaltzeit {shutdown_time}s",
+                    patcher.shutdown_time(shutdown_time)))
 
     crc_1000 = flask.request.form.get('crc_1000', None)
     if crc_1000:
-        print("crc1000")
-        patcher.current_raising_coeff(1000)
+        res.append(("CRC 1000", patcher.current_raising_coeff(1000)))
 
     cc_unlock = flask.request.form.get('cc_unlock', None)
     if cc_unlock:
-        print("ccul")
-        patcher.cc_unlock()
+        res.append(("Tempomat Unlock", patcher.cc_unlock()))
 
     cc_delay = flask.request.form.get('cc_delay', None)
     if cc_delay is not None:
-        print("ccd", cc_delay)
         cc_delay = float(cc_delay)
         assert cc_delay >= 0 and cc_delay <= 5
-        patcher.cc_delay(cc_delay)
+        res.append(("Tempomat Verzögerung {cc_delay}s",
+                    patcher.cc_delay(cc_delay)))
 
     ltgm = flask.request.form.get('ltgm', None)
     if ltgm:
-        print("ltgm")
-        patcher.ltgm()
+        res.append(("ltgm", patcher.ltgm()))
 
-    mem.write(patcher.data)
-    mem.seek(0)
+    return res, patcher.data
 
-    #r = flask.Response(mem, mimetype="application/octet-stream")
-    #r.headers['Content-Length'] = mem.getbuffer().nbytes
-    #r.headers['Content-Disposition'] = "attachment; filename={}".format(f.filename)
-    return flask.send_file(
-        mem,
-        as_attachment=True,
-        mimetype='application/octet-stream',
-        attachment_filename=f.filename,
-    )
+
+@app.route('/cfw', methods=['POST'])
+def patch_firmware():
+    f = flask.request.files['filename']
+
+    data = f.read()
+    if not len(data) > 0xf:
+        return 'Keine Datei ausgewählt.', 400
+
+    res, data_patched = patch(data)
+
+    pod = flask.request.form.get('patchordoc', None)
+    if pod == "Patch!":
+        mem = io.BytesIO()
+        mem.write(data_patched)
+        mem.seek(0)
+
+        #r = flask.Response(mem, mimetype="application/octet-stream")
+        #r.headers['Content-Length'] = mem.getbuffer().nbytes
+        #r.headers['Content-Disposition'] = "attachment; filename={}".format(f.filename)
+        return flask.send_file(
+            mem,
+            as_attachment=True,
+            mimetype='application/octet-stream',
+            attachment_filename=f.filename,
+        )
+    elif pod == "Offsets":
+        return flask.render_template('doc.html', patches=res)
