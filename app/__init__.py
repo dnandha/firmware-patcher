@@ -107,7 +107,7 @@ def patch(data):
     remove_kers = flask.request.form.get('remove_kers', None)
     dkc = flask.request.form.get('dkc', None)
     if dkc:
-        res.append("D.K.C.", patcher.dkc())
+        res.append(("D.K.C.", patcher.dkc()))
     elif remove_kers:
         res.append(("KERS ausschalten", patcher.remove_kers()))
 
@@ -154,12 +154,12 @@ def patch(data):
     if cc_delay is not None:
         cc_delay = float(cc_delay)
         assert cc_delay >= 0 and cc_delay <= 5
-        res.append(("Tempomat Verzögerung {cc_delay}s",
+        res.append((f"Tempomat Verzögerung {cc_delay}s",
                     patcher.cc_delay(cc_delay)))
 
     ltgm = flask.request.form.get('ltgm', None)
     if ltgm:
-        res.append(("ltgm", patcher.ltgm()))
+        res.append(("LTGM", patcher.ltgm()))
 
     return res, patcher.data
 
