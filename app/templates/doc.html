@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="author" content="BotoX">
+<meta name="description" content="VLT Custom Firmware Toolkit">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='newstyle.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+<title>VLT Custom Firmware Toolkit</title>
+</head>
+
+<body>
+
+<noscript>Diese Webseite benötigt JavaScript.</noscript>
+
+<div class="container">
+    <div class="row"><div class="col center-block text-center">
+        <h1>VLT Firmwares</h1>
+    </div></div>
+
+    <div class="row"><div class="col">
+	    <p class="text">
+	    	Diese Seite dokumentiert alle Offsets der ausgewählten Mods. Die Offsets lassen sich zudem als BytePatch Datei ausgeben.
+	    </p>
+    </div></div>
+
+    {% for (patch,offsets) in patches %}
+	<div class="modal fade" id="{{offsets[0][0]}}" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+		    <div class="modal-content">
+			  <div class="modal-header">
+				  <h5 class="modal-title">{{patch}}</h5>
+			  </div>
+			<div class="modal-body">
+				<p style="word-wrap: break-word; ">
+					{% for (name, ofs, pre, post) in offsets %}
+						bytepatch.exe "%1" -a {{ofs}} {{post}}<br/>
+					{% endfor %}
+					pause
+				</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+			</div>
+		    </div>
+		</div>
+	</div>
+	<div class="card">
+	    <div class="card-header text-center">
+	    	<b>{{patch}}</b>
+	    </div>
+	    <div class="card-body">
+		<div class="card-text">
+			<table class="table table-bordered table-hover table-sm">
+				<thead class="thead-light">
+					<tr>
+						<th scope="col">Offset</th>
+						<th scope="col">Vorher</th>
+						<th scope="col">Nachher</th>
+					</tr>
+				</thead>
+				<tbody>
+
+			{% for (name, ofs, pre, post) in offsets %}
+			<tr>
+				<td>{{ofs}}</td>
+				<td style="word-wrap: break-word; max-width: 10rem">{{pre}}</td>
+				<td style="word-wrap: break-word; max-width: 10rem">{{post}}</td>
+			{% endfor %}
+
+				</tbody>
+			</table>
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#{{offsets[0][0]}}">
+				BytePatch
+			</button>
+		</div>
+	    </div>
+	</div>
+    {% endfor %}
+</div>
+
+<script src="{{ url_for('static', filename='popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+
+</body>
+</html>
