@@ -104,12 +104,19 @@ def patch(data):
     if remove_autobrake:
         res.append(("Autom. Bremsen deaktivieren", patcher.remove_autobrake()))
 
-    remove_kers = flask.request.form.get('remove_kers', None)
     dkc = flask.request.form.get('dkc', None)
     if dkc:
-        res.append(("D.K.C.", patcher.dkc()))
-    elif remove_kers:
-        res.append(("KERS ausschalten", patcher.remove_kers()))
+        l0 = flask.request.form.get('dkc_l0', None)
+        l1 = flask.request.form.get('dkc_l1', None)
+        l2 = flask.request.form.get('dkc_l2', None)
+        if l0 and l1 and l2:
+            l0 = float(l0)
+            l1 = float(l1)
+            l2 = float(l2)
+            assert l0 >= 0 and l0 < 0x26
+            assert l1 >= 0 and l1 < 0x26
+            assert l2 >= 0 and l2 < 0x26
+            res.append((f"D.K.C. ({l0}, {l1}, {l2})", patcher.dkc(l0, l1, l2)))
 
     motor_start_speed = flask.request.form.get('motor_start_speed', None)
     if motor_start_speed is not None:

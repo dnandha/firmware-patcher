@@ -262,7 +262,7 @@
         </div>
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dkc">
+                <input class="form-check-input" type="checkbox" name="dkc" onchange="CheckForm('dkc_l0', this);">
                 <label class="form-check-label"><b>D.K.C.</b></label>
             </div>
             <div class="card-body">
@@ -270,6 +270,11 @@
                 Stufenloses setzen des KERS Multiplikator zur Laufzeit.<br/>
                 KERS ganz einfach ausschalten.<br/>
 				Empfohlene App zur Steuerung ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+
+                Individuelle Standard KERS Level:
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l0', 'dkc_l0_value')">-</button><input class="form-range" name="dkc_l0" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('dkc_l0_value', this.value)" oninput="OnSliderChange('dkc_l0_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l0', 'dkc_l0_value')">+</button></span><div id="dkc_l0_value">8.5</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l1', 'dkc_l1_value')">-</button><input class="form-range" name="dkc_l1" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('dkc_l1_value', this.value)" oninput="OnSliderChange('dkc_l1_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l1', 'dkc_l1_value')">+</button></span><div id="dkc_l1_value">8.5</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l2', 'dkc_l2_value')">-</button><input class="form-range" name="dkc_l2" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('dkc_l2_value', this.value)" oninput="OnSliderChange('dkc_l2_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l2', 'dkc_l2_value')">+</button></span><div id="dkc_l2_value">8.5</div>
             </div>
         </div>
     </div>
@@ -372,6 +377,9 @@
         "RELIGHT_DELAY": "relight_delay",
 
         "DKC": "dkc",
+        "DKC_L0": "dkc_l0",
+        "DKC_L1": "dkc_l1",
+        "DKC_L2": "dkc_l2",
     };
 
     var formValues = Object.values(forms);
@@ -547,6 +555,9 @@
         ChangeForm(forms.RELIGHT_DELAY, false);
 
         ChangeForm(forms.DKC, false);
+        ChangeForm(forms.DKC_L0, "30", false);
+        ChangeForm(forms.DKC_L1, "34", false);
+        ChangeForm(forms.DKC_L2, "38", false);
     }
 </script>
 

@@ -92,25 +92,18 @@ class FirmwarePatcher():
         self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         #self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
 
-    def remove_kers(self):
+    def error_on_pair(self, errnum=2):
         '''
+        First offset of old No Kers Mod ("Error 1" Bug)
         '''
         ret = []
 
         sig = [0x01, 0x40, 0x0a, 0x20, 0x3c, 0xe0, 0x00, 0x88]
         ofs = FindPattern(self.data, sig) + 2
         pre = self.data[ofs:ofs+2]
-        post = bytes([int(x, 0) for x in ['0x01', '0x20']])
+        post = bytes(self.ks.asm('movs r0, #{}'.format(errnum))[0])
         self.data[ofs:ofs+2] = post
-        ret.append(["no_kers", hex(ofs), pre.hex(), post.hex()])
-
-        ofs += 0x142
-
-        pre = self.data[ofs:ofs+2]
-        assert pre[0] == 0x49 and pre[1] == 0x42
-        post = bytes([int(x, 0) for x in ['0xff', '0x21']])
-        self.data[ofs:ofs+2] = post
-        ret.append(["no_kers", hex(ofs), pre.hex(), post.hex()])
+        ret.append(["eop", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -573,22 +566,22 @@ class FirmwarePatcher():
 
         return ret
 
-    def dkc(self):
+    def dkc(self, l0=0x1e, l1=0x22, l2=0x26):
         '''
         '''
         ret = []
 
-        asm = """
+        asm = f"""
         nop
         nop
         nop
         nop
         cmp	r2, #0
-        ble	#0x1e
+        ble	#{l0}
         cmp	r2, #1
-        beq	#0x22
+        beq	#{l1}
         cmp	r2, #2
-        beq	#0x26
+        beq	#{l2}
         cmp	r2, #0x21
         bgt	#0x26
         subs	r2, #3
@@ -605,8 +598,8 @@ class FirmwarePatcher():
         ofs = FindPattern(self.data, sig) + 6
         pre = self.data[ofs:ofs+42]
         post = bytes(self.ks.asm(asm)[0])
-        y = bytes.fromhex("00bf00bf00bf00bf002a08dd012a08d0022a08d0212a06dc033a110004e0062102e00c2100e014214843")
-        assert post == y
+        #y = bytes.fromhex("00bf00bf00bf00bf002a08dd012a08d0022a08d0212a06dc033a110004e0062102e00c2100e014214843")
+        #assert post == y
         self.data[ofs:ofs+42] = post
         ret.append(["dkc", hex(ofs), pre.hex(), post.hex()])
 
@@ -631,25 +624,25 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    ##ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    ret.extend(vlt.relight_mod(beep=False, delay=False))  # must come first
+    ret.extend(vlt.error_on_pair(2))
+    #ret.extend(vlt.brakelight_mod())  # not compatible with relight
+    #ret.extend(vlt.relight_mod(beep=False, delay=False))  # must come first
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(2))
     ret.extend(vlt.motor_start_speed(3))
-    #ret.extend(vlt.wheel_speed_const(mult))
-    #ret.extend(vlt.speed_limit(22))
-    #ret.extend(vlt.speed_limit_global(27))
-    #ret.extend(vlt.ampere(30000))
-    ##ret.extend(vlt.remove_kers())
+    ret.extend(vlt.wheel_speed_const(mult))
+    ret.extend(vlt.speed_limit(22))
+    ret.extend(vlt.speed_limit_global(27))
+    ret.extend(vlt.ampere(30000))
     ret.extend(vlt.dkc())
-    #ret.extend(vlt.remove_autobrake())
-    #ret.extend(vlt.remove_charging_mode())
-    #ret.extend(vlt.current_raising_coeff(1000))  # do this last
-    ##ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    #ret.extend(vlt.cc_delay(2))
-    #ret.extend(vlt.cc_unlock())
+    ret.extend(vlt.remove_autobrake())
+    ret.extend(vlt.remove_charging_mode())
+    ret.extend(vlt.current_raising_coeff(1000))  # do this last
+    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
+    ret.extend(vlt.cc_delay(2))
+    ret.extend(vlt.cc_unlock())
     ret.extend(vlt.ltgm())
-    #ret.extend(vlt.reset_mode())
+    ret.extend(vlt.reset_mode())
     for desc, ofs, pre, post in ret:
         print(ofs, pre, post, desc)
 
