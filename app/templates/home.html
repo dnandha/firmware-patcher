@@ -207,21 +207,24 @@
     </div>
 
     <div class="card-group">
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
-                <label class="form-check-label"><b>Rad Durchmesser</b></label>
+                <input class="form-check-input" type="checkbox" name="dkc" onchange="CheckForm('dkc_l0', this);CheckForm('dkc_l1', this);CheckForm('dkc_l2', this);">
+                <label class="form-check-label"><b>D.K.C.</b></label>
             </div>
-
             <div class="card-body">
-                <div class="card-title center-block">
-			<div>Zoll</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button><input class="form-range" name="wheelsize" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button></span><div id="wheelsize_value">8.5</div>
+                <div class="card-title">
+			Volle Kontrolle über die 3 KERS Multiplikatoren, stufenloses Setzen des KERS Multiplikator zur Laufzeit. <br/>
+			Empfohlene App zur Steuerung ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+		</div>
 
-                </div>
-                <div class="card-text">
-                    Passt GPS Geschwindigkeit und Motor-Koeffizient (Anzugsverhalten) für unterschiedliche Radgrößen an.
-                </div>
+		<div class="card-text">
+                Individuelle Standard KERS Level (0 := AUS)
+			<span class="input-group-text">Leicht:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l0', 'dkc_l0_value')">-</button><input class="form-range" name="dkc_l0" type="range" step="1" min="0" max="30" value="6" onchange="OnSliderChange('dkc_l0_value', this.value)" oninput="OnSliderChange('dkc_l0_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l0', 'dkc_l0_value')">+</button></span><div id="dkc_l0_value">6</div>
+			<span class="input-group-text">Mittel:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l1', 'dkc_l1_value')">-</button><input class="form-range" name="dkc_l1" type="range" step="1" min="0" max="30" value="12" onchange="OnSliderChange('dkc_l1_value', this.value)" oninput="OnSliderChange('dkc_l1_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l1', 'dkc_l1_value')">+</button></span><div id="dkc_l1_value">12</div>
+			<span class="input-group-text">Stark:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l2', 'dkc_l2_value')">-</button><input class="form-range" name="dkc_l2" type="range" step="1" min="0" max="30" value="20" onchange="OnSliderChange('dkc_l2_value', this.value)" oninput="OnSliderChange('dkc_l2_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l2', 'dkc_l2_value')">+</button></span><div id="dkc_l2_value">20</div>
+
+		</div>
             </div>
         </div>
         <div class="card text-center m-1 border-warning custom" hidden>
@@ -260,21 +263,21 @@
 				<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite.</span>
             </div>
         </div>
-        <div class="card text-center m-1 border-warning custom" hidden>
+        <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dkc" onchange="CheckForm('dkc_l0', this);">
-                <label class="form-check-label"><b>D.K.C.</b></label>
+                <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
+                <label class="form-check-label"><b>Rad Durchmesser</b></label>
             </div>
-            <div class="card-body">
-                Volle Kontrolle über die 3 KERS Multiplikatoren.<br/>
-                Stufenloses setzen des KERS Multiplikator zur Laufzeit.<br/>
-                KERS ganz einfach ausschalten.<br/>
-				Empfohlene App zur Steuerung ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
 
-                Individuelle Standard KERS Level:
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l0', 'dkc_l0_value')">-</button><input class="form-range" name="dkc_l0" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('dkc_l0_value', this.value)" oninput="OnSliderChange('dkc_l0_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l0', 'dkc_l0_value')">+</button></span><div id="dkc_l0_value">8.5</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l1', 'dkc_l1_value')">-</button><input class="form-range" name="dkc_l1" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('dkc_l1_value', this.value)" oninput="OnSliderChange('dkc_l1_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l1', 'dkc_l1_value')">+</button></span><div id="dkc_l1_value">8.5</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l2', 'dkc_l2_value')">-</button><input class="form-range" name="dkc_l2" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('dkc_l2_value', this.value)" oninput="OnSliderChange('dkc_l2_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l2', 'dkc_l2_value')">+</button></span><div id="dkc_l2_value">8.5</div>
+            <div class="card-body">
+                <div class="card-title center-block">
+			<div>Zoll</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button><input class="form-range" name="wheelsize" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button></span><div id="wheelsize_value">8.5</div>
+
+                </div>
+                <div class="card-text">
+                    Passt GPS Geschwindigkeit und Motor-Koeffizient (Anzugsverhalten) für unterschiedliche Radgrößen an.
+                </div>
             </div>
         </div>
     </div>
@@ -455,7 +458,7 @@
     }
 
     function GetPatchCheckBox(name) {
-    	return GetForm(`${name}_cb`);
+        return GetForm(`${name}_cb`);
     }
 
     function CheckForm(name, cb) {
@@ -555,9 +558,9 @@
         ChangeForm(forms.RELIGHT_DELAY, false);
 
         ChangeForm(forms.DKC, false);
-        ChangeForm(forms.DKC_L0, "30", false);
-        ChangeForm(forms.DKC_L1, "34", false);
-        ChangeForm(forms.DKC_L2, "38", false);
+        ChangeForm(forms.DKC_L0, "6", null);
+        ChangeForm(forms.DKC_L1, "12", null);
+        ChangeForm(forms.DKC_L2, "20", null);
     }
 </script>
 

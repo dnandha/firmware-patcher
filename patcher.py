@@ -566,7 +566,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def dkc(self, l0=0x1e, l1=0x22, l2=0x26):
+    def dkc(self, l0=6, l1=12, l2=20):
         '''
         '''
         ret = []
@@ -577,23 +577,24 @@ class FirmwarePatcher():
         nop
         nop
         cmp	r2, #0
-        ble	#{l0}
+        ble	#0x1e
         cmp	r2, #1
-        beq	#{l1}
+        beq	#0x22
         cmp	r2, #2
-        beq	#{l2}
+        beq	#0x26
         cmp	r2, #0x21
         bgt	#0x26
         subs	r2, #3
         movs	r1, r2
         b	#0x28
-        movs	r1, #6
+        movs	r1, #{l0}
         b	#0x28
-        movs	r1, #0xc
+        movs	r1, #{l1}
         b	#0x28
-        movs	r1, #0x14
+        movs	r1, #{l2}
         muls	r0, r1, r0
         """
+        print(asm)
         sig = bytes.fromhex("e083 b9f8 f620 4946")
         ofs = FindPattern(self.data, sig) + 6
         pre = self.data[ofs:ofs+42]

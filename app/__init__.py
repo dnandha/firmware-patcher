@@ -110,12 +110,10 @@ def patch(data):
         l1 = flask.request.form.get('dkc_l1', None)
         l2 = flask.request.form.get('dkc_l2', None)
         if l0 and l1 and l2:
-            l0 = float(l0)
-            l1 = float(l1)
-            l2 = float(l2)
-            assert l0 >= 0 and l0 < 0x26
-            assert l1 >= 0 and l1 < 0x26
-            assert l2 >= 0 and l2 < 0x26
+            l0, l1, l2 = int(l0), int(l1), int(l2)
+            assert l0 >= 0 and l0 <= 30
+            assert l1 >= 0 and l1 <= 30
+            assert l2 >= 0 and l2 <= 30
             res.append((f"D.K.C. ({l0}, {l1}, {l2})", patcher.dkc(l0, l1, l2)))
 
     motor_start_speed = flask.request.form.get('motor_start_speed', None)
