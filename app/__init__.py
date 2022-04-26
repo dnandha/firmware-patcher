@@ -158,7 +158,7 @@ def patch(data):
     cc_delay = flask.request.form.get('cc_delay', None)
     if cc_delay is not None:
         cc_delay = float(cc_delay)
-        assert cc_delay >= 0 and cc_delay <= 5
+        assert cc_delay >= 0 and cc_delay <= 9
         res.append((f"Tempomat Verzögerung {cc_delay}s",
                     patcher.cc_delay(cc_delay)))
 
