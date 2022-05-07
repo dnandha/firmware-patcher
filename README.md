@@ -14,22 +14,21 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 
 ## Available Mods
 * Brakelight
-* +2 km/h Speed Limit (DE/US)
-* Amps / Phase Current (Speed Mode)
+* Speed limits
+* Amps / Phase currents
 * Motor start speed
-* No KERS
-* No Charging fix
-* Remove 30km/h speed check
+* No charging fix
+* 30km/h speed check
 * Wheelsize
 * Shutdown time
 * DPC (register)
 * LTGM (register)
 * Current raising coefficient
-* Cruise Control delay
-* Cruise Control unlock (DE)
+* Cruise control delay
+* Cruise control unlock (DE)
 * ReLight Mod
-* DKC
-* Pedestrian Unlock
+* DKC (replaces "No KERS")
+* Pedestrian unlock
 
 ## Instructions
 1. `FLASK_APP=app/__init__.py`
