@@ -100,10 +100,10 @@ def patch(data):
     if speed_plus2_global:
         res.append(("27 km/h Mod", patcher.speed_limit_global(27)))
 
-    unlock_pedo = flask.request.form.get('unlock_pedo', None)
-    if unlock_pedo is not None:
-        res.append(("Speed Lim Ped.: 9km/h", patcher.speed_limit_pedo(9)))
-        res.append(("Ampere Ped.: 10A/15A", patcher.ampere_pedo(10000, 15000)))
+    pedo_unlock = flask.request.form.get('pedo_unlock', None)
+    if pedo_unlock is not None:
+        res.append(("Speed Limit Pedestrian: 9km/h", patcher.speed_limit_pedo(9)))
+        res.append(("Ampere Pedestrian.: 10A/15A", patcher.ampere_pedo(10000, 15000)))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:
