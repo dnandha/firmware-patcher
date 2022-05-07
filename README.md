@@ -7,8 +7,10 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 ## Supported DRVs
 * DRV236
 * DRV247
+* DRV248 (partially)
 * DRV309
 * DRV319
+* DRV321 (partially)
 
 ## Available Mods
 * Brakelight
@@ -27,6 +29,7 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * Cruise Control unlock (DE)
 * ReLight Mod
 * DKC
+* Pedestrian Unlock
 
 ## Instructions
 1. `FLASK_APP=app/__init__.py`
