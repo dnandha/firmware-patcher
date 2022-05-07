@@ -102,8 +102,8 @@ def patch(data):
 
     unlock_pedo = flask.request.form.get('unlock_pedo', None)
     if unlock_pedo is not None:
-        res.append((f"Speed Lim Ped. {9km/h}", patcher.speed_limit_pedo(9)))
-        res.append((f"Ampere Ped. {10A/15A}", patcher.ampere_pedo(10000, 15000)))
+        res.append(("Speed Lim Ped.: 9km/h", patcher.speed_limit_pedo(9)))
+        res.append(("Ampere Ped.: 10A/15A", patcher.ampere_pedo(10000, 15000)))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:
