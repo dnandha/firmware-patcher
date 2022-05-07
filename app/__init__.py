@@ -100,6 +100,11 @@ def patch(data):
     if speed_plus2_global:
         res.append(("27 km/h Mod", patcher.speed_limit_global(27)))
 
+    unlock_pedo = flask.request.form.get('unlock_pedo', None)
+    if unlock_pedo is not None:
+        res.append((f"Speed Lim Ped. {9km/h}", patcher.speed_limit_pedo(9)))
+        res.append((f"Ampere Ped. {10A/15A}", patcher.ampere_pedo(10000, 15000)))
+
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:
         res.append(("Autom. Bremsen deaktivieren", patcher.remove_autobrake()))
@@ -138,7 +143,7 @@ def patch(data):
     if moreamps is not None:
         moreamps = int(moreamps)
         assert moreamps >= 20000 and moreamps <= 32000
-        res.append((f"Ampere {moreamps}", patcher.ampere(moreamps)))
+        res.append((f"Ampere {moreamps}", patcher.ampere_speed(moreamps)))
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:

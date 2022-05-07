@@ -183,6 +183,23 @@ class FirmwarePatcher():
 
         return ret
 
+    def speed_limit_pedo(self, kmh):
+        '''
+        '''
+        ret = []
+
+        val = hex(kmh)
+
+        sig = [0x4f, 0xf0, 0x05, None, 0x01, None, 0x02, 0xd1]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        reg = pre[-1]
+        post = bytes(self.ks.asm('MOV.W R{}, #{}'.format(reg, val))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["spt_pedo", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
     def motor_start_speed(self, kmh):
         '''
         '''
@@ -264,13 +281,13 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere(self, speed):
+    def ampere_speed(self, amps):
         '''
         More current <=> more consumption
         '''
         ret = []
 
-        val = struct.pack('<H', speed)
+        val = struct.pack('<H', amps)
 
         sig = [0x13, 0xD2, None, 0x85, None, 0xE0, None, 0x8E]
         ofs = FindPattern(self.data, sig) + 8
@@ -296,6 +313,47 @@ class FirmwarePatcher():
             ofs = FindPattern(self.data, sig) + 6
             pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
             ret.append(["amp_speed", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def ampere_pedo(self, amps, amps_max):
+        ret = []
+
+        sig = [None, 0x8e, 0x41, 0xf6, 0x58, None, None, None, 0x01, 0xd2]
+        ofs = FindPattern(self.data, sig) + 2
+        pre = self.data[ofs:ofs+4]
+        reg = 0
+        if pre[-1] == 0x32:
+            reg = 2
+        elif pre[-1] == 0x33:
+            reg = 3
+        elif pre[-1] == 0x3c:
+            reg = 12
+        else:
+            raise Exception("invalid firmware file")
+        post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["amp_pedo", hex(ofs), pre.hex(), post.hex()])
+
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, R0')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["amp_pedo_nop", hex(ofs), pre.hex(), post.hex()])
+
+        sig = [0xa4, 0xf8, 0x22, None, 0x4f, 0xf4, 0xfa, None, None, 0xe0]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+4]
+        reg = 0
+        if pre[-1] == 0x52:
+            reg = 2
+        elif pre[-1] == 0x53:
+            reg = 3
+        else:
+            raise Exception("invalid firmware file")
+        post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_max))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["amp_pedo_max", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -594,7 +652,6 @@ class FirmwarePatcher():
         movs	r1, #{l2}
         muls	r0, r1, r0
         """
-        print(asm)
         sig = bytes.fromhex("e083 b9f8 f620 4946")
         ofs = FindPattern(self.data, sig) + 6
         pre = self.data[ofs:ofs+42]
@@ -625,16 +682,18 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    ret.extend(vlt.error_on_pair(2))
+    #ret.extend(vlt.error_on_pair(2))
     #ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    #ret.extend(vlt.relight_mod(beep=False, delay=False))  # must come first
+    ret.extend(vlt.relight_mod(beep=False, delay=False))  # must come first
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(2))
     ret.extend(vlt.motor_start_speed(3))
     ret.extend(vlt.wheel_speed_const(mult))
     ret.extend(vlt.speed_limit(22))
     ret.extend(vlt.speed_limit_global(27))
-    ret.extend(vlt.ampere(30000))
+    ret.extend(vlt.speed_limit_pedo(9))
+    ret.extend(vlt.ampere_pedo(10000, 15000))
+    ret.extend(vlt.ampere_speed(30000))
     ret.extend(vlt.dkc())
     ret.extend(vlt.remove_autobrake())
     ret.extend(vlt.remove_charging_mode())

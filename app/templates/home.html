@@ -165,7 +165,18 @@
                 </div>
             </div>
         </div>
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1 border-danger custom-dev" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="pedo_unlock">
+                <label class="form-check-label"><b>Pedestrian Unlock</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    Macht den Fußgängermodus fahrbar (9km/h + 10A/15A).
+                </div>
+            </div>
+        </div>
+        <!--div class="card text-center m-1 custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" name="remove_kers" type="checkbox">
                 <label class="form-check-label"><b>KERS ausschalten</b></label>
@@ -174,7 +185,7 @@
                 Rekuperation (KERS) wird beim Ausrollen komplett entfernt.
                 Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
             </div>
-        </div>
+        </div-->
     </div>
 
     <div class="card-group">
@@ -207,7 +218,7 @@
     </div>
 
     <div class="card-group">
-        <div class="card text-center m-1 border-warning custom" hidden>
+        <div class="card text-center m-1 border-danger custom-dev" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="dkc" onchange="CheckForm('dkc_l0', this);CheckForm('dkc_l1', this);CheckForm('dkc_l2', this);">
                 <label class="form-check-label"><b>D.K.C.</b></label>
@@ -227,7 +238,7 @@
 		</div>
             </div>
         </div>
-        <div class="card text-center m-1 border-warning custom" hidden>
+        <div class="card text-center m-1 custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="relight_mod" onchange="CheckForm('relight_dpc', this);">
                 <label class="form-check-label"><b>ReLight Mod</b></label>
@@ -362,7 +373,7 @@
         "BRAKELIGHT_MOD": "brakelight_mod",
         "SPEED_PLUS2": "speed_plus2",
         "MOTOR_START_SPEED": "motor_start_speed",
-        "REMOVE_KERS": "remove_kers",
+        //"REMOVE_KERS": "remove_kers",
         "REMOVE_AUTOBRAKE": "remove_autobrake",
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
         "CC_UNLOCK": "cc_unlock",
@@ -383,6 +394,8 @@
         "DKC_L0": "dkc_l0",
         "DKC_L1": "dkc_l1",
         "DKC_L2": "dkc_l2",
+
+        "PEDO_UNLOCK": "pedo_unlock",
     };
 
     var formValues = Object.values(forms);
@@ -541,7 +554,7 @@
         ChangeForm(forms.SPEED_PLUS2, false);
         ChangeForm(forms.MOTOR_START_SPEED, "5", false);
         ChangeForm(forms.REMOVE_AUTOBRAKE, false);
-        ChangeForm(forms.REMOVE_KERS, false);
+        //ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
         ChangeForm(forms.CC_UNLOCK, false);
         ChangeForm(forms.CC_DELAY, "5.0", false);
@@ -561,6 +574,8 @@
         ChangeForm(forms.DKC_L0, "6", null);
         ChangeForm(forms.DKC_L1, "12", null);
         ChangeForm(forms.DKC_L2, "20", null);
+
+        ChangeForm(forms.PEDO_UNLOCK, false);
     }
 </script>
 
