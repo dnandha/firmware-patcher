@@ -59,10 +59,10 @@ def patch(data):
 
     patcher = FirmwarePatcher(data)
 
-    dpc = flask.request.form.get('dpc', None)
-    if dpc:
-        print("dpc")
-        patcher.dpc()
+    #dpc = flask.request.form.get('dpc', None)
+    #if dpc:
+    #    print("dpc")
+    #    patcher.dpc()
 
     relight_mod = flask.request.form.get('relight_mod', None)
     brakelight_mod = flask.request.form.get('brakelight_mod', None)
@@ -103,7 +103,7 @@ def patch(data):
     pedo_unlock = flask.request.form.get('pedo_unlock', None)
     if pedo_unlock is not None:
         res.append(("Speed Limit Pedestrian: 9km/h", patcher.speed_limit_pedo(9)))
-        res.append(("Ampere Pedestrian.: 10A/15A", patcher.ampere_pedo(10000, 15000)))
+        res.append(("Ampere Pedestrian: 10A/15A", patcher.ampere_pedo(10000, 15000)))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:
@@ -143,7 +143,7 @@ def patch(data):
     if moreamps is not None:
         moreamps = int(moreamps)
         assert moreamps >= 20000 and moreamps <= 32000
-        res.append((f"Ampere {moreamps}", patcher.ampere_speed(moreamps)))
+        res.append((f"Ampere {moreamps}mA", patcher.ampere_speed(moreamps)))
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
@@ -201,3 +201,5 @@ def patch_firmware():
         )
     elif pod == "Offsets":
         return flask.render_template('doc.html', patches=res)
+    else:
+        return 'Ungültige Anfrage.', 400
