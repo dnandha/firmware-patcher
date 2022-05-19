@@ -459,7 +459,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=True, gm=True, dpc=True, beep=True, delay=True):
+    def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=True, gm=True, dpc=True, beep=True, delay=True, autolight=False):
         '''
         Set / Reset with Throttle + Brake
         '''
@@ -486,7 +486,7 @@ class FirmwarePatcher():
         # and fill it with live
         asm = ""
         if delay:
-            asm = """
+            asm += """
             ldrb       r6,[r4,#0x18]
             adds       r6,r6,#0x1
             uxtb       r6,r6
@@ -496,16 +496,34 @@ class FirmwarePatcher():
             strb       r5,[r4,#0x18]
             """
 
-        asm += "MOVS R4,#0x1\n"
+        asm += "MOVS R1,#0x1\n"
         if gm:
             #asm += "STRB.W R{}, [R0, #0x43]\n".format(4 if reset else 5)
-            asm += "STRH.W R{}, [R0, #0x13a]\n".format(4 if reset else 5)
+            asm += "STRH.W R{}, [R0, #0x13a]\n".format(1 if reset else 5)
         if dpc:
-            asm += "STRH.W R{}, [R0, #0x132]\n".format(5 if reset else 4)
+            asm += "STRH.W R{}, [R0, #0x132]\n".format(5 if reset else 1)
         addr_f = addr_table[ofs][0]
         if beep:
             asm += "movs r0,#0x1\n"
             asm += f"bl #{addr_f}\n"
+
+        if autolight:
+            asm += """
+            adds       r2,r4,#0xc8
+            ldrh       r1,[r2,#0]
+            uxth       r3,r1
+            mov.w      r6,#0x40000000
+            strh       r3,[r6,#0x34]
+            adds       r1,#0x10
+            sxth       r1,r1
+            strh       r1,[r2,#0]
+            cmp        r1,#0x60
+            ble        #0x32
+            movs       r1,#0x60
+            strh       r1,[r2,#0]
+            b          #0x32
+            """
+
 
         post = bytes(self.ks.asm(asm)[0])
         self.data[ofs:ofs+len(post)] = post
@@ -515,13 +533,13 @@ class FirmwarePatcher():
         # main mod
         asm = f"""
         LDR     R6, {addr_l}
+        LDRB.W  R1, [R6, #{addr_t+1}]
+        CMP     R1, #{brake_pos}
+        BCC     0x14
         LDRB.W  R1, [R6, #{addr_t}]
         CMP     R1, #{throttle_pos}
-        BCC     0x14
-        LDRB.W  R6, [R6, #{addr_t+1}]
-        CMP     R6, #{brake_pos}
         BCS     {addr_b}
-        NOP
+        B       {addr_b+0x0a}
         """
         sig = [None, 0x4c, 0x00, 0x25, 0x61, 0x79, 0x01, 0x29, None, 0xd0]
         ofs = FindPattern(self.data, sig) + 4
@@ -682,27 +700,27 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    #ret.extend(vlt.error_on_pair(2))
-    #ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    ret.extend(vlt.relight_mod(beep=False, delay=False))  # must come first
-    ret.extend(vlt.dpc())
-    ret.extend(vlt.shutdown_time(2))
-    ret.extend(vlt.motor_start_speed(3))
-    ret.extend(vlt.wheel_speed_const(mult))
-    ret.extend(vlt.speed_limit(22))
-    ret.extend(vlt.speed_limit_global(27))
-    ret.extend(vlt.speed_limit_pedo(9))
-    ret.extend(vlt.ampere_pedo(10000, 15000))
-    ret.extend(vlt.ampere_speed(30000))
-    ret.extend(vlt.dkc())
-    ret.extend(vlt.remove_autobrake())
-    ret.extend(vlt.remove_charging_mode())
-    ret.extend(vlt.current_raising_coeff(1000))  # do this last
-    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    ret.extend(vlt.cc_delay(2))
-    ret.extend(vlt.cc_unlock())
-    ret.extend(vlt.ltgm())
-    ret.extend(vlt.reset_mode())
+    ##ret.extend(vlt.error_on_pair(2))
+    ##ret.extend(vlt.brakelight_mod())  # not compatible with relight
+    ret.extend(vlt.relight_mod(reset=False, gm=False, dpc=False, beep=False, delay=False, autolight=False))  # must come first
+    #ret.extend(vlt.dpc())
+    #ret.extend(vlt.shutdown_time(2))
+    #ret.extend(vlt.motor_start_speed(3))
+    #ret.extend(vlt.wheel_speed_const(mult))
+    #ret.extend(vlt.speed_limit(22))
+    #ret.extend(vlt.speed_limit_global(27))
+    #ret.extend(vlt.speed_limit_pedo(9))
+    #ret.extend(vlt.ampere_pedo(10000, 15000))
+    #ret.extend(vlt.ampere_speed(30000))
+    #ret.extend(vlt.dkc())
+    #ret.extend(vlt.remove_autobrake())
+    #ret.extend(vlt.remove_charging_mode())
+    #ret.extend(vlt.current_raising_coeff(1000))  # do this last
+    ##ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
+    #ret.extend(vlt.cc_delay(2))
+    #ret.extend(vlt.cc_unlock())
+    #ret.extend(vlt.ltgm())
+    #ret.extend(vlt.reset_mode())
     for desc, ofs, pre, post in ret:
         print(ofs, pre, post, desc)
 
