@@ -22,7 +22,7 @@ import os
 import io
 
 
-from patcher import FirmwarePatcher
+from patcher import FirmwarePatcher, SignatureException
 
 app = flask.Flask(__name__)
 
@@ -182,7 +182,10 @@ def patch_firmware():
     if not len(data) > 0xf:
         return 'Keine Datei ausgewählt.', 400
 
-    res, data_patched = patch(data)
+    try:
+        res, data_patched = patch(data)
+    except SignatureException:
+        return 'Patches konnten nicht angewendet werden. Bitte die korrekte Eingabedatei wählen.', 400
 
     pod = flask.request.form.get('patchordoc', None)
     if pod == "Patch!":
