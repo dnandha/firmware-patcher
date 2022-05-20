@@ -490,22 +490,21 @@ class FirmwarePatcher():
             asm += """
             ldrb       r6,[r4,#0x18]
             adds       r6,r6,#0x1
-            uxtb       r6,r6
             strb       r6,[r4,#0x18]
             cmp        r6,#0xc8
-            bls        #0x24
+            bls        #0x1a
             strb       r5,[r4,#0x18]
             """
 
-        asm += "MOVS R1,#0x1\n"
+        asm += "adds r1,r0,#0x132\n"
+        asm += "movs r0,#0x1\n"
         if gm:
             #asm += "STRB.W R{}, [R0, #0x43]\n".format(4 if reset else 5)
-            asm += "STRH.W R{}, [R0, #0x13a]\n".format(1 if reset else 5)
+            asm += "STRH R{}, [R1, #8]\n".format(0 if reset else 5)
         if dpc:
-            asm += "STRH.W R{}, [R0, #0x132]\n".format(5 if reset else 1)
+            asm += "STRH R{}, [R1, #0]\n".format(5 if reset else 0)
         addr_f = addr_table[ofs][0]
         if beep:
-            asm += "movs r0,#0x1\n"
             asm += f"bl #{addr_f}\n"
 
         post = bytes(self.ks.asm(asm)[0])
@@ -513,23 +512,21 @@ class FirmwarePatcher():
 
         if autolight:
             asm = """
-            adds       r2,r4,#0xc8
-            ldrh       r1,[r2,#0]
-            uxth       r3,r1
+            adds       r5,r4,#0xc8
+            ldrh       r1,[r5,#0]
             mov.w      r6,#0x40000000
-            strh       r3,[r6,#0x34]
+            strh       r1,[r6,#0x34]
             adds       r1,#0x10
-            sxth       r1,r1
-            strh       r1,[r2,#0]
+            strh       r1,[r5,#0]
             cmp        r1,#0x60
-            ble        #0x1c
+            ble        #0x18
             movs       r1,#0x60
-            strh       r1,[r2,#0]
+            strh       r1,[r5,#0]
             """
 
-        nofs = ofs + 0x16
+        dofs = 0x1a
         post = bytes(self.ks.asm(asm)[0])
-        self.data[nofs:nofs+len(post)] = post
+        self.data[ofs+dofs:ofs+dofs+len(post)] = post
 
         ret.append(["rl_payload", hex(ofs), pre.hex(), self.data[ofs:ofs+54].hex()])
 
@@ -543,7 +540,7 @@ class FirmwarePatcher():
         LDRB.W  R1, [R6, #{addr_t}]
         CMP     R1, #{throttle_pos}
         BCS     {addr_b}
-        B       {addr_b+0x16}
+        B       {addr_b+dofs}
         """
         sig = [None, 0x4c, 0x00, 0x25, 0x61, 0x79, 0x01, 0x29, None, 0xd0]
         ofs = FindPattern(self.data, sig) + 4
@@ -760,7 +757,7 @@ if __name__ == "__main__":
     ret = []
     ##ret.extend(vlt.error_on_pair(2))
     ##ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    ret.extend(vlt.relight_mod(reset=True, gm=True, dpc=True, beep=False, delay=False, autolight=True))
+    ret.extend(vlt.relight_mod(reset=True, gm=True, dpc=True, beep=True, delay=True, autolight=True))
     ret.extend(vlt.dpc())
     ret.extend(vlt.shutdown_time(1))
     ret.extend(vlt.motor_start_speed(3))
