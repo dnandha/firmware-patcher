@@ -72,6 +72,7 @@ def patch(data):
         gm = True if flask.request.form.get('relight_gm', '') == 'on'else False
         beep = True if flask.request.form.get('relight_beep', '') == 'on'else False
         delay = True if flask.request.form.get('relight_delay', '') == 'on'else False
+        autolight = True if flask.request.form.get('relight_auto', '') == 'on'else False
         if reset and not dpc and not gm:
             dpc = True
             gm = True
@@ -86,9 +87,15 @@ def patch(data):
             opts += ["Piep"]
         if delay:
             opts += ["Delay"]
+        if autolight:
+            opts += ["Autolight"]
         opts = " | ".join(opts)
         res.append((f"Relight Mod: {opts}",
-                    patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep, delay=delay)))
+                    patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep,
+                                        delay=delay, autolight=autolight)))
+        if autolight:
+            res.append(("Lower Light", patcher.lower_light()))
+
     elif brakelight_mod:
         res.append(("Bremslicht Mod", patcher.brakelight_mod()))
 
@@ -104,6 +111,10 @@ def patch(data):
     if pedo_unlock is not None:
         res.append(("Speed Limit Pedestrian: 9km/h", patcher.speed_limit_pedo(9)))
         res.append(("Ampere Pedestrian: 10A/15A", patcher.ampere_pedo(10000, 15000)))
+
+    ammeter = flask.request.form.get('ammeter', None)
+    if ammeter:
+        res.append(("Amperemeter", patcher.amp_meter()))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:
