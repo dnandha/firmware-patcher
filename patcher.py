@@ -281,7 +281,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_speed(self, amps):
+    def ampere_speed(self, amps, force=True):
         '''
         More current <=> more consumption
         '''
@@ -297,16 +297,18 @@ class FirmwarePatcher():
             pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
             ret.append(["amp_speed", hex(ofs), pre.hex(), post.hex()])
 
-            ofs += 4
-            pre = self.data[ofs:ofs+2]
-            post = bytes(self.ks.asm('CMP R0, R0')[0])
-            self.data[ofs:ofs+2] = post
-            ret.append(["amp_speed_nop", hex(ofs), pre.hex(), post.hex()])
+            if force:
+                ofs += 4
+                pre = self.data[ofs:ofs+2]
+                post = bytes(self.ks.asm('CMP R0, R0')[0])
+                self.data[ofs:ofs+2] = post
+                ret.append(["amp_speed_nop", hex(ofs), pre.hex(), post.hex()])
         else:
             # DRV319 / 247
-            post = bytes(self.ks.asm('CMP R0, R0')[0])
-            self.data[ofs:ofs+2] = post
-            ret.append(["amp_speed_nop", hex(ofs), pre.hex(), post.hex()])
+            if force:
+                post = bytes(self.ks.asm('CMP R0, R0')[0])
+                self.data[ofs:ofs+2] = post
+                ret.append(["amp_speed_nop", hex(ofs), pre.hex(), post.hex()])
 
             # moved up to speed limits section
             sig = [None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
@@ -316,7 +318,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_pedo(self, amps, amps_max):
+    def ampere_pedo(self, amps, amps_max, force=True):
         ret = []
 
         sig = [None, 0x8e, 0x41, 0xf6, 0x58, None, None, None, 0x01, 0xd2]
@@ -335,11 +337,12 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         ret.append(["amp_pedo", hex(ofs), pre.hex(), post.hex()])
 
-        ofs += 4
-        pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('CMP R0, R0')[0])
-        self.data[ofs:ofs+2] = post
-        ret.append(["amp_pedo_nop", hex(ofs), pre.hex(), post.hex()])
+        if force:
+            ofs += 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('CMP R0, R0')[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["amp_pedo_nop", hex(ofs), pre.hex(), post.hex()])
 
         sig = [0xa4, 0xf8, 0x22, None, 0x4f, 0xf4, 0xfa, None, None, 0xe0]
         ofs = FindPattern(self.data, sig) + 4
@@ -459,7 +462,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=True, gm=True, dpc=True, beep=True, delay=True):
+    def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=False, gm=False, dpc=False, beep=False, delay=False):
         '''
         Set / Reset with Throttle + Brake
         '''
@@ -682,27 +685,27 @@ if __name__ == "__main__":
     vlt = FirmwarePatcher(data)
 
     ret = []
-    #ret.extend(vlt.error_on_pair(2))
-    #ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    ret.extend(vlt.relight_mod(beep=False, delay=False))  # must come first
+    ##ret.extend(vlt.error_on_pair(2))
+    ##ret.extend(vlt.brakelight_mod())  # not compatible with relight
+    ret.extend(vlt.relight_mod(dpc=True, gm=True, reset=True))  # must come first
     ret.extend(vlt.dpc())
-    ret.extend(vlt.shutdown_time(2))
+    ret.extend(vlt.shutdown_time(1))
     ret.extend(vlt.motor_start_speed(3))
-    ret.extend(vlt.wheel_speed_const(mult))
-    ret.extend(vlt.speed_limit(22))
-    ret.extend(vlt.speed_limit_global(27))
+    #ret.extend(vlt.wheel_speed_const(mult))
+    #ret.extend(vlt.speed_limit(22))
+    #ret.extend(vlt.speed_limit_global(27))
     ret.extend(vlt.speed_limit_pedo(9))
     ret.extend(vlt.ampere_pedo(10000, 15000))
-    ret.extend(vlt.ampere_speed(30000))
-    ret.extend(vlt.dkc())
-    ret.extend(vlt.remove_autobrake())
-    ret.extend(vlt.remove_charging_mode())
-    ret.extend(vlt.current_raising_coeff(1000))  # do this last
-    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    ret.extend(vlt.cc_delay(2))
-    ret.extend(vlt.cc_unlock())
+    ret.extend(vlt.ampere_speed(24000))
+    ret.extend(vlt.dkc(l0=3))
+    #ret.extend(vlt.remove_autobrake())
+    #ret.extend(vlt.remove_charging_mode())
+    #ret.extend(vlt.current_raising_coeff(600))  # do this last
+    ##ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
+    ret.extend(vlt.cc_delay(3))
+    #ret.extend(vlt.cc_unlock())
     ret.extend(vlt.ltgm())
-    ret.extend(vlt.reset_mode())
+    ##ret.extend(vlt.reset_mode())
     for desc, ofs, pre, post in ret:
         print(ofs, pre, post, desc)
 
