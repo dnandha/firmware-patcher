@@ -316,7 +316,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_pedo(self, amps, amps_max):
+    def ampere_pedo(self, amps, amps_max, force=False):
         ret = []
 
         sig = [None, 0x8e, 0x41, 0xf6, 0x58, None, None, None, 0x01, 0xd2]
@@ -335,11 +335,12 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         ret.append(["amp_pedo", hex(ofs), pre.hex(), post.hex()])
 
-        ofs += 4
-        pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('CMP R0, R0')[0])
-        self.data[ofs:ofs+2] = post
-        ret.append(["amp_pedo_nop", hex(ofs), pre.hex(), post.hex()])
+        if force:
+            ofs += 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('CMP R0, R0')[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["amp_pedo_nop", hex(ofs), pre.hex(), post.hex()])
 
         sig = [0xa4, 0xf8, 0x22, None, 0x4f, 0xf4, 0xfa, None, None, 0xe0]
         ofs = FindPattern(self.data, sig) + 4
@@ -507,8 +508,11 @@ class FirmwarePatcher():
             asm += "movs r0,#0x1\n"
             asm += f"bl #{addr_f}\n"
 
+        post = bytes(self.ks.asm(asm)[0])
+        self.data[ofs:ofs+len(post)] = post
+
         if autolight:
-            asm += """
+            asm = """
             adds       r2,r4,#0xc8
             ldrh       r1,[r2,#0]
             uxth       r3,r1
@@ -518,15 +522,15 @@ class FirmwarePatcher():
             sxth       r1,r1
             strh       r1,[r2,#0]
             cmp        r1,#0x60
-            ble        #0x32
+            ble        #0x1c
             movs       r1,#0x60
             strh       r1,[r2,#0]
-            b          #0x32
             """
 
-
+        nofs = ofs + 0x16
         post = bytes(self.ks.asm(asm)[0])
-        self.data[ofs:ofs+len(post)] = post
+        self.data[nofs:nofs+len(post)] = post
+
         ret.append(["rl_payload", hex(ofs), pre.hex(), self.data[ofs:ofs+54].hex()])
 
         addr_b, addr_l, addr_t = addr_table[ofs][1:4]
@@ -539,7 +543,7 @@ class FirmwarePatcher():
         LDRB.W  R1, [R6, #{addr_t}]
         CMP     R1, #{throttle_pos}
         BCS     {addr_b}
-        B       {addr_b+0x0a}
+        B       {addr_b+0x16}
         """
         sig = [None, 0x4c, 0x00, 0x25, 0x61, 0x79, 0x01, 0x29, None, 0xd0]
         ofs = FindPattern(self.data, sig) + 4
@@ -548,6 +552,60 @@ class FirmwarePatcher():
         assert len(post) == 20, len(post)
         self.data[ofs:ofs+20] = post
         ret.append(["rl_hook", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def lower_light(self):
+        '''
+        Lowers light intensity
+        '''
+        ret = []
+
+        sig = [0x4f, 0xf0, 0x80, 0x40, 0x04, 0xf0, None, 0xfc, 0x20, 0x88]
+        ofs = FindPattern(self.data, sig) + 0xa
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm("adds r0,#1")[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["lower_light_step", hex(ofs), pre.hex(), post.hex()])
+
+        ofs += 6
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm("cmp r0,#5")[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["lower_light_cmp", hex(ofs), pre.hex(), post.hex()])
+
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm("movs r0,#5")[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["lower_light_max", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def amp_meter(self):
+        '''
+        Replace dashboard battery bars with amp meter
+        '''
+        ret = []
+
+        ofs1, ofs2 = 0x9c, 0x208
+        asm = """
+        ldr r1,[pc,#{}]
+        ldr.w r0,[r1,#{}]
+        asrs r0,r0,#8
+        bmi #0xc
+        """
+
+        sig = [None, 0x79, 0x27, 0x49, 0x10, 0xb9, 0xfd, 0xf7, None, 0xfd, 0x48, 0x70]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+0xa]
+
+        if pre[0] == 0x80:  # 247
+            ofs1 += 4
+            ofs2 += 4
+        post = bytes(self.ks.asm(asm.format(ofs1, ofs2))[0])
+        self.data[ofs:ofs+0xa] = post
+        ret.append(["amp_meter", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -702,25 +760,27 @@ if __name__ == "__main__":
     ret = []
     ##ret.extend(vlt.error_on_pair(2))
     ##ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    ret.extend(vlt.relight_mod(reset=False, gm=False, dpc=False, beep=False, delay=False, autolight=False))  # must come first
-    #ret.extend(vlt.dpc())
-    #ret.extend(vlt.shutdown_time(2))
-    #ret.extend(vlt.motor_start_speed(3))
+    ret.extend(vlt.relight_mod(reset=True, gm=True, dpc=True, beep=False, delay=False, autolight=True))
+    ret.extend(vlt.dpc())
+    ret.extend(vlt.shutdown_time(1))
+    ret.extend(vlt.motor_start_speed(3))
     #ret.extend(vlt.wheel_speed_const(mult))
     #ret.extend(vlt.speed_limit(22))
     #ret.extend(vlt.speed_limit_global(27))
-    #ret.extend(vlt.speed_limit_pedo(9))
-    #ret.extend(vlt.ampere_pedo(10000, 15000))
-    #ret.extend(vlt.ampere_speed(30000))
-    #ret.extend(vlt.dkc())
+    ret.extend(vlt.speed_limit_pedo(9))
+    ret.extend(vlt.ampere_pedo(10000, 15000))
+    #ret.extend(vlt.ampere_speed(24000))
+    ret.extend(vlt.dkc(l0=3))
     #ret.extend(vlt.remove_autobrake())
     #ret.extend(vlt.remove_charging_mode())
     #ret.extend(vlt.current_raising_coeff(1000))  # do this last
     ##ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
     #ret.extend(vlt.cc_delay(2))
     #ret.extend(vlt.cc_unlock())
-    #ret.extend(vlt.ltgm())
-    #ret.extend(vlt.reset_mode())
+    ret.extend(vlt.ltgm())
+    ret.extend(vlt.lower_light())
+    ret.extend(vlt.amp_meter())
+    ##ret.extend(vlt.reset_mode())
     for desc, ofs, pre, post in ret:
         print(ofs, pre, post, desc)
 
