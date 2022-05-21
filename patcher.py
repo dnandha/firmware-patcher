@@ -585,10 +585,18 @@ class FirmwarePatcher():
         '''
         ret = []
 
-        ofs1, ofs2 = 0x9c, 0x208
+        # set point
+        #ofs1, ofs2 = 0x9c, 0x208
+        #asm = """
+        #ldr r1,[pc,#{}]
+        #ldr.w r0,[r1,#{}]
+        #asrs r0,r0,#8
+        #bmi #0xc
+        #"""
+
         asm = """
         ldr r1,[pc,#{}]
-        ldr.w r0,[r1,#{}]
+        ldr r0,[r{},#{}]
         asrs r0,r0,#8
         bmi #0xc
         """
@@ -598,9 +606,10 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+0xa]
 
         if pre[0] == 0x80:  # 247
-            ofs1 += 4
-            ofs2 += 4
-        post = bytes(self.ks.asm(asm.format(ofs1, ofs2))[0])
+            reg, ofs1, ofs2 = 0, 0xa0, -0x30
+        else:  # 319
+            reg, ofs1, ofs2 = 5, 0x9c, -0x10
+        post = bytes(self.ks.asm(asm.format(ofs1, reg, ofs2))[0])
         self.data[ofs:ofs+0xa] = post
         ret.append(["amp_meter", hex(ofs), pre.hex(), post.hex()])
 
