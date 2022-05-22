@@ -114,7 +114,9 @@ def patch(data):
 
     ammeter = flask.request.form.get('ammeter', None)
     if ammeter:
-        res.append(("Amperemeter", patcher.amp_meter()))
+        real = flask.request.form.get('ammeter_real', None)
+        shift = flask.request.form.get('ammeter_shift', None)
+        res.append(("Amperemeter", patcher.amp_meter(real=real, shift=9 if shift else 8)))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake:

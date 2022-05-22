@@ -297,14 +297,20 @@
     <div class="card-group">
         <div class="card text-center m-1 border-danger custom-dev" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="ammeter">
+                <input class="form-check-input" type="checkbox" name="ammeter" onchange="CheckForm('ammeter_real', this);">
                 <label class="form-check-label"><b>Amperemeter</b></label>
             </div>
             <div class="card-body">
-                <div class="card-text">
+                <div class="card-title">
                     Ersetzt die Batterieanzeige durch eine Stromanzeige (Amperemeter).<br/>
-		    Keine Balken := kein Stromverbrauch, volle Balken := Stromverbrauch größer 25000mA.<br/>
-		    <br/>
+		    Keine Balken := kein Stromverbrauch, volle Balken := Stromverbrauch 25A.<br/>
+                </div>
+                <div class="card-text" name="ammeter">
+                    <input class="form-check-input" type="checkbox" name="ammeter_real">
+                    <label class="form-check-label"><b>Strom-Istwert statt Strom-Sollwert</b></label><br/>
+                    <input class="form-check-input" type="checkbox" name="ammeter_shift">
+                    <label class="form-check-label"><b>Wertebereich verdoppeln (100% := 50A)</b></label><br/>
+
 		    Der Akkustand lässt sich weiterhin per App auslesen.<br/>
 		    <span style="color: red;">&#9888;&nbsp;Beim Laden wird auf dem Dashboard dauerhaft eine "0" angezeigt, das Laden funktioniert aber ganz normal.</span>
                 </div>
@@ -414,7 +420,10 @@
         "DKC_L2": "dkc_l2",
 
         "PEDO_UNLOCK": "pedo_unlock",
+
         "AMMETER": "ammeter",
+        "AMMETER_REAL": "ammeter_real",
+        "AMMETER_SHIFT": "ammeter_shift",
     };
 
     var formValues = Object.values(forms);
@@ -596,7 +605,10 @@
         ChangeForm(forms.DKC_L2, "20", null);
 
         ChangeForm(forms.PEDO_UNLOCK, false);
+
         ChangeForm(forms.AMMETER, false);
+        ChangeForm(forms.AMMETER_REAL, false);
+        ChangeForm(forms.AMMETER_SHIFT, false);
     }
 </script>
 
