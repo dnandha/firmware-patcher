@@ -7,10 +7,10 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 ## Supported DRVs
 * DRV236
 * DRV247
-* DRV248 (partially)
+* DRV248
 * DRV309
 * DRV319
-* DRV321 (partially)
+* DRV321
 
 ## Available Mods
 * Brakelight

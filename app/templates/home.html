@@ -74,7 +74,7 @@
             <div class="card-body">
                 <div class="card-text">
                     Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.
-                    Es Blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
+                    Es blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
                 </div>
             </div>
         </div>
@@ -132,9 +132,9 @@
 
             <div class="card-body">
                 Lite Touch GM gibt direkte Kontrolle über die Regionskennung in der Firmware.
-				LTGM kann per App ein und ausgeschaltet werden.
-				Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
-				Bei Neustart bzw. Ausschalten des Rollers wird LTGM ebenfalls zurückgesetzt.
+		LTGM kann per App ein und ausgeschaltet werden.
+		Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
+		Bei Neustart bzw. Ausschalten des Rollers wird LTGM ebenfalls zurückgesetzt.
             </div>
         </div>
 
@@ -238,7 +238,7 @@
 		</div>
             </div>
         </div>
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1 border-danger custom-dev" hidden>
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="relight_mod" onchange="CheckForm('relight_dpc', this);">
                 <label class="form-check-label"><b>ReLight Mod</b></label>
@@ -259,6 +259,8 @@
                     <label class="form-check-label"><b>Piep</b></label><br/>
                     <input class="form-check-input" type="checkbox" name="relight_delay">
                     <label class="form-check-label"><b>1s Verzögerung</b></label><br/>
+                    <input class="form-check-input" type="checkbox" name="relight_auto">
+                    <label class="form-check-label"><b>Auto Bremslicht</b></label><br/>
                 </div>
             </div>
         </div>
@@ -293,6 +295,21 @@
         </div>
     </div>
     <div class="card-group">
+        <div class="card text-center m-1 border-danger custom-dev" hidden>
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="ammeter">
+                <label class="form-check-label"><b>Amperemeter</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-text">
+                    Ersetzt die Batterieanzeige durch eine Stromanzeige (Amperemeter).<br/>
+		    Keine Balken := kein Stromverbrauch, volle Balken := Stromverbrauch größer 25000mA.<br/>
+		    <br/>
+		    Der Akkustand lässt sich weiterhin per App auslesen.<br/>
+		    <span style="color: red;">&#9888;&nbsp;Beim Laden wird auf dem Dashboard dauerhaft eine "0" angezeigt, das Laden funktioniert aber ganz normal.</span>
+                </div>
+            </div>
+        </div>
         <div class="card text-center m-1 border-warning custom" hidden>
             <div class="card-header">
                 <input class="form-check-input" name="moreamps_cb" type="checkbox" onchange="CheckForm('moreamps', this);">
@@ -317,8 +334,8 @@
                 </div>
 
                 Der Nennstrom / DC Phasenstrom für den Speed Modus wird erhöht. Standard sind 20A beim 1S und 25A beim Pro2.<br> 
-				Ermöglicht ein stabileres Halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser".<br>
-				<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite und ab circa 10% Akku wird die Endgeschwindigkeit stark gedrosselt.</span>
+		Ermöglicht ein stabileres Halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser".<br>
+		<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite und ab circa 10% Akku wird die Endgeschwindigkeit stark gedrosselt.</span>
             </div>
         </div>
     </div>
@@ -389,6 +406,7 @@
         "RELIGHT_DPC": "relight_dpc",
         "RELIGHT_BEEP": "relight_beep",
         "RELIGHT_DELAY": "relight_delay",
+        "RELIGHT_AUTO": "relight_auto",
 
         "DKC": "dkc",
         "DKC_L0": "dkc_l0",
@@ -396,6 +414,7 @@
         "DKC_L2": "dkc_l2",
 
         "PEDO_UNLOCK": "pedo_unlock",
+        "AMMETER": "ammeter",
     };
 
     var formValues = Object.values(forms);
@@ -569,6 +588,7 @@
         ChangeForm(forms.RELIGHT_DPC, false);
         ChangeForm(forms.RELIGHT_BEEP, false);
         ChangeForm(forms.RELIGHT_DELAY, false);
+        ChangeForm(forms.RELIGHT_AUTO, false);
 
         ChangeForm(forms.DKC, false);
         ChangeForm(forms.DKC_L0, "6", null);
@@ -576,6 +596,7 @@
         ChangeForm(forms.DKC_L2, "20", null);
 
         ChangeForm(forms.PEDO_UNLOCK, false);
+        ChangeForm(forms.AMMETER, false);
     }
 </script>
 

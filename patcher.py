@@ -17,6 +17,7 @@
 # Based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
 
 #!/usr/bin/python3
+import sys
 from binascii import hexlify, unhexlify
 import struct
 import keystone
@@ -318,7 +319,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_pedo(self, amps, amps_max, force=True):
+    def ampere_pedo(self, amps, amps_max, force=False):
         ret = []
 
         sig = [None, 0x8e, 0x41, 0xf6, 0x58, None, None, None, 0x01, 0xd2]
@@ -438,7 +439,8 @@ class FirmwarePatcher():
                 except SignatureException:
                     break
 
-        assert len(ret) in [11, 12], len(ret)
+        if not len(ret) in [11, 12]:
+            raise SignatureException('Pattern not found')
 
         return ret
 
@@ -462,7 +464,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=False, gm=False, dpc=False, beep=False, delay=False):
+    def relight_mod(self, throttle_pos=0x9c, brake_pos=0x3c, reset=False, gm=False, dpc=False, beep=False, delay=False, autolight=False):
         '''
         Set / Reset with Throttle + Brake
         '''
@@ -470,7 +472,9 @@ class FirmwarePatcher():
 
         addr_table = {
             # ofs: [beep,  bcs,  ldr,  thrtl]
+            0x666: [0x332, 0x3c, 0x78, 0x274],  # 321
             0x662: [0x332, 0x3c, 0x78, 0x274],  # 319
+            0x6e2: [0x332, 0x3c, 0x78, 0x278],  # 248
             0x6de: [0x332, 0x3c, 0x78, 0x278],  # 247
             0x732: [0x39e, 0x34, 0x80, 0x278],  # 304
             0x73a: [0x38e, 0x3c, 0x78, 0x278],  # 236
@@ -489,42 +493,67 @@ class FirmwarePatcher():
         # and fill it with live
         asm = ""
         if delay:
-            asm = """
+            asm += """
             ldrb       r6,[r4,#0x18]
             adds       r6,r6,#0x1
-            uxtb       r6,r6
             strb       r6,[r4,#0x18]
             cmp        r6,#0xc8
-            bls        #0x24
+            bls        #0x1a
             strb       r5,[r4,#0x18]
             """
 
-        asm += "MOVS R4,#0x1\n"
+        asm += "adds r1,r0,#0x132\n"
+        asm += "movs r0,#0x1\n"
         if gm:
-            #asm += "STRB.W R{}, [R0, #0x43]\n".format(4 if reset else 5)
-            asm += "STRH.W R{}, [R0, #0x13a]\n".format(4 if reset else 5)
+            asm += "strh r{}, [r1, #8]\n".format(0 if reset else 5)
         if dpc:
-            asm += "STRH.W R{}, [R0, #0x132]\n".format(5 if reset else 4)
+            asm += "strh r{}, [r1, #0]\n".format(5 if reset else 0)
         addr_f = addr_table[ofs][0]
         if beep:
-            asm += "movs r0,#0x1\n"
             asm += f"bl #{addr_f}\n"
 
         post = bytes(self.ks.asm(asm)[0])
         self.data[ofs:ofs+len(post)] = post
+
+        if autolight:
+            if ofs < 0x700:
+                # new drvs
+                asm = """
+                adds       r5,r4,#0xc8
+                ldrh       r1,[r5,#0]
+                mov.w      r6,#0x40000000
+                strh       r1,[r6,#0x34]
+                adds       r1,#0x10
+                strh       r1,[r5,#0]
+                cmp        r1,#0x60
+                ble        #0x18
+                movs       r1,#0x60
+                strh       r1,[r5,#0]
+                """
+            else:
+                asm = """
+                movw       r1,#15000
+                mov.w      r6,#0x40000000
+                strh       r1,[r6,#0x34]
+                """
+
+        dofs = 0x1a
+        post = bytes(self.ks.asm(asm)[0])
+        self.data[ofs+dofs:ofs+dofs+len(post)] = post
+
         ret.append(["rl_payload", hex(ofs), pre.hex(), self.data[ofs:ofs+54].hex()])
 
         addr_b, addr_l, addr_t = addr_table[ofs][1:4]
         # main mod
         asm = f"""
         LDR     R6, {addr_l}
+        LDRB.W  R1, [R6, #{addr_t+1}]
+        CMP     R1, #{brake_pos}
+        BCC     0x14
         LDRB.W  R1, [R6, #{addr_t}]
         CMP     R1, #{throttle_pos}
-        BCC     0x14
-        LDRB.W  R6, [R6, #{addr_t+1}]
-        CMP     R6, #{brake_pos}
         BCS     {addr_b}
-        NOP
+        B       {addr_b+dofs}
         """
         sig = [None, 0x4c, 0x00, 0x25, 0x61, 0x79, 0x01, 0x29, None, 0xd0]
         ofs = FindPattern(self.data, sig) + 4
@@ -533,6 +562,89 @@ class FirmwarePatcher():
         assert len(post) == 20, len(post)
         self.data[ofs:ofs+20] = post
         ret.append(["rl_hook", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def lower_light(self):
+        '''
+        Lowers light intensity
+        '''
+        ret = []
+
+        try:
+            sig = [0x4f, 0xf0, 0x80, 0x40, 0x04, 0xf0, None, 0xfc, 0x20, 0x88]
+            ofs = FindPattern(self.data, sig) + 0xa
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm("adds r0,#1")[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lower_light_step", hex(ofs), pre.hex(), post.hex()])
+
+            ofs += 6
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm("cmp r0,#5")[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lower_light_cmp", hex(ofs), pre.hex(), post.hex()])
+
+            ofs += 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm("movs r0,#5")[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lower_light_max", hex(ofs), pre.hex(), post.hex()])
+        except SignatureException:
+            # 304 / 236
+            asm = """
+            movw r1,#5000
+            mov.w r0,#0x40000000
+            strh r1,[r0,#0x34]
+            bx lr
+            """
+            sig = [0x42, 0xf2, 0x10, 0x71, 0x88, 0x06, 0x04, 0xf0, None, 0xbd]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+12]
+            post = bytes(self.ks.asm(asm)[0])
+            self.data[ofs:ofs+12] = post
+            ret.append(["lower_light", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def amp_meter(self, real=True, shift=8):
+        '''
+        Replace dashboard battery bars with amp meter
+        '''
+        ret = []
+
+        if real:
+            asm = """
+            ldr r1,[pc,#{}]
+            ldr r0,[r{},#{}]
+            asrs r0,r0,#{}
+            bmi #0xc
+            """
+            addr_table = {
+                #pre[0] ofs1 reg ofs2
+                0x80: [0xa0, 0, -0x30],  # 247
+                0xa8: [0x9c, 5, -0x10],  # 319
+            }
+        else:
+            # set point
+            asm = """
+            ldr r1,[pc,#{}]
+            ldr.w r0,[r1,#{}]
+            asrs r0,r0,#{}
+            bmi #0xc
+            """
+            addr_table = {
+                #pre[0] ofs1 ofs2
+                0x80: [0xa0, 0x20c],  # 247
+                0xa8: [0x9c, 0x208],  # 319
+            }
+
+        sig = [None, 0x79, 0x27, 0x49, 0x10, 0xb9, 0xfd, 0xf7, None, None, 0x48, 0x70]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+0xa]
+        post = bytes(self.ks.asm(asm.format(*addr_table[pre[0]], shift))[0])
+        self.data[ofs:ofs+0xa] = post
+        ret.append(["amp_meter", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -672,9 +784,8 @@ def eprint(*args, **kwargs):
 
 
 if __name__ == "__main__":
-    import sys
-    if len(sys.argv) != 3:
-        eprint("Usage: {0} <orig-firmware.bin> <target.bin>".format(sys.argv[0]))
+    if len(sys.argv) != 4:
+        eprint("Usage: {0} <orig-firmware.bin> <target.bin> [patches]".format(sys.argv[0]))
         exit(1)
 
     with open(sys.argv[1], 'rb') as fp:
@@ -684,30 +795,43 @@ if __name__ == "__main__":
 
     vlt = FirmwarePatcher(data)
 
-    ret = []
-    ##ret.extend(vlt.error_on_pair(2))
-    ##ret.extend(vlt.brakelight_mod())  # not compatible with relight
-    ret.extend(vlt.relight_mod(dpc=True, gm=True, reset=True))  # must come first
-    ret.extend(vlt.dpc())
-    ret.extend(vlt.shutdown_time(1))
-    ret.extend(vlt.motor_start_speed(3))
-    #ret.extend(vlt.wheel_speed_const(mult))
-    #ret.extend(vlt.speed_limit(22))
-    #ret.extend(vlt.speed_limit_global(27))
-    ret.extend(vlt.speed_limit_pedo(9))
-    ret.extend(vlt.ampere_pedo(10000, 15000))
-    ret.extend(vlt.ampere_speed(24000))
-    ret.extend(vlt.dkc(l0=3))
-    #ret.extend(vlt.remove_autobrake())
-    #ret.extend(vlt.remove_charging_mode())
-    #ret.extend(vlt.current_raising_coeff(600))  # do this last
-    ##ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
-    ret.extend(vlt.cc_delay(3))
-    #ret.extend(vlt.cc_unlock())
-    ret.extend(vlt.ltgm())
-    ##ret.extend(vlt.reset_mode())
-    for desc, ofs, pre, post in ret:
-        print(ofs, pre, post, desc)
+    #ret.extend(vlt.error_on_pair(2))
+    #ret.extend(vlt.brakelight_mod())  # not compatible with relight
+    #ret.extend(vlt.speedlimit_mod())  # not compatible with ltgm
+    #ret.extend(vlt.reset_mode())
+
+    patches = {
+        'rlt':  lambda: vlt.relight_mod(reset=True, gm=True,
+                                        dpc=True, beep=True,
+                                        delay=True, autolight=True),
+        'dpc':  lambda: vlt.dpc(),
+        'sdt':  lambda: vlt.shutdown_time(1),
+        'ss':   lambda: vlt.motor_start_speed(3),
+        'wsc':  lambda: vlt.wheel_speed_const(mult),
+        'sl':   lambda: vlt.speed_limit(22),
+        'slg':  lambda: vlt.speed_limit_global(27),
+        'slp':  lambda: vlt.speed_limit_pedo(9),
+        'ap':   lambda: vlt.ampere_pedo(10000, 15000),
+        'as':   lambda: vlt.ampere_speed(24000),
+        'dkc':  lambda: vlt.dkc(l0=3),
+        'ra':   lambda: vlt.remove_autobrake(),
+        'rcm':  lambda: vlt.remove_charging_mode(),
+        'crc':  lambda: vlt.current_raising_coeff(1000),
+        'ccd':  lambda: vlt.cc_delay(2),
+        'ccu':  lambda: vlt.cc_unlock(),
+        'ltg':  lambda: vlt.ltgm(),
+        'll':   lambda: vlt.lower_light(),
+        'am':   lambda: vlt.amp_meter(real=False, shift=8)
+    }
+
+    for k in patches:
+        if k not in sys.argv[3]:
+            continue
+        try:
+            for ofs, pre, post, desc in patches[k]():
+                print(ofs, pre, post, desc)
+        except SignatureException:
+            print("sigerr", k)
 
     with open(sys.argv[2], 'wb') as fp:
         fp.write(vlt.data)
