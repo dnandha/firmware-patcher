@@ -33,6 +33,7 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * Amperemeter
 * German brake
 * Lever resolution (gas/brake)
+* Brake start speed
 
 ## Instructions
 1. `FLASK_APP=app/__init__.py`

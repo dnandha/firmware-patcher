@@ -838,6 +838,14 @@ class FirmwarePatcher():
 
         return ret
 
+    def brake_start_speed(self, kmh):
+        '''
+        '''
+        val = struct.pack('<H', round(kmh * 345))
+        sig = bytes.fromhex("026840f20b439a42")
+        ofs = FindPattern(self.data, sig) + 2
+        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        return [("bss", hex(ofs), pre.hex(), post.hex())]
 
 
 def eprint(*args, **kwargs):
@@ -886,6 +894,7 @@ if __name__ == "__main__":
         'gb':   lambda: vlt.german_brake(),
         'lrb':   lambda: vlt.lever_resolution(brake=0x9c),
         'lrg':   lambda: vlt.lever_resolution(gas=0x9c),
+        'bss':   lambda: vlt.brake_start_speed(1.2),
     }
 
     for k in patches:
