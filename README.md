@@ -31,6 +31,8 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * Pedestrian unlock
 * Lower light
 * Amperemeter
+* German brake
+* Lever resolution (gas/brake)
 
 ## Instructions
 1. `FLASK_APP=app/__init__.py`

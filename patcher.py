@@ -479,6 +479,7 @@ class FirmwarePatcher():
             0x732: [0x39e, 0x34, 0x80, 0x278],  # 304
             0x73a: [0x38e, 0x3c, 0x78, 0x278],  # 236
         }
+        dofs = 0x1a
 
         sig = [0x90, 0xf8, None, None, None, 0x28, None, 0xd1]
         ofs = FindPattern(self.data, sig)
@@ -537,9 +538,8 @@ class FirmwarePatcher():
                 strh       r1,[r6,#0x34]
                 """
 
-        dofs = 0x1a
-        post = bytes(self.ks.asm(asm)[0])
-        self.data[ofs+dofs:ofs+dofs+len(post)] = post
+            post = bytes(self.ks.asm(asm)[0])
+            self.data[ofs+dofs:ofs+dofs+len(post)] = post
 
         ret.append(["rl_payload", hex(ofs), pre.hex(), self.data[ofs:ofs+54].hex()])
 
@@ -741,6 +741,7 @@ class FirmwarePatcher():
 
     def dkc(self, l0=6, l1=12, l2=20):
         '''
+        Author: VoodooShamane
         '''
         ret = []
 
@@ -778,6 +779,66 @@ class FirmwarePatcher():
 
         return ret
 
+    def german_brake(self):
+        '''
+        '''
+        ret = []
+
+        sig = bytes.fromhex("52b12b4ab2f86020")
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["german_brake", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def lever_resolution(self, gas=0x7d, brake=0x73):
+        ret = []
+
+        if brake != 0x73:
+            sig = bytes.fromhex("732800dd7320")
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('cmp r0,#{}'.format(brake))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lever_res_brake1", hex(ofs), pre.hex(), post.hex()])
+
+            ofs += 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('movs r0,#{}'.format(brake))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lever_res_brake2", hex(ofs), pre.hex(), post.hex()])
+
+            ofs += 8
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('movs r2,#{}'.format(brake))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lever_res_brake3", hex(ofs), pre.hex(), post.hex()])
+
+        if gas != 0x7d:
+            sig = bytes.fromhex("7d2800dd7d20")
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('cmp r0,#{}'.format(gas))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lever_res_gas1", hex(ofs), pre.hex(), post.hex()])
+
+            ofs += 4
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('movs r0,#{}'.format(gas))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lever_res_gas2", hex(ofs), pre.hex(), post.hex()])
+
+            ofs += 6
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('movs r1,#{}'.format(gas))[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["lever_res_gas3", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -802,8 +863,8 @@ if __name__ == "__main__":
 
     patches = {
         'rlt':  lambda: vlt.relight_mod(reset=True, gm=True,
-                                        dpc=True, beep=True,
-                                        delay=True, autolight=True),
+                                        dpc=True, beep=False,
+                                        delay=False, autolight=False),
         'dpc':  lambda: vlt.dpc(),
         'sdt':  lambda: vlt.shutdown_time(1),
         'ss':   lambda: vlt.motor_start_speed(3),
@@ -821,7 +882,10 @@ if __name__ == "__main__":
         'ccu':  lambda: vlt.cc_unlock(),
         'ltg':  lambda: vlt.ltgm(),
         'll':   lambda: vlt.lower_light(),
-        'am':   lambda: vlt.amp_meter(real=False, shift=8)
+        'am':   lambda: vlt.amp_meter(real=True, shift=9),
+        'gb':   lambda: vlt.german_brake(),
+        'lrb':   lambda: vlt.lever_resolution(brake=0x9c),
+        'lrg':   lambda: vlt.lever_resolution(gas=0x9c),
     }
 
     for k in patches:
