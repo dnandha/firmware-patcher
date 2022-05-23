@@ -890,15 +890,15 @@ if __name__ == "__main__":
         'ccu':  lambda: vlt.cc_unlock(),
         'ltg':  lambda: vlt.ltgm(),
         'll':   lambda: vlt.lower_light(),
-        'am':   lambda: vlt.amp_meter(real=True, shift=9),
+        'am':   lambda: vlt.amp_meter(real=True, shift=8),
         'gb':   lambda: vlt.german_brake(),
-        'lrb':   lambda: vlt.lever_resolution(brake=0x9c),
-        'lrg':   lambda: vlt.lever_resolution(gas=0x9c),
-        'bss':   lambda: vlt.brake_start_speed(1.2),
+        'lrb':  lambda: vlt.lever_resolution(brake=0x9c),
+        'lrg':  lambda: vlt.lever_resolution(gas=0x9c),
+        'bss':  lambda: vlt.brake_start_speed(1.2),
     }
 
     for k in patches:
-        if k not in sys.argv[3]:
+        if k not in sys.argv[3].split(","):
             continue
         try:
             for ofs, pre, post, desc in patches[k]():
