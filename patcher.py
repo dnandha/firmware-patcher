@@ -17,7 +17,6 @@
 # Based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
 
 #!/usr/bin/python3
-import sys
 from binascii import hexlify, unhexlify
 import struct
 import keystone
@@ -709,7 +708,42 @@ class FirmwarePatcher():
 
         return ret
 
-    def cc_unlock(self):
+    def rf_de_brake(self):
+        '''
+        '''
+        ret = []
+
+        sig = bytes.fromhex("52b12b4ab2f86020")
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["rf_de_brake", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def rf_bl_unlock(self):
+        '''
+        '''
+        ret = []
+
+        sig = [0x90, 0xf8, 0x43, 0x10, None, 0xb3, 0x90, 0xf8]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+2]
+        addr = 0
+        if pre[0] == 0x19:
+            addr = 0x4a
+        elif pre[0] == 0x39:
+            addr = 0x52
+        else:
+            raise Exception("invalid firmware file")
+        post = bytes(self.ks.asm('b #{}'.format(addr))[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["rf_bl_unlock", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def rf_cc_unlock(self):
         '''
         '''
         ret = []
@@ -719,7 +753,7 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
-        ret.append(["cc_unlock", hex(ofs), pre.hex(), post.hex()])
+        ret.append(["rf_cc_unlock", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -779,21 +813,9 @@ class FirmwarePatcher():
 
         return ret
 
-    def german_brake(self):
-        '''
-        '''
-        ret = []
-
-        sig = bytes.fromhex("52b12b4ab2f86020")
-        ofs = FindPattern(self.data, sig)
-        pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('NOP')[0])
-        self.data[ofs:ofs+2] = post
-        ret.append(["german_brake", hex(ofs), pre.hex(), post.hex()])
-
-        return ret
-
     def lever_resolution(self, gas=0x7d, brake=0x73):
+        '''
+        '''
         ret = []
 
         if brake != 0x73:
@@ -816,30 +838,32 @@ class FirmwarePatcher():
             self.data[ofs:ofs+2] = post
             ret.append(["lever_res_brake3", hex(ofs), pre.hex(), post.hex()])
 
-        if gas != 0x7d:
-            sig = bytes.fromhex("7d2800dd7d20")
-            ofs = FindPattern(self.data, sig)
-            pre = self.data[ofs:ofs+2]
-            post = bytes(self.ks.asm('cmp r0,#{}'.format(gas))[0])
-            self.data[ofs:ofs+2] = post
-            ret.append(["lever_res_gas1", hex(ofs), pre.hex(), post.hex()])
+        # shouldn't be changed
+        #if gas != 0x7d:
+        #    sig = bytes.fromhex("7d2800dd7d20")
+        #    ofs = FindPattern(self.data, sig)
+        #    pre = self.data[ofs:ofs+2]
+        #    post = bytes(self.ks.asm('cmp r0,#{}'.format(gas))[0])
+        #    self.data[ofs:ofs+2] = post
+        #    ret.append(["lever_res_gas1", hex(ofs), pre.hex(), post.hex()])
 
-            ofs += 4
-            pre = self.data[ofs:ofs+2]
-            post = bytes(self.ks.asm('movs r0,#{}'.format(gas))[0])
-            self.data[ofs:ofs+2] = post
-            ret.append(["lever_res_gas2", hex(ofs), pre.hex(), post.hex()])
+        #    ofs += 4
+        #    pre = self.data[ofs:ofs+2]
+        #    post = bytes(self.ks.asm('movs r0,#{}'.format(gas))[0])
+        #    self.data[ofs:ofs+2] = post
+        #    ret.append(["lever_res_gas2", hex(ofs), pre.hex(), post.hex()])
 
-            ofs += 6
-            pre = self.data[ofs:ofs+2]
-            post = bytes(self.ks.asm('movs r1,#{}'.format(gas))[0])
-            self.data[ofs:ofs+2] = post
-            ret.append(["lever_res_gas3", hex(ofs), pre.hex(), post.hex()])
+        #    ofs += 6
+        #    pre = self.data[ofs:ofs+2]
+        #    post = bytes(self.ks.asm('movs r1,#{}'.format(gas))[0])
+        #    self.data[ofs:ofs+2] = post
+        #    ret.append(["lever_res_gas3", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
     def brake_start_speed(self, kmh):
         '''
+        WIP: brake stutter on low speeds
         '''
         val = struct.pack('<H', round(kmh * 345))
         sig = bytes.fromhex("026840f20b439a42")
@@ -848,16 +872,20 @@ class FirmwarePatcher():
         return [("bss", hex(ofs), pre.hex(), post.hex())]
 
 
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
-
-
 if __name__ == "__main__":
+    import sys
+    from zippy.zippy import Zippy
+
+    def eprint(*args, **kwargs):
+        print(*args, file=sys.stderr, **kwargs)
+
     if len(sys.argv) != 4:
         eprint("Usage: {0} <orig-firmware.bin> <target.bin> [patches]".format(sys.argv[0]))
         exit(1)
 
-    with open(sys.argv[1], 'rb') as fp:
+    infile, outfile, args = sys.argv[1], sys.argv[2], sys.argv[3]
+
+    with open(infile, 'rb') as fp:
         data = fp.read()
 
     mult = 10./8.5  # new while size / old wheel size
@@ -887,18 +915,19 @@ if __name__ == "__main__":
         'rcm':  lambda: vlt.remove_charging_mode(),
         'crc':  lambda: vlt.current_raising_coeff(1000),
         'ccd':  lambda: vlt.cc_delay(2),
-        'ccu':  lambda: vlt.cc_unlock(),
         'ltg':  lambda: vlt.ltgm(),
         'll':   lambda: vlt.lower_light(),
         'am':   lambda: vlt.amp_meter(real=True, shift=8),
-        'gb':   lambda: vlt.german_brake(),
         'lrb':  lambda: vlt.lever_resolution(brake=0x9c),
-        'lrg':  lambda: vlt.lever_resolution(gas=0x9c),
-        'bss':  lambda: vlt.brake_start_speed(1.2),
+        #'lrg':  lambda: vlt.lever_resolution(gas=0x9c),
+        #'bss':  lambda: vlt.brake_start_speed(2.0),
+        'rcc':  lambda: vlt.rf_cc_unlock(),
+        'rbl':  lambda: vlt.rf_bl_unlock(),
+        'rdb':  lambda: vlt.rf_de_brake(),
     }
 
     for k in patches:
-        if k not in sys.argv[3].split(","):
+        if k not in args.split(","):
             continue
         try:
             for ofs, pre, post, desc in patches[k]():
@@ -906,5 +935,8 @@ if __name__ == "__main__":
         except SignatureException:
             print("sigerr", k)
 
-    with open(sys.argv[2], 'wb') as fp:
-        fp.write(vlt.data)
+    with open(outfile, 'wb') as fp:
+        if outfile.endswith(".zip"):
+            fp.write(Zippy(vlt.data).zip_it("ilike".encode()))
+        else:
+            fp.write(vlt.data)

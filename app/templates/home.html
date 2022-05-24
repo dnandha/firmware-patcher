@@ -189,14 +189,22 @@
     </div>
 
     <div class="card-group">
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1 border-danger custom-dev" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="cc_unlock">
-                <label class="form-check-label"><b>Tempomat Unlock</b></label>
+                <input class="form-check-input" type="checkbox" name="regionfree" onchange="CheckForm('rf_cc_unlock', this);">
+                <label class="form-check-label"><b>Region Mods</b></label>
             </div>
             <div class="card-body">
+                <div class="card-title">
+                    Schaltet regionsabhängige Features frei.
+                </div>
                 <div class="card-text">
-                    Schaltet den Tempomat für DE Seriennummern frei.
+                    <input class="form-check-input" type="checkbox" name="rf_cc_unlock">
+                    <label class="form-check-label"><b>Tempomat Unlock für DE Region</b></label><br/>
+                    <input class="form-check-input" type="checkbox" name="rf_bl_unlock">
+                    <label class="form-check-label"><b>Dauer-Rücklicht Unlock für DE Region</b></label><br/>
+                    <input class="form-check-input" type="checkbox" name="rf_de_break">
+                    <label class="form-check-label"><b>German Brake: US zu DE Bremse</b></label><br/>
                 </div>
             </div>
         </div>
@@ -297,7 +305,7 @@
     <div class="card-group">
         <div class="card text-center m-1 border-danger custom-dev" hidden>
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="ammeter" onchange="CheckForm('ammeter_real', this);">
+                <input class="form-check-input" type="checkbox" name="ammeter" onchange="CheckForm('ammeter_setval', this);">
                 <label class="form-check-label"><b>Amperemeter</b></label>
             </div>
             <div class="card-body">
@@ -306,8 +314,8 @@
 		    Keine Balken := kein Stromverbrauch, volle Balken := Stromverbrauch 25A.<br/>
                 </div>
                 <div class="card-text" name="ammeter">
-                    <input class="form-check-input" type="checkbox" name="ammeter_real">
-                    <label class="form-check-label"><b>Strom-Istwert statt Sollwert</b></label><br/>
+                    <input class="form-check-input" type="checkbox" name="ammeter_setval">
+                    <label class="form-check-label"><b>Strom-Sollwert statt Istwert</b></label><br/>
                     <input class="form-check-input" type="checkbox" name="ammeter_shift">
                     <label class="form-check-label"><b>Wertebereich verdoppeln (50A)</b></label><br/>
 
@@ -399,7 +407,6 @@
         //"REMOVE_KERS": "remove_kers",
         "REMOVE_AUTOBRAKE": "remove_autobrake",
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
-        "CC_UNLOCK": "cc_unlock",
         "CC_DELAY": "cc_delay",
         "WHEELSIZE": "wheelsize",
         "MOREAMPS": "moreamps",
@@ -422,8 +429,12 @@
         "PEDO_UNLOCK": "pedo_unlock",
 
         "AMMETER": "ammeter",
-        "AMMETER_REAL": "ammeter_real",
+        "AMMETER_SETVAL": "ammeter_setval",
         "AMMETER_SHIFT": "ammeter_shift",
+
+        "RF_CC_UNLOCK": "rf_cc_unlock",
+        "RF_BL_UNLOCK": "rf_bl_unlock",
+        "RF_DE_BREAK": "rf_de_break",
     };
 
     var formValues = Object.values(forms);
@@ -584,7 +595,6 @@
         ChangeForm(forms.REMOVE_AUTOBRAKE, false);
         //ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
-        ChangeForm(forms.CC_UNLOCK, false);
         ChangeForm(forms.CC_DELAY, "5.0", false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
         ChangeForm(forms.MOREAMPS, "", false);
@@ -607,8 +617,12 @@
         ChangeForm(forms.PEDO_UNLOCK, false);
 
         ChangeForm(forms.AMMETER, false);
-        ChangeForm(forms.AMMETER_REAL, false);
+        ChangeForm(forms.AMMETER_SETVAL, false);
         ChangeForm(forms.AMMETER_SHIFT, false);
+
+        ChangeForm(forms.RF_CC_UNLOCK, false);
+        ChangeForm(forms.RF_BL_UNLOCK, false);
+        ChangeForm(forms.RF_DE_BREAK, false);
     }
 </script>
 
