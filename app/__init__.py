@@ -114,7 +114,7 @@ def patch(data):
 
     ammeter = flask.request.form.get('ammeter', None)
     if ammeter:
-        real = flask.request.form.get('ammeter_real', None)
+        real = not flask.request.form.get('ammeter_setval', None)
         shift = flask.request.form.get('ammeter_shift', None)
         opts = []
         if real:
@@ -177,15 +177,17 @@ def patch(data):
     if crc_1000:
         res.append(("CRC 1000", patcher.current_raising_coeff(1000)))
 
-    rf_cc_unlock = flask.request.form.get('rf_cc_unlock', None)
-    if rf_cc_unlock:
-        res.append(("Tempomat Unlock", patcher.rf_cc_unlock()))
-    rf_bl_unlock = flask.request.form.get('rf_bl_unlock', None)
-    if rf_bl_unlock:
-        res.append(("Rücklicht Unlock", patcher.rf_bl_unlock()))
-    rf_de_brake = flask.request.form.get('rf_de_brake', None)
-    if rf_de_brake:
-        res.append(("German Brake", patcher.rf_de_brake()))
+    rf = flask.request.form.get('regionfree', None)
+    if rf:
+        rf_cc_unlock = flask.request.form.get('rf_cc_unlock', None)
+        if rf_cc_unlock:
+            res.append(("Tempomat Unlock", patcher.rf_cc_unlock()))
+        rf_bl_unlock = flask.request.form.get('rf_bl_unlock', None)
+        if rf_bl_unlock:
+            res.append(("Rücklicht Unlock", patcher.rf_bl_unlock()))
+        rf_de_brake = flask.request.form.get('rf_de_brake', None)
+        if rf_de_brake:
+            res.append(("German Brake", patcher.rf_de_brake()))
 
     cc_delay = flask.request.form.get('cc_delay', None)
     if cc_delay is not None:

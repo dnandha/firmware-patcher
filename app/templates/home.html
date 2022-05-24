@@ -198,12 +198,12 @@
                 <div class="card-title">
                     Schaltet regionsabhängige Features frei.
                 </div>
-                <div class="card-text">
+                <div class="card-text" name="regionfree">
                     <input class="form-check-input" type="checkbox" name="rf_cc_unlock">
                     <label class="form-check-label"><b>Tempomat Unlock für DE Region</b></label><br/>
                     <input class="form-check-input" type="checkbox" name="rf_bl_unlock">
                     <label class="form-check-label"><b>Dauer-Rücklicht Unlock für DE Region</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="rf_de_break">
+                    <input class="form-check-input" type="checkbox" name="rf_de_brake">
                     <label class="form-check-label"><b>German Brake: US zu DE Bremse</b></label><br/>
                 </div>
             </div>
@@ -432,9 +432,10 @@
         "AMMETER_SETVAL": "ammeter_setval",
         "AMMETER_SHIFT": "ammeter_shift",
 
+        "RF": "regionfree",
         "RF_CC_UNLOCK": "rf_cc_unlock",
         "RF_BL_UNLOCK": "rf_bl_unlock",
-        "RF_DE_BREAK": "rf_de_break",
+        "RF_DE_BREAK": "rf_de_brake",
     };
 
     var formValues = Object.values(forms);
@@ -620,6 +621,7 @@
         ChangeForm(forms.AMMETER_SETVAL, false);
         ChangeForm(forms.AMMETER_SHIFT, false);
 
+        ChangeForm(forms.RF, false);
         ChangeForm(forms.RF_CC_UNLOCK, false);
         ChangeForm(forms.RF_BL_UNLOCK, false);
         ChangeForm(forms.RF_DE_BREAK, false);
