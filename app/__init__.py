@@ -198,7 +198,8 @@ def patch(data):
 
     ltgm = flask.request.form.get('ltgm', None)
     if ltgm:
-        res.append(("LTGM", patcher.ltgm()))
+        persist = flask.request.form.get('ltgm_persist', None)
+        res.append(("LTGM" + " (persistent)" if persist else "", patcher.ltgm(persist=persist)))
 
     return res, patcher.data
 

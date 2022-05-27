@@ -405,7 +405,7 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         return [("shutdown", hex(ofs), pre.hex(), post.hex())]
 
-    def ltgm(self):
+    def ltgm(self, persist=False):
         '''
         Brute-force address replacement
         '''
@@ -424,21 +424,22 @@ class FirmwarePatcher():
                 except SignatureException:
                     break
 
-        for reg_src in range(6):
-            while True:
-                try:
-                    sig = self.ks.asm('STRB.W R0,[R{},#0x43]'.format(reg_src))[0]
-                    sig[-1] = None  # blank out dst register
-                    ofs = FindPattern(self.data, sig)
-                    pre = self.data[ofs:ofs+4]
-                    reg_dst = pre[-1]>>4
-                    post = bytes(self.ks.asm('STRH.W R{},[R{},#0x13a]'.format(reg_dst, reg_src))[0])
-                    self.data[ofs:ofs+4] = post
-                    ret.append(["ltgm_write", hex(ofs), pre.hex(), post.hex()])
-                except SignatureException:
-                    break
+        if not persist:
+            for reg_src in range(6):
+                while True:
+                    try:
+                        sig = self.ks.asm('STRB.W R0,[R{},#0x43]'.format(reg_src))[0]
+                        sig[-1] = None  # blank out dst register
+                        ofs = FindPattern(self.data, sig)
+                        pre = self.data[ofs:ofs+4]
+                        reg_dst = pre[-1]>>4
+                        post = bytes(self.ks.asm('STRH.W R{},[R{},#0x13a]'.format(reg_dst, reg_src))[0])
+                        self.data[ofs:ofs+4] = post
+                        ret.append(["ltgm_write", hex(ofs), pre.hex(), post.hex()])
+                    except SignatureException:
+                        break
 
-        if not len(ret) in [11, 12]:
+        if len(ret) < 10:
             raise SignatureException('Pattern not found')
 
         return ret
@@ -917,7 +918,7 @@ if __name__ == "__main__":
         'ccd':  lambda: vlt.cc_delay(2),
         'ltg':  lambda: vlt.ltgm(),
         'll':   lambda: vlt.lower_light(),
-        'am':   lambda: vlt.amp_meter(real=True, shift=8),
+        'am':   lambda: vlt.amp_meter(real=False, shift=8),
         'lrb':  lambda: vlt.lever_resolution(brake=0x9c),
         #'lrg':  lambda: vlt.lever_resolution(gas=0x9c),
         #'bss':  lambda: vlt.brake_start_speed(2.0),
