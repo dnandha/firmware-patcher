@@ -134,12 +134,12 @@
                 <div class="class-title">
                     Lite Touch GM gibt direkte Kontrolle über die Regionskennung in der Firmware.
             LTGM kann per App ein und ausgeschaltet werden.
-            Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
-            Bei Neustart bzw. Ausschalten des Rollers wird LTGM ebenfalls zurückgesetzt (bei original Seriennummer!).
+            Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>.
+            Bei Start (nach Neustart bzw. Ausschalten) des Rollers wird LTGM ebenfalls zurückgesetzt, sofern die Seriennummer nicht verändert wurde.
                 </div>
                 <div class="class-text" name="ltgm">
                     <input class="form-check-input" type="checkbox" name="ltgm_persist">
-                    <label class="form-check-label"><b>Persistent (KEIN Reset bei Start)</b></label><br/>
+                    <label class="form-check-label"><b>Persistent (Kein Zurücksetzen bei Start)</b></label><br/>
                 </div>
             </div>
         </div>
@@ -407,6 +407,7 @@
     var forms = {
         "VERSION": "version",
         "LTGM": "ltgm",
+        "LTGM_PERSIST": "ltgm_persist",
         "BRAKELIGHT_MOD": "brakelight_mod",
         "SPEED_PLUS2": "speed_plus2",
         "MOTOR_START_SPEED": "motor_start_speed",
@@ -596,6 +597,7 @@
 
     function Preset_Default() {
         ChangeForm(forms.LTGM, false);
+        ChangeForm(forms.LTGM_PERSIST, false);
         ChangeForm(forms.BRAKELIGHT_MOD, false);
         ChangeForm(forms.SPEED_PLUS2, false);
         ChangeForm(forms.MOTOR_START_SPEED, "5", false);
