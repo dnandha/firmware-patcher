@@ -928,7 +928,7 @@ if __name__ == "__main__":
     }
 
     for k in patches:
-        if k not in args.split(","):
+        if k not in args.split(",") and args != 'all':
             continue
         try:
             for ofs, pre, post, desc in patches[k]():
