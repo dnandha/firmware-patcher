@@ -59,147 +59,105 @@ def patch(data):
 
     patcher = FirmwarePatcher(data)
 
-    #dpc = flask.request.form.get('dpc', None)
-    #if dpc:
-    #    print("dpc")
-    #    patcher.dpc()
+    dpc = flask.request.form.get('dpc', None)
+    if dpc:
+        res.append(("DPC", patcher.dpc()))
 
-    relight_mod = flask.request.form.get('relight_mod', None)
-    brakelight_mod = flask.request.form.get('brakelight_mod', None)
-    if relight_mod:
-        reset = True if flask.request.form.get('relight_reset', '') == 'on' else False
-        dpc = True if flask.request.form.get('relight_dpc', '') == 'on'else False
-        gm = True if flask.request.form.get('relight_gm', '') == 'on'else False
-        beep = True if flask.request.form.get('relight_beep', '') == 'on'else False
-        delay = True if flask.request.form.get('relight_delay', '') == 'on'else False
-        autolight = True if flask.request.form.get('relight_auto', '') == 'on'else False
-        if reset and not dpc and not gm:
-            dpc = True
-            gm = True
-        opts = []
-        if reset:
-            opts += ["Reset"]
-        if dpc:
-            opts += ["DPC"]
-        if gm:
-            opts += ["LTGM"]
-        if beep:
-            opts += ["Piep"]
-        if delay:
-            opts += ["Delay"]
-        if autolight:
-            opts += ["Autolight"]
-        opts = " | ".join(opts)
-        res.append((f"Relight Mod: {opts}",
-                    patcher.relight_mod(reset=reset, gm=gm, dpc=dpc, beep=beep,
-                                        delay=delay, autolight=autolight)))
-        if autolight:
-            res.append(("Lower Light", patcher.lower_light()))
+    sl_speed = flask.request.form.get('sl_speed', None)
+    if sl_speed:
+        sl_speed = int(sl_speed)
+        assert sl_speed >= 0 and sl_speed <= 35, sl_speed
+        res.append((f"Speed-Limit Speed Mode: {sl_speed}km/h", patcher.speed_limit_speed(sl_speed)))
 
-    elif brakelight_mod:
-        res.append(("Bremslicht Mod", patcher.brakelight_mod()))
+    sl_drive = flask.request.form.get('sl_drive', None)
+    if sl_drive:
+        sl_drive = int(sl_drive)
+        assert sl_drive >= 0 and sl_drive <= 35, sl_drive
+        res.append((f"Speed-Limit Drive Mode: {sl_drive}km/h", patcher.speed_limit_drive(sl_drive)))
 
-    speed_plus2 = flask.request.form.get('speed_plus2', None)
-    if speed_plus2:
-        res.append(("22 km/h Mod", patcher.speed_limit(22)))
+    sl_pedo = flask.request.form.get('sl_pedo', None)
+    if sl_pedo:
+        sl_pedo = int(sl_pedo)
+        assert sl_pedo >= 0 and sl_pedo <= 35, sl_pedo
+        res.append((f"Speed-Limit Pedestrian Mode: {sl_pedo}km/h", patcher.speed_limit_pedo(sl_speed)))
 
-    speed_plus2_global = flask.request.form.get('speed_plus2_global', None)
-    if speed_plus2_global:
-        res.append(("27 km/h Mod", patcher.speed_limit_global(27)))
+    amps_speed = flask.request.form.get('amps_speed', None)
+    if amps_speed is not None:
+        amps_speed = int(amps_speed)
+        assert amps_speed >= 5000 and amps_speed <= 35000, amps_speed
+        res.append((f"Current Speed Mode: {amps_speed}mA", patcher.ampere_speed(amps_speed)))
 
-    pedo_unlock = flask.request.form.get('pedo_unlock', None)
-    if pedo_unlock is not None:
-        res.append(("Speed Limit Pedestrian: 9km/h", patcher.speed_limit_pedo(9)))
-        res.append(("Ampere Pedestrian: 10A/15A", patcher.ampere_pedo(10000, 15000)))
+    amps_drive = flask.request.form.get('amps_drive', None)
+    if amps_drive is not None:
+        amps_drive = int(amps_drive)
+        assert amps_drive >= 5000 and amps_drive <= 35000, amps_drive
+        res.append((f"Current Drive Mode: {amps_drive}mA", patcher.ampere_drive(amps_drive)))
 
-    ammeter = flask.request.form.get('ammeter', None)
-    if ammeter:
-        real = not flask.request.form.get('ammeter_setval', None)
-        shift = flask.request.form.get('ammeter_shift', None)
-        opts = []
-        if real:
-            opts += ["Ist"]
-        else:
-            opts += ["Soll"]
-        if shift:
-            opts += ["Shift"]
-        opts = " | ".join(opts)
-        res.append((f"Amperemeter: {opts}", patcher.amp_meter(real=real, shift=9 if shift else 8)))
+    amps_pedo = flask.request.form.get('amps_pedo', None)
+    if amps_pedo is not None:
+        amps_pedo = int(amps_pedo)
+        assert amps_pedo >= 5000 and amps_pedo <= 35000, amps_pedo
+        res.append((f"Current Pedestrian Mode: {amps_pedo}mA", patcher.ampere_pedo(amps_pedo, 20000)))
 
-    remove_autobrake = flask.request.form.get('remove_autobrake', None)
-    if remove_autobrake:
-        res.append(("Autom. Bremsen deaktivieren", patcher.remove_autobrake()))
+    amps_speed_max = flask.request.form.get('amps_speed_max', None)
+    amps_drive_max = flask.request.form.get('amps_drive_max', None)
+    amps_pedo_max = flask.request.form.get('amps_pedo_max', None)
+    if amps_speed_max is not None or amps_drive_max is not None or amps_pedo_max is not None:
+        amps_speed_max = int(amps_speed_max)
+        amps_drive_max = int(amps_drive_max)
+        amps_pedo_max = int(amps_pedo_max)
+        assert amps_speed_max >= 5000 and amps_speed_max <= 65000, amps_speed_max
+        assert amps_drive_max >= 5000 and amps_drive_max <= 65000, amps_drive_max
+        assert amps_pedo_max >= 5000 and amps_pedo_max <= 65000, amps_pedo_max
+        res.append((f"Max-Currents: {amps_pedo_max}mA/{amps_drive_max}mA/{amps_speed_max}mA",
+                    patcher.ampere_max(amps_pedo_max, amps_drive_max, amps_speed_max)))
 
-    dkc = flask.request.form.get('dkc', None)
-    if dkc:
-        l0 = flask.request.form.get('dkc_l0', None)
-        l1 = flask.request.form.get('dkc_l1', None)
-        l2 = flask.request.form.get('dkc_l2', None)
-        if l0 and l1 and l2:
-            l0, l1, l2 = int(l0), int(l1), int(l2)
-            assert l0 >= 0 and l0 <= 30
-            assert l1 >= 0 and l1 <= 30
-            assert l2 >= 0 and l2 <= 30
-            res.append((f"D.K.C. ({l0}, {l1}, {l2})", patcher.dkc(l0, l1, l2)))
+    crc = flask.request.form.get('crc', None)
+    if crc:
+        crc = int(crc)
+        print(crc)
+        assert crc >= 100 and crc <= 2000
+        res.append((f"CRC: {crc}", patcher.current_raising_coeff(crc)))
 
     motor_start_speed = flask.request.form.get('motor_start_speed', None)
     if motor_start_speed is not None:
         motor_start_speed = float(motor_start_speed)
         assert motor_start_speed >= 0 and motor_start_speed <= 100
-        res.append((f"Motor Startgeschw. {motor_start_speed}km/h",
+        res.append((f"Motor Start Speed: {motor_start_speed}km/h",
                     patcher.motor_start_speed(motor_start_speed)))
+
+    remove_kers = flask.request.form.get('remove_kers', None)
+    if remove_kers:
+        res.append(("Remove KERS", patcher.remove_kers()))
+
+    remove_autobrake = flask.request.form.get('remove_autobrake', None)
+    if remove_autobrake:
+        res.append(("Remove Speed Check", patcher.remove_autobrake()))
 
     remove_charging_mode = flask.request.form.get('remove_charging_mode', None)
     if remove_charging_mode:
-        res.append(("Zusatzakku Fix", patcher.remove_charging_mode()))
+        res.append(("Remove Charging Mode", patcher.remove_charging_mode()))
 
     wheelsize = flask.request.form.get('wheelsize', None)
     if wheelsize is not None:
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
         mult = wheelsize/8.5  # 8.5" is default
-        res.append((f"Rad Durchmesser {wheelsize}\"", patcher.wheel_speed_const(mult)))
-
-    moreamps = flask.request.form.get('moreamps', None)
-    if moreamps is not None:
-        moreamps = int(moreamps)
-        assert moreamps >= 20000 and moreamps <= 32000
-        res.append((f"Ampere {moreamps}mA", patcher.ampere_speed(moreamps)))
+        res.append((f"Wheel Size: {wheelsize}\"", patcher.wheel_speed_const(mult)))
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
         shutdown_time = float(shutdown_time)
         assert shutdown_time >= 0 and shutdown_time <= 5
-        res.append((f"Ausschaltzeit {shutdown_time}s",
+        res.append((f"Shutdown Time: {shutdown_time}s",
                     patcher.shutdown_time(shutdown_time)))
-
-    crc_1000 = flask.request.form.get('crc_1000', None)
-    if crc_1000:
-        res.append(("CRC 1000", patcher.current_raising_coeff(1000)))
-
-    rf = flask.request.form.get('regionfree', None)
-    if rf:
-        rf_cc_unlock = flask.request.form.get('rf_cc_unlock', None)
-        if rf_cc_unlock:
-            res.append(("Tempomat Unlock", patcher.rf_cc_unlock()))
-        rf_bl_unlock = flask.request.form.get('rf_bl_unlock', None)
-        if rf_bl_unlock:
-            res.append(("Rücklicht Unlock", patcher.rf_bl_unlock()))
-        rf_de_brake = flask.request.form.get('rf_de_brake', None)
-        if rf_de_brake:
-            res.append(("German Brake", patcher.rf_de_brake()))
 
     cc_delay = flask.request.form.get('cc_delay', None)
     if cc_delay is not None:
         cc_delay = float(cc_delay)
         assert cc_delay >= 0 and cc_delay <= 9
-        res.append((f"Tempomat Verzögerung {cc_delay}s",
+        res.append((f"CC Delay: {cc_delay}s",
                     patcher.cc_delay(cc_delay)))
-
-    ltgm = flask.request.form.get('ltgm', None)
-    if ltgm:
-        persist = flask.request.form.get('ltgm_persist', None)
-        res.append(("LTGM" + " (persistent)" if persist else "", patcher.ltgm(persist=persist)))
 
     return res, patcher.data
 
@@ -210,12 +168,12 @@ def patch_firmware():
 
     data = f.read()
     if not len(data) > 0xf:
-        return 'Keine Datei ausgewählt.', 400
+        return 'No file selected.', 400
 
     try:
         res, data_patched = patch(data)
     except SignatureException:
-        return 'Patches konnten nicht angewendet werden. Bitte die korrekte Eingabedatei wählen.', 400
+        return 'Patches could not be applied. Please select the correct input file.', 400
 
     pod = flask.request.form.get('patchordoc', None)
     if pod == "Patch!":
@@ -235,4 +193,4 @@ def patch_firmware():
     elif pod == "Offsets":
         return flask.render_template('doc.html', patches=res)
     else:
-        return 'Ungültige Anfrage.', 400
+        return 'Invalid request.', 400

@@ -3,401 +3,319 @@
 <head>
 <meta charset="utf-8">
 <meta name="author" content="BotoX">
-<meta name="description" content="VLT Custom Firmware Toolkit">
+<meta name="description" content="XNG Custom Firmware Toolkit">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='newstyle.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
 
-<title>VLT Custom Firmware Toolkit</title>
+<title>NextGen Firmware Toolkit</title>
 </head>
 
 <body onload="OnLoad()">
 
-<noscript>Diese Webseite benötigt JavaScript.</noscript>
+<noscript>This website requires JavaScript.</noscript>
 
     <div id="disclaimer" class="modal red darken-4 white-text">
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">HAFTUNGSAUSSCHLUSS</h4>
+                <h4 class="modal-title">User Agreement</h4>
             </div>
             <div class="modal-body">
-                Ich nehme zur Kenntnis, dass vlt-firmwares.com lediglich Informationen und Dienste für Testzwecke zur Verfügung stellt.
+                I acknowledge that this site only provides information for test purposes.
                 <br />
-                Für eventuelle Schäden an Sache oder Person, die sich durch das Einspielen einer veränderten Firmware ergeben, übernehme ich (der Endanwender) die volle Verantwortung.
+                I am familiar with my local laws and acknowledge that I solely am responsible for potential harm caused to myself or others.
                 <br />
-		<br /><b>Ich bin selbst im Besitz des Gerätes und der Software!</b>
+		<br /><b>I own the device and software subject to modification!</b>
 
-		<br /><br /><u>Disclaimer</u><br />vlt-firmwares.com steht in keiner Verbindung zu irgendeinem Gerätehersteller. vlt-firmwares.com hostet keine Firmware Dateien und generiert auch keine fertigen Firmware Dateien. Der Endanwender hat die Option, eine Datei, die ihm gehört, hochzuladen und durch einen Dienst verändern zu lassen. Die Datei wird durch den Dienst an den angegebenen Stellen verändert, selbst aber in keinster Weise zwischengespeichert.
+		<br /><br /><u>Disclaimer</u><br />This site is not affiliated with any brand or manufacturer and does not host any copyright material. The user has the option to upload a file, which is modified according to the user selection. The modified file is presented to the user end-to-end and not saved on any servers .
             </div>
             <div class="modal-footer red darken-2 white-text">
-		    <i>Mit einem Klick auf "Einverstanden" und/oder der Nutzung dieses Dienstes akzeptiere ich (der Endanwender) die oben genannten Hinweise und Haftungsausschluss.</i>
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Einverstanden</button>
+		    <i>By clicking on "Agree" I confirm the aforementioned and accept the disclaimer.</i>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Agree</button>
             </div>
         </div>
         </div>
     </div>
 
 <div class="container">
-    <div class="row"><div class="col center-block text-center">
-        <h1>VLT Firmwares</h1>
-    </div></div>
+    <div class="center-block text-center">
+        <h1 class="display-1">NextGen FW</h1>
 
-    <div class="row"><div class="col">
-	    <p class="text">
-		Konfiguriere deine eigene VLT Firmware durch Anpassung der unten stehenden Optionen. Standardmäßig wird nichts gepatcht, sondern erst wenn eine Checkbox aktiviert wird.<br/>
-	    </p>
-    </div></div>
-
-    <div class="row">
-        <div class="col">
-            Voreinstellung:
-        </div>
-        <div class="col">
-            <select class="form-select" id="modeselect" onchange="ChangeMode()">
-                <option value="default">Basis</option>
-                <option value="custom">Erweitert</option>
-                <option value="custom-dev">Experimentell</option>
-            </select>
-        </div>
+        <p class="lead">
+            Configure your own NextGen firmware (NGFW) by adjusting the options below. <b>Both V3.0 and V3.1 controllers are supported!</b>
+                By default nothing will be patched, enable patches with the checkbox next to them.
+        </p>
     </div>
 
     <hr>
     <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
-    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" name="brakelight_mod" type="checkbox">
-                <label class="form-check-label"><b>Bremslicht Mod</b></label>
+                <input class="form-check-input" name="dpc" type="checkbox">
+                <label class="form-check-label"><b>DPC</b></label>
             </div>
             <div class="card-body">
-                <div class="card-text">
-                    Bei Aktivem GM verhält sich das Rücklicht wie als wenn GM nicht Aktiv ist.
-                    Es blinkt nicht wenn man die Bremse betätigt oder vom Gas geht.
-                </div>
+                Activate/Deactivate DPC via register.
             </div>
         </div>
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
-                <label class="form-check-label"><b>Ausschaltzeit</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-			<div>Sekunden</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="3" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">3</div>
-                </div>
-                <div class="card-text">
-                    Hierbei handelt es sich um die Dauer für die man den An/Aus-Knopf gedrückt halten muss, bis der Roller ausgeht.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
-                <label class="form-check-label"><b>Motor Startgeschwindigkeit</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-			<div>km/h</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span><div id="mss_value">5</div>
-                </div>
-                <div class="card-text">
-                    Die Startgeschwindigkeit bei dem der Motor aktiviert wird.
-                    Standard ist 5-Kmh. 0-Kmh braucht trotzdem einen winzigen Stubser damit der Motor los geht.
-                </div>
-            </div>
-        </div>
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" name="speed_plus2" type="checkbox">
-                <label class="form-check-label"><b>22&nbsp;km/h Mod</b></label>
-            </div>
-
-            <div class="card-body">
-                Hebt das Deutsche Geschwindigkeits Limit des Sport Modus auf 22Kmh an.
-                Nutzt die aktuelle Gesetzeslage komplett aus, da man aktuell in DE 20 + 2Kmh Toleranz schnell fahren darf. Nicht wundern, Der Tacho vom Pro 2 zeigt nach 2-3 sekunden Top Speed nur 21Kmh an. Es schwankt aber zwischen 21,4 - 21,8 Kmh nur wird es mangels Display Funktion nicht angezeigt.
-            </div>
-        </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="ltgm" onchange="CheckForm('ltgm_persist', this);">
-                <label class="form-check-label"><b>LTGM</b></label>
-            </div>
-
-            <div class="card-body">
-                <div class="class-title">
-                    Lite Touch GM gibt direkte Kontrolle über die Regionskennung in der Firmware.
-            LTGM kann per App ein und ausgeschaltet werden.
-            Empfohlene App zum ein und ausschalten ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>.
-            Bei Start (nach Neustart bzw. Ausschalten) des Rollers wird LTGM ebenfalls zurückgesetzt, sofern die Seriennummer nicht verändert wurde.
-                </div>
-                <div class="class-text" name="ltgm">
-                    <input class="form-check-input" type="checkbox" name="ltgm_persist">
-                    <label class="form-check-label"><b>Persistent (Kein Zurücksetzen bei Start)</b></label><br/>
-                </div>
-            </div>
-        </div>
-
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="remove_autobrake">
-                <label class="form-check-label"><b>Automatisches abbremsen deaktivieren</b></label>
+                <label class="form-check-label"><b>Remove Speed Check</b></label>
             </div>
             <div class="card-body">
                 <div class="card-text">
-                    Der Roller bremst nicht mehr automatisch ab und piepst auch nicht.
-                    Z.b. wenn man einen Hang runter rollt (wenn man vom Gas geht greift natürlich trotzdem Kers) oder im leerlauf schnell auf Vmax beschleunigt. Es wird auch nicht von alleine über 20Kmh oder mit 22Kmh Mod über 22Kmh schnell wenn das Rad in der Luft dreht.
+                    Remove automatic braking at certain speeds.
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="remove_charging_mode">
-                <label class="form-check-label"><b>Zusatzakku Fix</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title"><i>Remove charging mode</i></div>
-                <div class="card-text">
-                    Zusatzakku Auflade Fix.
-                    Roller fährt, trotz alledem der interne Akku vom Externen geladen wird.
-                </div>
-            </div>
-        </div>
-        <div class="card text-center m-1 custom" hidden>
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="pedo_unlock">
-                <label class="form-check-label"><b>Pedestrian Unlock</b></label>
+                <label class="form-check-label"><b>Remove Charging Mode</b></label>
             </div>
             <div class="card-body">
                 <div class="card-text">
-                    Macht den Fußgängermodus fahrbar (9km/h + 10A/15A).
+                    Ignore input from charging line.
                 </div>
             </div>
         </div>
-        <!--div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="remove_kers" type="checkbox">
-                <label class="form-check-label"><b>KERS ausschalten</b></label>
+                <label class="form-check-label"><b>No KERS</b></label>
             </div>
             <div class="card-body">
-                Rekuperation (KERS) wird beim Ausrollen komplett entfernt.
-                Energierückgewinnung greift nur noch wenn die elektrische Bremse (Rechts) betätigt wird.
+                Deactivates KERS. Improved version.
             </div>
-        </div-->
-    </div>
+        </div>
 
-    <div class="card-group">
-        <div class="card text-center m-1 border-danger custom-dev" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="regionfree" onchange="CheckForm('rf_cc_unlock', this);">
-                <label class="form-check-label"><b>Region Mods</b></label>
+                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
+                <label class="form-check-label"><b>Shutdown Time</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Schaltet regionsabhängige Features frei.
+			<div>Seconds</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="3" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">3</div>
                 </div>
-                <div class="card-text" name="regionfree">
-                    <input class="form-check-input" type="checkbox" name="rf_cc_unlock">
-                    <label class="form-check-label"><b>Tempomat Unlock für DE Region</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="rf_bl_unlock">
-                    <label class="form-check-label"><b>Dauer-Rücklicht Unlock für DE Region</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="rf_de_brake">
-                    <label class="form-check-label"><b>(TESTFUNKTION) German Brake: US zu DE Bremse</b></label><br/>
+                <div class="card-text">
+                    Time you have to press the power button until the device turns off.
                 </div>
             </div>
         </div>
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="cc_delay_cb" type="checkbox" onchange="CheckForm('cc_delay', this);">
-                <label class="form-check-label"><b>Tempomat Verzögerung</b></label>
+                <label class="form-check-label"><b>Cruise Control Delay</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-			<div>Sekunden</div>
+			<div>Seconds</div>
 			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('cc_delay', 'cc_delay_val')">-</button><input class="form-range" name="cc_delay" type="range" step="1" min="1" max="9" value="5" onchange="OnSliderChange('cc_delay_val', this.value)" oninput="OnSliderChange('cc_delay_val', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('cc_delay', 'cc_delay_val')">+</button></span><div id="cc_delay_val">5</div>
                 </div>
                 <div class="card-text">
-                    Hierbei handelt es sich um die Dauer für die man den Gashebel in einer Position halten muss, bis der Tempomat aktiviert wird.
+                    Time needed for cruise control to kick in.
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="dkc" onchange="CheckForm('dkc_l0', this);CheckForm('dkc_l1', this);CheckForm('dkc_l2', this);">
-                <label class="form-check-label"><b>D.K.C.</b></label>
+                <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
+                <label class="form-check-label"><b>Motor Start Speed</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-			Volle Kontrolle über die 3 KERS Multiplikatoren, stufenloses Setzen des KERS Multiplikator zur Laufzeit. <br/>
-			Empfohlene App zur Steuerung ist die <a href="https://rollerplausch.com/threads/neue-gm-app-fuer-xiaomi-1s-pro2-unterstuetzt-alle-ble-versionen.4220/">HomeMi App von @nandtek</a>
-		</div>
-
-		<div class="card-text">
-                Individuelle Standard KERS Level (0 := AUS)
-			<span class="input-group-text">Leicht:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l0', 'dkc_l0_value')">-</button><input class="form-range" name="dkc_l0" type="range" step="1" min="0" max="30" value="6" onchange="OnSliderChange('dkc_l0_value', this.value)" oninput="OnSliderChange('dkc_l0_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l0', 'dkc_l0_value')">+</button></span><div id="dkc_l0_value">6</div>
-			<span class="input-group-text">Mittel:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l1', 'dkc_l1_value')">-</button><input class="form-range" name="dkc_l1" type="range" step="1" min="0" max="30" value="12" onchange="OnSliderChange('dkc_l1_value', this.value)" oninput="OnSliderChange('dkc_l1_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l1', 'dkc_l1_value')">+</button></span><div id="dkc_l1_value">12</div>
-			<span class="input-group-text">Stark:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('dkc_l2', 'dkc_l2_value')">-</button><input class="form-range" name="dkc_l2" type="range" step="1" min="0" max="30" value="20" onchange="OnSliderChange('dkc_l2_value', this.value)" oninput="OnSliderChange('dkc_l2_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('dkc_l2', 'dkc_l2_value')">+</button></span><div id="dkc_l2_value">20</div>
-
-		</div>
+                    <div class="row">
+                        <div class="col">km/h</div>
+                        <div class="col" id="mss_value"></div>
+                    </div>
+                    <div class="row">
+                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('motor_start_speed', 'mss_value')">-</button><input class="form-range" name="motor_start_speed" type="range" step="0.5" min="0" max="10" value="5" onchange="OnSliderChange('mss_value', this.value)" oninput="OnSliderChange('mss_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('motor_start_speed', 'mss_value')">+</button></span>
+                    </div>
+                </div>
+                <div class="card-text">
+                    Minimum required speed before the motor will start.
+                </div>
             </div>
         </div>
-        <div class="card text-center m-1 border-danger custom-dev" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="relight_mod" onchange="CheckForm('relight_dpc', this);">
-                <label class="form-check-label"><b>ReLight Mod</b></label>
+                <input class="form-check-input" name="crc_cb" type="checkbox" onchange="CheckForm('crc', this);">
+                <label class="form-check-label"><b>CRC</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                Ersetzt das blinkende Rücklicht und somit die Bremslicht Mod durch Tastenkombinationen, aktuell Bremse+Gas.<br />
-                Konfiguriere hier deinen Effekt:
+                    <div class="row">
+                        <div class="col" id="crc_value"></div>
+                    </div>
+                    <div class="row">
+                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('crc', 'crc_value')">-</button><input class="form-range" name="crc" type="range" step="1" min="0" max="2000" value="300" onchange="OnSliderChange('crc_value', this.value)" oninput="OnSliderChange('crc_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('crc', 'crc_value')">+</button></span>
+                    </div>
                 </div>
-                <div class="card-text" name="relight_mod">
-                    <input class="form-check-input" type="checkbox" name="relight_dpc">
-                    <label class="form-check-label"><b>DPC</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="relight_gm">
-                    <label class="form-check-label"><b>LTGM</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="relight_reset">
-                    <label class="form-check-label"><b>Reset (Zurücksetzen statt Setzen)</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="relight_beep">
-                    <label class="form-check-label"><b>Piep</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="relight_delay">
-                    <label class="form-check-label"><b>1s Verzögerung</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="relight_auto">
-                    <label class="form-check-label"><b>Auto Bremslicht</b></label><br/>
+                <div class="card-text">
+                    Current raising coefficient defines the increments of current increase.
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1 border-warning custom" hidden>
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="crc_1000">
-                <label class="form-check-label"><b>CRC 1000</b></label>
-            </div>
-            <div class="card-body">
-                Setzt den Current Raising Coefficient auf 1000. Damit steigt die Beschleunigung, ohne die Stromgrenzwerte des Rollers zu verschieben.
-				<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite.</span>
-            </div>
-        </div>
-        <div class="card text-center m-1 custom" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
-                <label class="form-check-label"><b>Rad Durchmesser</b></label>
+                <label class="form-check-label"><b>Wheel Size</b></label>
             </div>
 
             <div class="card-body">
                 <div class="card-title center-block">
-			<div>Zoll</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button><input class="form-range" name="wheelsize" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button></span><div id="wheelsize_value">8.5</div>
-
+                    <div class="row">
+                        <div class="col">Inches</div>
+                        <div class="col" id="wheelsize_value"></div>
+                    </div>
+                    <div class="row">
+                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button><input class="form-range" name="wheelsize" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button></span>
+                    </div>
                 </div>
                 <div class="card-text">
-                    Passt GPS Geschwindigkeit und Motor-Koeffizient (Anzugsverhalten) für unterschiedliche Radgrößen an.
+                    When upgrading / changing the stock wheels, this parameter has to be adjusted to match GPS speed and torque.
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1 border-danger custom-dev" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="ammeter" onchange="CheckForm('ammeter_setval', this);">
-                <label class="form-check-label"><b>Amperemeter</b></label>
+                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);">
+                <label class="form-check-label"><b>Speed Limits</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Ersetzt die Batterieanzeige durch eine Stromanzeige (Amperemeter).<br/>
-		    Keine Balken := kein Stromverbrauch, volle Balken := Stromverbrauch 25A.<br/>
-                </div>
-                <div class="card-text" name="ammeter">
-                    <input class="form-check-input" type="checkbox" name="ammeter_setval">
-                    <label class="form-check-label"><b>Strom-Sollwert statt Istwert</b></label><br/>
-                    <input class="form-check-input" type="checkbox" name="ammeter_shift">
-                    <label class="form-check-label"><b>Wertebereich verdoppeln (50A)</b></label><br/>
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Speed Mode, km/h</label></div>
+                            <div class="col" id="sl_speed_value"></div>
+                        </div>
+                        <div class="row center-block">
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_speed', 'sl_speed_value')">-</button><input class="form-range" name="sl_speed" type="range" step="1" min="0" max="35" value="0" onchange="OnSliderChange('sl_speed_value', this.value)" oninput="OnSliderChange('sl_speed_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_speed', 'sl_speed_value')">+</button></span>
+                        </div>
 
-		    Der Akkustand lässt sich weiterhin per App auslesen.<br/>
-		    <span style="color: red;">&#9888;&nbsp;Beim Laden wird auf dem Dashboard dauerhaft eine "0" angezeigt, das Laden funktioniert aber ganz normal.</span>
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Drive Mode, km/h</label></div>
+                            <div class="col" id="sl_drive_value"></div>
+                        </div>
+                        <div class="row center-block">
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_drive', 'sl_drive_value')">-</button><input class="form-range" name="sl_drive" type="range" step="1" min="0" max="35" value="0" onchange="OnSliderChange('sl_drive_value', this.value)" oninput="OnSliderChange('sl_drive_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_drive', 'sl_drive_value')">+</button></span>
+                        </div>
+
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Pedestrian Mode, km/h</label></div>
+                            <div class="col" id="sl_pedo_value"></div>
+                        </div>
+                        <div class="row center-block">
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_pedo', 'sl_pedo_value')">-</button><input class="form-range" name="sl_pedo" type="range" step="1" min="0" max="35" value="0" onchange="OnSliderChange('sl_pedo_value', this.value)" oninput="OnSliderChange('sl_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_pedo', 'sl_pedo_value')">+</button></span>
+                        </div>
                 </div>
             </div>
         </div>
-        <div class="card text-center m-1 border-warning custom" hidden>
+        <div class="card text-center m-1">
             <div class="card-header">
-                <input class="form-check-input" name="moreamps_cb" type="checkbox" onchange="CheckForm('moreamps', this);">
-                <label class="form-check-label"><b>Ampere Mod (Speed Mode)</b></label>
+                <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_speed', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this);">
+                <label class="form-check-label"><b>Nominal Currents</b></label>
             </div>
             <div class="card-body">
-                <div class="row g-3">
-                  <div class="col center-block text-center">
-                    Auswahl:
-                  </div>
-                  <div class="col center-block text-center">
-                    <select class="form-select" name="moreamps" id="moreamps" onchange="ChangeAmps('amps_description', this.value)">
-                      <option value="28000">Pro2 OHNE Zusatzakku</option>
-                      <option value="32000">Pro2 mit Zusatzakku</option>
-                      <option value="24000">1S OHNE Zusatzakku</option>
-                      <option value="30000">1S mit Zusatzakku</option>
-                    </select>
-                  </div>
-                  <div class="col center-block text-center">
-                    <div id="amps_description">Nicht ausgewählt</div>
-                  </div>
-                </div>
+                <div class="card-title">
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Speed Mode, mA</label></div>
+                            <div class="col" id="amps_speed_value"></div>
+                        </div>
+                        <div class="row center-block">
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_speed', 'amps_speed_value')">-</button><input class="form-range" name="amps_speed" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_speed_value', this.value)" oninput="OnSliderChange('amps_speed_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_speed', 'amps_speed_value')">+</button></span>
+                        </div>
 
-                Der Nennstrom / DC Phasenstrom für den Speed Modus wird erhöht. Standard sind 20A beim 1S und 25A beim Pro2.<br> 
-		Ermöglicht ein stabileres Halten der Wunschgeschwindigkeit bei Steigungen. Beschleunigung wird dadurch nicht pauschal "besser".<br>
-		<span style="color: red;">&#9888;&nbsp;Verringert die Max Reichweite und ab circa 10% Akku wird die Endgeschwindigkeit stark gedrosselt.</span>
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Drive Mode, mA</label></div>
+                            <div class="col" id="amps_drive_value"></div>
+                        </div>
+                        <div class="row center-block">
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_drive', 'amps_drive_value')">-</button><input class="form-range" name="amps_drive" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_drive_value', this.value)" oninput="OnSliderChange('amps_drive_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_drive', 'amps_drive_value')">+</button></span>
+                        </div>
+
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Pedestrian Mode, mA</label></div>
+                            <div class="col" id="amps_pedo_value"></div>
+                        </div>
+                        <div class="row center-block">
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo', 'amps_pedo_value')">-</button><input class="form-range" name="amps_pedo" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_pedo_value', this.value)" oninput="OnSliderChange('amps_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo', 'amps_pedo_value')">+</button></span>
+                        </div>
+                </div>
             </div>
         </div>
-    </div>
+        <div class="card text-center m-1">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_speed_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this);">
+                <label class="form-check-label"><b>Current Limits</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Speed Mode, max. mA</label></div>
+                            <div class="col" id="amps_speed_max_value"></div>
+                        </div>
+                        <div class="row center-block">
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_speed_max', 'amps_speed_max_value')">-</button><input class="form-range" name="amps_speed_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_speed_max_value', this.value)" oninput="OnSliderChange('amps_speed_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_speed_max', 'amps_speed_max_value')">+</button></span>
+                        </div>
 
-    <hr>
-    <div class="row">
-        <div class="col-sm-4">
-            Achtung: Bitte prüfe vor dem Patchen erneut, ob alle gemachten Eingaben passen!!<br />
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Drive Mode, max. mA</label></div>
+                            <div class="col" id="amps_drive_max_value"></div>
+                        </div>
+                        <div class="row center-block">
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_drive_max', 'amps_drive_max_value')">-</button><input class="form-range" name="amps_drive_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_drive_max_value', this.value)" oninput="OnSliderChange('amps_drive_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_drive_max', 'amps_drive_max_value')">+</button></span>
+                        </div>
+
+                        <div class="row center-block">
+                            <div class="col"><label class="form-check-label">Pedestrian Mode, max. mA</label></div>
+                            <div class="col" id="amps_pedo_max_value"></div>
+                        </div>
+                        <div class="row center-block">
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo_max', 'amps_pedo_max_value')">-</button><input class="form-range" name="amps_pedo_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_pedo_max_value', this.value)" oninput="OnSliderChange('amps_pedo_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo_max', 'amps_pedo_max_value')">+</button></span>
+                        </div>
+                </div>
+            </div>
         </div>
-        <div class="col">
-            <b><label id="drvselect" class="custom-file-label" for="file">Eingabe-Datei auswählen:</label></b>
 
-              <input type="file" id="file" class="custom-file-input" name="filename">
-          <input type="submit" name="patchordoc" value="Patch!">
-          <input type="submit" name="patchordoc" value="Offsets">
+        <hr>
+        <div class="row">
+            <div class="col">
+                <p class="text">
+                    <span style="color: red;">&#9888;&nbsp;Warning:&nbsp;</span>
+                    Before clicking "Patch!" please check all entered values.
+                    This tool applies the selected patches on the uploaded file and returns the patched file for download.
+                </p>
+            </div>
         </div>
-    </div>
-
+        <div class="row">
+            <div class="col">
+                <b><label id="drvselect" class="custom-file-label" for="file">Select Input File:</label></b>
+            </div>
+            <div class="col">
+                <input type="file" id="file" class="custom-file-input" name="filename">
+            </div>
+            <div class="col">
+                <input type="submit" name="patchordoc" value="Patch!">
+            </div>
+        </div>
     </form>
 
-    <div class="row">
-        <div class="col">
-            <b><span style="color: red;">&#9888;&nbsp;NEW </span>Dieses Tool wendet auf die hochgeladene Datei die ausgewählten Patches an (im Forum dokumentiert) und liefert diese ohne Zwischenspeicherung wieder zurück als Download.</b><br>
-            <b><span style="color: red;">&#9888;&nbsp;NEW </span>Die gepatchte Datei sollte anschließend kontrolliert und nach Einsatzzweck aufbereitet werden. Bitte dazu selbst im Forum informieren!</b>.
-        </div>
-    </div>
-
     <hr>
     <div class="row">
-	    <div class="col">
-		<h4 class="text-start">Credits</h3>
-		<p class="text">
-			VLT Firmwares von VooDooShamane (Rollerplausch): <a href="https://rollerplausch.com/threads/vlt-firmwares-in-de-22kmh-mit-neuster-vanilla-firmware-und-vieles-mehr.3197/">Link zum Thread</a><br/>
-			Großen Dank an die Tester: @Daniel_Gee @mhdot
-		</p>
-	    </div>
-	    <div class="col">
-		<h4 class="text-start">Disclaimer</h3>
-		<p class="text-md">
-		    VLT Firmware Patcher by NandTek (dnandha): <a href="https://github.com/dnandha/vlt-firmware-patcher" target="_blank">Link zu GitHub</a> <br/>
-		    Basiert auf BotoX' m365 Firmware Patcher: <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">Link zu GitHub</a>
-		</p>
+	    <div class="col-sm-2">
+            <h4 class="text-start">Credits</h3>
+                </h4>
+            </div>
+        <div class="col">
+            <p class="text">
+                Thanks to ScooterHacking.org. These patches are an adaptation of the mods available at https://pro2.cfw.sh/ for new DRVs, including some improved and new mods.. 
+                Based on BotoX <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">firmware patcher</a>.
+            </p>
 	    </div>
 
     </div>
@@ -406,43 +324,27 @@
 <script>
     var forms = {
         "VERSION": "version",
-        "LTGM": "ltgm",
-        "LTGM_PERSIST": "ltgm_persist",
-        "BRAKELIGHT_MOD": "brakelight_mod",
-        "SPEED_PLUS2": "speed_plus2",
+        "DPC": "dpc",
         "MOTOR_START_SPEED": "motor_start_speed",
-        //"REMOVE_KERS": "remove_kers",
+        "REMOVE_KERS": "remove_kers",
         "REMOVE_AUTOBRAKE": "remove_autobrake",
         "REMOVE_CHARGING_MODE": "remove_charging_mode",
         "CC_DELAY": "cc_delay",
+        "CRC": "crc",
         "WHEELSIZE": "wheelsize",
-        "MOREAMPS": "moreamps",
-        "CRC_1000": "crc_1000",
         "SHUTDOWN_TIME": "shutdown_time",
-
-        "RELIGHT_MOD": "relight_mod",
-        "RELIGHT_RESET": "relight_reset",
-        "RELIGHT_GM": "relight_gm",
-        "RELIGHT_DPC": "relight_dpc",
-        "RELIGHT_BEEP": "relight_beep",
-        "RELIGHT_DELAY": "relight_delay",
-        "RELIGHT_AUTO": "relight_auto",
-
-        "DKC": "dkc",
-        "DKC_L0": "dkc_l0",
-        "DKC_L1": "dkc_l1",
-        "DKC_L2": "dkc_l2",
-
-        "PEDO_UNLOCK": "pedo_unlock",
-
-        "AMMETER": "ammeter",
-        "AMMETER_SETVAL": "ammeter_setval",
-        "AMMETER_SHIFT": "ammeter_shift",
-
-        "RF": "regionfree",
-        "RF_CC_UNLOCK": "rf_cc_unlock",
-        "RF_BL_UNLOCK": "rf_bl_unlock",
-        "RF_DE_BREAK": "rf_de_brake",
+        "SL": "sl_cb",
+        "SL_SPEED": "sl_speed",
+        "SL_DRIVE": "sl_drive",
+        "SL_PEDO": "sl_pedo",
+        "AMPS": "amps_cb",
+        "AMPS_SPEED": "amps_speed",
+        "AMPS_DRIVE": "amps_drive",
+        "AMPS_PEDO": "amps_pedo",
+        "AMPS_MAX": "amps_max_cb",
+        "AMPS_SPEED_MAX": "amps_speed_max",
+        "AMPS_DRIVE_MAX": "amps_drive_max",
+        "AMPS_PEDO_MAX": "amps_pedo_max",
     };
 
     var formValues = Object.values(forms);
@@ -536,7 +438,9 @@
         if(o.onchange) { o.onchange(); }
 
         if (typeof patch === 'boolean') {
+            console.log(patch);
             var cb = GetPatchCheckBox(name);
+            console.log(cb);
 
             if (cb) {
                 cb.checked = patch;
@@ -552,87 +456,32 @@
         ChangeMode();
     }
 
-    function ChangeAmps(div, sel) {
-        var amps = document.getElementById(div);
-        switch (sel) {
-                case "24000":
-                    amps.innerHTML = "24A (ca. 19A gemessen)";
-                    break;
-                case "28000":
-                    amps.innerHTML = "28A (ca. 22A gemessen)";
-                    break;
-                case "30000":
-                    amps.innerHTML = "30A (ca. 23A gemessen)";
-                    break;
-                case "32000":
-                    amps.innerHTML = "32A (ca. 25A gemessen)";
-                    break;
-        }
-    }
-
     function ChangeMode(){
         Preset_Default();
-
-        var mode = document.getElementById("modeselect").value;
-        var divs = document.getElementsByClassName("custom");
-        for (var i=0; i < divs.length; i++) {
-            if (mode === "custom" || mode === "custom-dev") {
-                divs[i].removeAttribute("hidden");
-            } else {
-                const hidden = document.createAttribute("hidden");
-                divs[i].setAttributeNode(hidden);
-            }
-        }
-
-        divs = document.getElementsByClassName("custom-dev");
-        for (var i=0; i < divs.length; i++) {
-            if (mode === "custom-dev") {
-                divs[i].removeAttribute("hidden");
-            } else {
-                const hidden = document.createAttribute("hidden");
-                divs[i].setAttributeNode(hidden);
-            }
-        }
     }
 
     function Preset_Default() {
-        ChangeForm(forms.LTGM, false);
-        ChangeForm(forms.LTGM_PERSIST, false);
-        ChangeForm(forms.BRAKELIGHT_MOD, false);
-        ChangeForm(forms.SPEED_PLUS2, false);
-        ChangeForm(forms.MOTOR_START_SPEED, "5", false);
+        ChangeForm(forms.DPC, false);
+        ChangeForm(forms.MOTOR_START_SPEED, "5.0", false);
         ChangeForm(forms.REMOVE_AUTOBRAKE, false);
-        //ChangeForm(forms.REMOVE_KERS, false);
+        ChangeForm(forms.REMOVE_KERS, false);
         ChangeForm(forms.REMOVE_CHARGING_MODE, false);
-        ChangeForm(forms.CC_DELAY, "5.0", false);
+        ChangeForm(forms.CC_DELAY, "5", false);
+        ChangeForm(forms.CRC, "300", false);
         ChangeForm(forms.WHEELSIZE, "8.5", false);
-        ChangeForm(forms.MOREAMPS, "", false);
-        ChangeForm(forms.CRC_1000, false);
         ChangeForm(forms.SHUTDOWN_TIME, "3.0", false);
-
-        ChangeForm(forms.RELIGHT_MOD, false);
-        ChangeForm(forms.RELIGHT_RESET, false);
-        ChangeForm(forms.RELIGHT_GM, false);
-        ChangeForm(forms.RELIGHT_DPC, false);
-        ChangeForm(forms.RELIGHT_BEEP, false);
-        ChangeForm(forms.RELIGHT_DELAY, false);
-        ChangeForm(forms.RELIGHT_AUTO, false);
-
-        ChangeForm(forms.DKC, false);
-        ChangeForm(forms.DKC_L0, "6", null);
-        ChangeForm(forms.DKC_L1, "12", null);
-        ChangeForm(forms.DKC_L2, "20", null);
-
-        ChangeForm(forms.PEDO_UNLOCK, false);
-
-        ChangeForm(forms.AMMETER, false);
-        ChangeForm(forms.AMMETER_SETVAL, false);
-        ChangeForm(forms.AMMETER_SHIFT, false);
-
-        ChangeForm(forms.RF, false);
-        ChangeForm(forms.RF_CC_UNLOCK, false);
-        ChangeForm(forms.RF_BL_UNLOCK, false);
-        ChangeForm(forms.RF_DE_BREAK, false);
+        ChangeForm(forms.SL, false);
+        ChangeForm(forms.SL_SPEED, "25", false);
+        ChangeForm(forms.SL_DRIVE, "20", false);
+        ChangeForm(forms.SL_PEDO, "5", false);
+        ChangeForm(forms.AMPS, false);
+        ChangeForm(forms.AMPS_SPEED, "25000", false);
+        ChangeForm(forms.AMPS_DRIVE, "17000", false);
+        ChangeForm(forms.AMPS_PEDO, "7000", false);
+        ChangeForm(forms.AMPS_MAX, false);
+        ChangeForm(forms.AMPS_SPEED_MAX, "55000", false);
+        ChangeForm(forms.AMPS_DRIVE_MAX, "32000", false);
+        ChangeForm(forms.AMPS_PEDO_MAX, "8000", false);
     }
 </script>
 
