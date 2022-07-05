@@ -325,6 +325,7 @@ class FirmwarePatcher():
             ofs_f = ofs + 4
         except SignatureException:
             try:
+                # 016
                 sig = [0x95, 0xf8, 0x40, 0xc0, 0xbc, 0xf1, 0x01, 0x0f, 0x05, 0xd0]
                 ofs = FindPattern(self.data, sig) + len(sig)
                 pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
@@ -346,22 +347,12 @@ class FirmwarePatcher():
     def ampere_pedo(self, amps, force=False):
         ret = []
 
+        val = struct.pack('<H', amps)
+
         sig = [None, None, 0x41, 0xf6, 0x58, None, None, None, 0x01, 0xd2]
         ofs = FindPattern(self.data, sig) + 2
 
-        b = self.data[ofs+3]
-        reg = 0
-        if b == 0x32:
-            reg = 2
-        elif b == 0x33:
-            reg = 3
-        elif b == 0x3c:
-            reg = 12
-        else:
-            raise Exception(f"invalid firmware file: {hex(b)}")
-        pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps))[0])
-        self.data[ofs:ofs+4] = post
+        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
         ret.append(["amp_pedo", hex(ofs), pre.hex(), post.hex()])
 
         if force:
@@ -375,6 +366,10 @@ class FirmwarePatcher():
 
     def ampere_max(self, amps_pedo, amps_drive, amps_speed):
         ret = []
+
+        #val_pedo = struct.pack('<H', amps_pedo)
+        #val_drive = struct.pack('<H', amps_drive)
+        #val_speed = struct.pack('<H', amps_speed)
 
         sig = [0xa4, 0xf8, None, None, 0x4f, 0xf4, 0xfa]
         ofs_p = FindPattern(self.data, sig) + 4
@@ -396,11 +391,13 @@ class FirmwarePatcher():
             else:
                 raise Exception(f"invalid firmware file: {hex(b)}")
 
+            #pre, post = PatchImm(self.data, ofs, 4, val_pedo, MOVW_T3_IMM)
             pre = self.data[ofs_p:ofs_p+4]
             post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_pedo))[0])
             self.data[ofs_p:ofs_p+4] = post
             ret.append(["amp_max_pedo", hex(ofs_p), pre.hex(), post.hex()])
 
+            #pre, post = PatchImm(self.data, ofs, 4, val_drive, MOVW_T3_IMM)
             pre = self.data[ofs_d:ofs_d+4]
             post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_drive))[0])
             self.data[ofs_d:ofs_d+4] = post
@@ -430,8 +427,7 @@ class FirmwarePatcher():
                 self.data[ofs_d:ofs_d+4] = post
                 ret.append(["amp_max_drive", hex(ofs_d), pre.hex(), post.hex()])
 
-        #val = struct.pack('<H', amps_speed)
-        #pre, post = PatchImm(self.data, ofs_s, 4, val, MOVW_T3_IMM)
+        #pre, post = PatchImm(self.data, ofs, 4, val_speed, MOVW_T3_IMM)
         pre = self.data[ofs_s:ofs_s+4]
         post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_speed))[0])
         self.data[ofs_s:ofs_s+4] = post

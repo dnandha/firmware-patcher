@@ -6,7 +6,7 @@
 <meta name="description" content="XNG Custom Firmware Toolkit">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='newstyle.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
 
 <title>NextGen Firmware Toolkit</title>
@@ -24,7 +24,7 @@
             </div>
             <div class="modal-body">
                 I acknowledge that this site only provides information for test purposes.
-                <br />
+                <br /><br />
                 I am familiar with my local laws and acknowledge that I solely am responsible for potential harm caused to myself or others.
                 <br />
 		<br /><b>I own the device and software subject to modification!</b>
@@ -51,6 +51,7 @@
 
     <hr>
     <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="dpc" type="checkbox">
@@ -71,6 +72,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="remove_charging_mode">
@@ -88,10 +91,11 @@
                 <label class="form-check-label"><b>No KERS</b></label>
             </div>
             <div class="card-body">
-                Deactivates KERS. Improved version.
+                Deactivates KERS (Improved version).
             </div>
         </div>
-
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
@@ -122,6 +126,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
@@ -161,6 +167,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
@@ -182,6 +190,8 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);">
@@ -213,8 +223,13 @@
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_pedo', 'sl_pedo_value')">-</button><input class="form-range" name="sl_pedo" type="range" step="1" min="0" max="35" value="0" onchange="OnSliderChange('sl_pedo_value', this.value)" oninput="OnSliderChange('sl_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_pedo', 'sl_pedo_value')">+</button></span>
                         </div>
                 </div>
+                <div class="card-text">
+                    These values define the maximum speed of each mode - does not apply to DPC.
+                </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_speed', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this);">
@@ -246,8 +261,13 @@
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo', 'amps_pedo_value')">-</button><input class="form-range" name="amps_pedo" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_pedo_value', this.value)" oninput="OnSliderChange('amps_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo', 'amps_pedo_value')">+</button></span>
                         </div>
                 </div>
+                <div class="card-text">
+                    <span style="color: red;">&#9888;&nbsp;These values affect battery life and setting them too high can toast your controller!</span>
+                </div>
             </div>
         </div>
+    </div>
+    <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_speed_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this);">
@@ -279,30 +299,34 @@
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo_max', 'amps_pedo_max_value')">-</button><input class="form-range" name="amps_pedo_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_pedo_max_value', this.value)" oninput="OnSliderChange('amps_pedo_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo_max', 'amps_pedo_max_value')">+</button></span>
                         </div>
                 </div>
+                <div class="card-text">
+                    <span style="color: red;">&#9888;&nbsp;These values affect battery life and setting them too high can toast your controller!</span>
+                </div>
             </div>
         </div>
+    </div>
 
-        <hr>
-        <div class="row">
-            <div class="col">
-                <p class="text">
-                    <span style="color: red;">&#9888;&nbsp;Warning:&nbsp;</span>
-                    Before clicking "Patch!" please check all entered values.
-                    This tool applies the selected patches on the uploaded file and returns the patched file for download.
-                </p>
-            </div>
+    <hr>
+    <div class="row">
+        <div class="col">
+            <p class="text">
+                <span style="color: red;">&#9888;&nbsp;Warning:&nbsp;</span>
+                Before clicking "Patch!" please check all entered values.
+                This tool applies the selected patches on the uploaded file and returns the patched file for download.
+            </p>
         </div>
-        <div class="row">
-            <div class="col">
-                <b><label id="drvselect" class="custom-file-label" for="file">Select Input File:</label></b>
-            </div>
-            <div class="col">
-                <input type="file" id="file" class="custom-file-input" name="filename">
-            </div>
-            <div class="col">
-                <input type="submit" name="patchordoc" value="Patch!">
-            </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <b><label id="drvselect" class="custom-file-label" for="file">Select Input File:</label></b>
         </div>
+        <div class="col">
+            <input type="file" id="file" class="custom-file-input" name="filename">
+        </div>
+        <div class="col">
+            <input type="submit" name="patchordoc" value="Patch!">
+        </div>
+    </div>
     </form>
 
     <hr>
@@ -313,7 +337,7 @@
             </div>
         <div class="col">
             <p class="text">
-                Thanks to ScooterHacking.org. These patches are an adaptation of the mods available at https://pro2.cfw.sh/ for new DRVs, including some improved and new mods.. 
+                These patches are an adaptation of the mods available at https://pro2.cfw.sh/ for new DRVs, including some improved and new mods.. Thanks to ScooterHacking.org!
                 Based on BotoX <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">firmware patcher</a>.
             </p>
 	    </div>
