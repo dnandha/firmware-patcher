@@ -190,7 +190,7 @@ def patch_firmware():
             mimetype='application/octet-stream',
             attachment_filename=f.filename,
         )
-    elif pod == "Offsets":
+    elif pod == "Documentation":
         return flask.render_template('doc.html', patches=res)
     else:
         return 'Invalid request.', 400

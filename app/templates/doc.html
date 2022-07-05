@@ -9,21 +9,21 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
 
-<title>VLT Custom Firmware Toolkit</title>
+<title>NextGen Firmware Toolkit</title>
 </head>
 
 <body>
 
-<noscript>Diese Webseite benötigt JavaScript.</noscript>
+<noscript>This website requires JavaScript.</noscript>
 
 <div class="container">
     <div class="row"><div class="col center-block text-center">
-        <h1>VLT Firmwares</h1>
+        <h1>NextGen FW</h1>
     </div></div>
 
     <div class="row"><div class="col">
 	    <p class="text">
-	    	Diese Seite dokumentiert alle Offsets der ausgewählten Mods. Die Offsets lassen sich zudem als BytePatch Datei ausgeben.
+            This page documents all selected modifications. A BytePatch file can be generated for each modification.
 	    </p>
     </div></div>
 
@@ -58,8 +58,8 @@
 				<thead class="thead-light">
 					<tr>
 						<th scope="col">Offset</th>
-						<th scope="col">Vorher</th>
-						<th scope="col">Nachher</th>
+						<th scope="col">Original</th>
+						<th scope="col">Modified</th>
 					</tr>
 				</thead>
 				<tbody>
