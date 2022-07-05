@@ -382,12 +382,12 @@ class FirmwarePatcher():
             b = self.data[ofs_p+3]
             if b == 0x52:  # 247
                 reg = 2
-                ofs_d = ofs - 6
-                ofs_s = ofs + len(sig) + 6
+                ofs_s = ofs - 6
+                ofs_d = ofs + len(sig) + 6
             elif b == 0x53:  # 319
                 reg = 3
-                ofs_d = ofs - 8
-                ofs_s = ofs + len(sig) + 8
+                ofs_s = ofs - 8
+                ofs_d = ofs + len(sig) + 8
             else:
                 raise Exception(f"invalid firmware file: {hex(b)}")
 

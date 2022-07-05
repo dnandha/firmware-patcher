@@ -40,13 +40,26 @@
     </div>
 
 <div class="container">
-    <div class="center-block text-center">
+    <div class="text-center">
         <h1 class="display-1">NextGen FW</h1>
 
         <p class="lead">
             Configure your own NextGen firmware (NGFW) by adjusting the options below. <b>Both V3.0 and V3.1 controllers are supported!</b>
                 By default nothing will be patched, enable patches with the checkbox next to them.
         </p>
+    </div>
+
+    <hr>
+    <div class="row text-center">
+        <div class="col"><h5>Preset (Optional)</h5></div>
+        <div class="col">
+            <select class="form-select" id="devselect" name="device" onchange="ChangeDevice()">
+                <option value="1s">1S</option>
+                <option value="pro2">Pro2</option>
+                <option value="lite">Lite/Essential</option>
+                <option value="mi3">3</option>
+            </select>
+        </div>
     </div>
 
     <hr>
@@ -176,7 +189,7 @@
             </div>
 
             <div class="card-body">
-                <div class="card-title center-block">
+                <div class="card-title">
                     <div class="row">
                         <div class="col">Inches</div>
                         <div class="col" id="wheelsize_value"></div>
@@ -191,35 +204,36 @@
             </div>
         </div>
     </div>
+
     <div class="card-group">
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);">
-                <label class="form-check-label"><b>Speed Limits</b></label>
+                <label class="form-check-label"><b>Speed Limit</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Speed Mode, km/h</label></div>
                             <div class="col" id="sl_speed_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
                             <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_speed', 'sl_speed_value')">-</button><input class="form-range" name="sl_speed" type="range" step="1" min="0" max="35" value="0" onchange="OnSliderChange('sl_speed_value', this.value)" oninput="OnSliderChange('sl_speed_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_speed', 'sl_speed_value')">+</button></span>
                         </div>
 
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Drive Mode, km/h</label></div>
                             <div class="col" id="sl_drive_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_drive', 'sl_drive_value')">-</button><input class="form-range" name="sl_drive" type="range" step="1" min="0" max="35" value="0" onchange="OnSliderChange('sl_drive_value', this.value)" oninput="OnSliderChange('sl_drive_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_drive', 'sl_drive_value')">+</button></span>
                         </div>
 
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Pedestrian Mode, km/h</label></div>
                             <div class="col" id="sl_pedo_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_pedo', 'sl_pedo_value')">-</button><input class="form-range" name="sl_pedo" type="range" step="1" min="0" max="35" value="0" onchange="OnSliderChange('sl_pedo_value', this.value)" oninput="OnSliderChange('sl_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_pedo', 'sl_pedo_value')">+</button></span>
                         </div>
                 </div>
@@ -233,31 +247,31 @@
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_speed', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this);">
-                <label class="form-check-label"><b>Nominal Currents</b></label>
+                <label class="form-check-label"><b>Nominal Current</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Speed Mode, mA</label></div>
                             <div class="col" id="amps_speed_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
                             <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_speed', 'amps_speed_value')">-</button><input class="form-range" name="amps_speed" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_speed_value', this.value)" oninput="OnSliderChange('amps_speed_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_speed', 'amps_speed_value')">+</button></span>
                         </div>
 
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Drive Mode, mA</label></div>
                             <div class="col" id="amps_drive_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_drive', 'amps_drive_value')">-</button><input class="form-range" name="amps_drive" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_drive_value', this.value)" oninput="OnSliderChange('amps_drive_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_drive', 'amps_drive_value')">+</button></span>
                         </div>
 
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Pedestrian Mode, mA</label></div>
                             <div class="col" id="amps_pedo_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo', 'amps_pedo_value')">-</button><input class="form-range" name="amps_pedo" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_pedo_value', this.value)" oninput="OnSliderChange('amps_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo', 'amps_pedo_value')">+</button></span>
                         </div>
                 </div>
@@ -271,31 +285,31 @@
         <div class="card text-center m-1">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_speed_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this);">
-                <label class="form-check-label"><b>Current Limits</b></label>
+                <label class="form-check-label"><b>Maximum Current</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Speed Mode, max. mA</label></div>
                             <div class="col" id="amps_speed_max_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
                             <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_speed_max', 'amps_speed_max_value')">-</button><input class="form-range" name="amps_speed_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_speed_max_value', this.value)" oninput="OnSliderChange('amps_speed_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_speed_max', 'amps_speed_max_value')">+</button></span>
                         </div>
 
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Drive Mode, max. mA</label></div>
                             <div class="col" id="amps_drive_max_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_drive_max', 'amps_drive_max_value')">-</button><input class="form-range" name="amps_drive_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_drive_max_value', this.value)" oninput="OnSliderChange('amps_drive_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_drive_max', 'amps_drive_max_value')">+</button></span>
                         </div>
 
-                        <div class="row center-block">
+                        <div class="row">
                             <div class="col"><label class="form-check-label">Pedestrian Mode, max. mA</label></div>
                             <div class="col" id="amps_pedo_max_value"></div>
                         </div>
-                        <div class="row center-block">
+                        <div class="row">
 				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo_max', 'amps_pedo_max_value')">-</button><input class="form-range" name="amps_pedo_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_pedo_max_value', this.value)" oninput="OnSliderChange('amps_pedo_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo_max', 'amps_pedo_max_value')">+</button></span>
                         </div>
                 </div>
@@ -311,8 +325,7 @@
         <div class="col">
             <p class="text">
                 <span style="color: red;">&#9888;&nbsp;Warning:&nbsp;</span>
-                Before clicking "Patch!" please check all entered values.
-                This tool applies the selected patches on the uploaded file and returns the patched file for download.
+                Before proceeding, please check all entered values! Select a file and press one of the two buttons: "Patch!" applies the selected patches on the uploaded file and returns the patched file for download, "Documentation" generates a full description of all selected modifications.
             </p>
         </div>
     </div>
@@ -333,12 +346,11 @@
     <hr>
     <div class="row">
 	    <div class="col-sm-2">
-            <h4 class="text-start">Credits</h3>
-                </h4>
-            </div>
+            <h4 class="text-start">Credits</h4>
+        </div>
         <div class="col">
             <p class="text">
-                These patches are an adaptation of the mods available at https://pro2.cfw.sh/ for new DRVs, including some improved and new mods.. Thanks to ScooterHacking.org!
+                These patches are an adaptation of the mods available at https://pro2.cfw.sh/ for new DRVs, including some improved and new mods.. Thanks to the authors at ScooterHacking.org!
                 Based on BotoX <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">firmware patcher</a>.
             </p>
 	    </div>
@@ -463,9 +475,7 @@
         if(o.onchange) { o.onchange(); }
 
         if (typeof patch === 'boolean') {
-            console.log(patch);
             var cb = GetPatchCheckBox(name);
-            console.log(cb);
 
             if (cb) {
                 cb.checked = patch;
@@ -478,11 +488,52 @@
         var warning = new bootstrap.Modal(document.getElementById('disclaimer'));
         warning.show();
     
-        ChangeMode();
+        ChangeDevice();
     }
 
-    function ChangeMode(){
+    function ChangeDevice(){
         Preset_Default();
+
+        var dev = document.getElementById("devselect").value;
+        if (dev === "pro2") {
+            Preset_Pro2();
+        } else if (dev === "1s") {
+            Preset_1S();
+        } else if (dev === "lite") {
+            Preset_Lite();
+        } else if (dev === "mi3") {
+            Preset_Mi3();
+        }
+    }
+
+    function Preset_1S() {
+        ChangeForm(forms.AMPS_SPEED, "20000", false);
+        ChangeForm(forms.AMPS_DRIVE, "15000", false);
+        ChangeForm(forms.AMPS_SPEED_MAX, "35000", false);
+        ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
+    }
+
+    function Preset_Pro2() {
+        ChangeForm(forms.AMPS_SPEED, "25000", false);
+        ChangeForm(forms.AMPS_DRIVE, "17000", false);
+        ChangeForm(forms.AMPS_SPEED_MAX, "55000", false);
+        ChangeForm(forms.AMPS_DRIVE_MAX, "32000", false);
+    }
+
+    function Preset_Lite() {
+        ChangeForm(forms.SL_SPEED, "20", false);
+        ChangeForm(forms.SL_DRIVE, "15", false);
+        ChangeForm(forms.AMPS_SPEED, "17000", false);
+        ChangeForm(forms.AMPS_DRIVE, "0", false);
+        ChangeForm(forms.AMPS_SPEED_MAX, "32000", false);
+        ChangeForm(forms.AMPS_DRIVE_MAX, "0", false);
+    }
+
+    function Preset_Mi3() {
+        ChangeForm(forms.AMPS_SPEED, "26500", false);
+        ChangeForm(forms.AMPS_DRIVE, "15000", false);
+        ChangeForm(forms.AMPS_SPEED_MAX, "55000", false);
+        ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
     }
 
     function Preset_Default() {
@@ -500,12 +551,8 @@
         ChangeForm(forms.SL_DRIVE, "20", false);
         ChangeForm(forms.SL_PEDO, "5", false);
         ChangeForm(forms.AMPS, false);
-        ChangeForm(forms.AMPS_SPEED, "25000", false);
-        ChangeForm(forms.AMPS_DRIVE, "17000", false);
-        ChangeForm(forms.AMPS_PEDO, "7000", false);
         ChangeForm(forms.AMPS_MAX, false);
-        ChangeForm(forms.AMPS_SPEED_MAX, "55000", false);
-        ChangeForm(forms.AMPS_DRIVE_MAX, "32000", false);
+        ChangeForm(forms.AMPS_PEDO, "7000", false);
         ChangeForm(forms.AMPS_PEDO_MAX, "8000", false);
     }
 </script>
