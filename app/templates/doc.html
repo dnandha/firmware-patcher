@@ -17,15 +17,23 @@
 <noscript>This website requires JavaScript.</noscript>
 
 <div class="container">
-    <div class="row"><div class="col center-block text-center">
-        <h1>NextGen FW</h1>
-    </div></div>
+    <div class="row text-center">
+        <div class="col">
+            <h1 class="display-1">NextGen FW</h1>
+        </div>
+    </div>
 
-    <div class="row"><div class="col">
-	    <p class="text">
-            This page documents all selected modifications. A BytePatch file can be generated for each modification.
-	    </p>
-    </div></div>
+    <div class="row text-center">
+        <div class="col">
+            <p class="lead">
+                This page documents all selected modifications. A BytePatch file can be generated for each modification.
+            </p>
+            <p class="text">
+                This information service is provided free of charge and it must stay that way.
+                    If you decide to use the information provided here for your project, please add a reference to this site!
+            </p>
+        </div>
+    </div>
 
     {% for (patch,offsets) in patches %}
 	<div class="modal fade" id="{{offsets[0][0]}}" tabindex="-1" role="dialog" aria-hidden="true">

@@ -104,7 +104,10 @@ def patch(data):
     amps_pedo_max = flask.request.form.get('amps_pedo_max', None)
     if amps_speed_max is not None or amps_drive_max is not None or amps_pedo_max is not None:
         amps_speed_max = int(amps_speed_max)
-        amps_drive_max = int(amps_drive_max)
+        if amps_drive_max is not None:
+            amps_drive_max = int(amps_drive_max)
+        else:
+            amps_drive_max = amps_speed_max
         amps_pedo_max = int(amps_pedo_max)
         assert amps_speed_max >= 5000 and amps_speed_max <= 65000, amps_speed_max
         assert amps_drive_max >= 5000 and amps_drive_max <= 65000, amps_drive_max

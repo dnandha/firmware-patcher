@@ -44,14 +44,18 @@
         <h1 class="display-1">NextGen FW</h1>
 
         <p class="lead">
-            Configure your own NextGen firmware (NGFW) by adjusting the options below. <b>Both V3.0 and V3.1 controllers are supported!</b>
+        Configure your own NextGen firmware (NGFW) by adjusting the options below. <b>Both V3.0 and V3.1 controllers are supported!</b><br/>
                 By default nothing will be patched, enable patches with the checkbox next to them.
+        </p>
+        <p class="text">
+        This information service is provided free of charge and it must stay that way. The source code is available at <a href="https://github.com/dnandha/firmware-patcher/tree/ng">GitHub</a>.<br/>
+            If you decide to use any of the information provided here for your project, please add a reference to this site!
         </p>
     </div>
 
     <hr>
     <div class="row text-center">
-        <div class="col"><h5>Preset (Optional)</h5></div>
+        <div class="col"><h5>Load Preset</h5></div>
         <div class="col">
             <select class="form-select" id="devselect" name="device" onchange="ChangeDevice()">
                 <option value="1s">1S</option>
@@ -350,8 +354,8 @@
         </div>
         <div class="col">
             <p class="text">
-                These patches are an adaptation of the mods available at https://pro2.cfw.sh/ for new DRVs, including some improved and new mods.. Thanks to the authors at ScooterHacking.org!
-                Based on BotoX <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">firmware patcher</a>.
+            These patches are an adaptation of the mods available at https://pro2.cfw.sh/ for new DRVs, including some improved and new mods.. Thanks to the authors at ScooterHacking.org!
+            Based on BotoX <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">firmware patcher</a>.
             </p>
 	    </div>
 
@@ -461,7 +465,10 @@
     }
 
     function CheckForm(name, cb) {
-        GetForm(name).disabled = !cb.checked;
+        var o = GetForm(name);
+        if (o.value != 0) {
+            o.disabled = !cb.checked;
+        }
     }
 
     function ChangeForm(name, value, patch) {
