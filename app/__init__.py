@@ -67,7 +67,7 @@ def patch(data):
     if sl_speed:
         sl_speed = int(sl_speed)
         assert sl_speed >= 0 and sl_speed <= 35, sl_speed
-        res.append((f"Speed-Limit Speed Mode: {sl_speed}km/h", patcher.speed_limit_speed(sl_speed)))
+        res.append((f"Speed-Limit Sport Mode: {sl_speed}km/h", patcher.speed_limit_speed(sl_speed)))
 
     sl_drive = flask.request.form.get('sl_drive', None)
     if sl_drive:
@@ -79,13 +79,13 @@ def patch(data):
     if sl_pedo:
         sl_pedo = int(sl_pedo)
         assert sl_pedo >= 0 and sl_pedo <= 35, sl_pedo
-        res.append((f"Speed-Limit Pedestrian Mode: {sl_pedo}km/h", patcher.speed_limit_pedo(sl_speed)))
+        res.append((f"Speed-Limit Pedestrian Mode: {sl_pedo}km/h", patcher.speed_limit_pedo(sl_pedo)))
 
     amps_speed = flask.request.form.get('amps_speed', None)
     if amps_speed is not None:
         amps_speed = int(amps_speed)
         assert amps_speed >= 5000 and amps_speed <= 35000, amps_speed
-        res.append((f"Current Speed Mode: {amps_speed}mA", patcher.ampere_speed(amps_speed)))
+        res.append((f"Current Sport Mode: {amps_speed}mA", patcher.ampere_speed(amps_speed)))
 
     amps_drive = flask.request.form.get('amps_drive', None)
     if amps_drive is not None:
