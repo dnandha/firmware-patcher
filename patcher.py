@@ -1,4 +1,6 @@
-# VLT Firmware Patcher
+#!/usr/bin/python3
+# ##
+# NGFW Patcher
 # Copyright (C) 2022 Daljeet Nandha
 #
 # This program is free software: you can redistribute it and/or modify
@@ -13,10 +15,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+# ##
 
-# Based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
+# ##
+# Based on: https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
+# I introduced mods into the patcher either by studying existing patchers or creating new mods myself.
+# All original authors are mentioned in the function comments!
+# ##
 
-#!/usr/bin/python3
 from binascii import hexlify, unhexlify
 import struct
 import keystone
@@ -94,6 +100,8 @@ class FirmwarePatcher():
 
     def remove_kers(self):
         '''
+        Original Author: D. Nandha
+        Description: Alternate (improved) version of No Kers Mod
         '''
         sig = [0x00, 0xeb, 0x80, 0x00, 0x80, 0x00, 0x80, 0x0a]
         ofs = FindPattern(self.data, sig) + 6
@@ -104,6 +112,7 @@ class FirmwarePatcher():
 
     def remove_autobrake(self):
         '''
+        Original Author: BotoX
         '''
         sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
         ofs = FindPattern(self.data, sig) + 2
@@ -114,6 +123,7 @@ class FirmwarePatcher():
 
     def remove_charging_mode(self):
         '''
+        Original Author: BotoX
         '''
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
         ofs = FindPattern(self.data, sig) + 4
@@ -124,6 +134,7 @@ class FirmwarePatcher():
 
     def current_raising_coeff(self, coeff):
         '''
+        Original Author: SH
         '''
         ret = []
 
@@ -153,6 +164,7 @@ class FirmwarePatcher():
 
     def speed_limit_drive(self, kmh):
         '''
+        Original Author: BotoX
         '''
         ret = []
 
@@ -182,6 +194,7 @@ class FirmwarePatcher():
 
     def speed_limit_speed(self, kmh):
         '''
+        Original Author: SH
         '''
         ret = []
 
@@ -211,6 +224,8 @@ class FirmwarePatcher():
 
     def speed_limit_pedo(self, kmh):
         '''
+        Original Author: D. Nandha
+        Description: Speed limit of pedestrian mode
         '''
         ret = []
 
@@ -233,6 +248,7 @@ class FirmwarePatcher():
 
     def motor_start_speed(self, kmh):
         '''
+        Original Author: BotoX
         '''
         val = struct.pack('<H', round(kmh * 345))
         sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
@@ -242,6 +258,7 @@ class FirmwarePatcher():
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
         '''
+        Original Author: BotoX
         '''
         ret = []
 
@@ -268,6 +285,7 @@ class FirmwarePatcher():
 
     def ampere_speed(self, amps, force=True):
         '''
+        Original Author: SH
         '''
         ret = []
 
@@ -312,6 +330,7 @@ class FirmwarePatcher():
 
     def ampere_drive(self, amps, force=True):
         '''
+        Original Author: BotoX
         '''
         ret = []
 
@@ -344,7 +363,11 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_pedo(self, amps, force=False):
+    def ampere_pedo(self, amps, force=True):
+        '''
+        Original Author: D. Nandha
+        Description: Nominal current of pedestrian mode
+        '''
         ret = []
 
         val = struct.pack('<H', amps)
@@ -365,6 +388,9 @@ class FirmwarePatcher():
         return ret
 
     def ampere_max(self, amps_pedo, amps_drive, amps_speed):
+        '''
+        Original Author: BotoX/SH
+        '''
         ret = []
 
         #val_pedo = struct.pack('<H', amps_pedo)
@@ -437,6 +463,7 @@ class FirmwarePatcher():
 
     def dpc(self):
         '''
+        Original Author: SH
         '''
         ret = []
         sig = [0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
@@ -444,9 +471,8 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
-        ofs += 2
-        post = bytes(self.ks.asm('NOP')[0])
-        self.data[ofs:ofs+2] = post
+        self.data[ofs+2:ofs+4] = post
+        post = self.data[ofs:ofs+4]
         ret.append(["dpc_nop", hex(ofs), pre.hex(), post.hex()])
 
         sig = [0xa4, 0xf8, 0xe2, None, 0xa4, 0xf8, 0xf0, None, 0xa4, 0xf8, 0xee, None]
@@ -469,6 +495,8 @@ class FirmwarePatcher():
 
     def shutdown_time(self, seconds):
         '''
+        Original Author: D. Nandha
+        Description: Time to press power button before shutdown
         '''
         delay = int(seconds * 200)
         assert delay.bit_length() <= 12, 'bit length overflow'
@@ -479,8 +507,137 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         return [("shutdown", hex(ofs), pre.hex(), post.hex())]
 
+    def brake_light(self):
+        '''
+        Original Author: D. Nandha
+        Description: Alternate (improved) version,
+                     instead of changing condition flags (hacky), replace code
+        '''
+        ret = []
+
+        sig = [0x10, 0xbd, 0x00, 0x00, None, 0x04, 0x00, 0x20, 0x70, 0xb5]
+        ofs = FindPattern(self.data, sig) + 4
+        ofs_1 = self.data[ofs:ofs+4]
+        ofs_1 = struct.unpack("<L", ofs_1)[0]
+
+        sig = [None, 0x00, 0x00, 0x20, None, 0x06, 0x00, 0x20, None, 0x03, 0x00, 0x20]
+        ofs = FindPattern(self.data, sig) + 0x8
+        ofs_2 = self.data[ofs:ofs+4]
+        ofs_2 = struct.unpack("<L", ofs_2)[0]
+        adds = ofs_1 - ofs_2
+
+        len_ = 46
+        try:
+            sig = [0x90, 0xf8, None, None, None, 0x28, None, 0xd1]
+            ofs = FindPattern(self.data, sig) + 0x8
+        except SignatureException:
+            # 242
+            sig = [0xa0, 0x7d, 0x40, 0x1c, 0xc0, 0xb2, 0xa0, 0x75]
+            ofs = FindPattern(self.data, sig)
+
+        # smash stuff
+        pre = self.data[ofs:ofs+len_]
+        nopcount = ((len_ - 4) // 2)
+        post = bytes(self.ks.asm('NOP')[0] * nopcount
+                     + self.ks.asm('POP.W {R4, R5, R6, PC}')[0])
+        assert len(post) == len_, len(post)
+        self.data[ofs:ofs+len_] = post
+
+        # duplicate "backlight on" code
+        asm = """
+        adds       r5,r4,#{}
+        ldrh       r1,[r5,#0]
+        mov.w      r6,#0x40000000
+        strh       r1,[r6,#0x34]
+        adds       r1,#0x10
+        strh       r1,[r5,#0]
+        cmp        r1,#0x60
+        ble        #0x18
+        movs       r1,#0x60
+        strh       r1,[r5,#0]
+        """.format(adds)
+
+        patch = bytes(self.ks.asm(asm)[0])
+        self.data[ofs:ofs+len(patch)] = patch
+        post = self.data[ofs:ofs+len_]
+        ret.append(["blm", hex(ofs), pre.hex(), post.hex()])
+        return ret
+
+    def region_free(self, persist=False):
+        '''
+        Original Author: D. Nandha
+        Description: Remove all region restrictions bound to serial number
+        '''
+        ret = []
+        sig = self.ks.asm('STRB.W R2,[R1,#0x43]')[0]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        self.data[ofs+2:ofs+4] = post
+        post = self.data[ofs:ofs+4]
+        ret.append(["rfm", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def lower_light(self):
+        '''
+        Original Author: D. Nandha
+        Description: Lowers light intensity, for auto-light effect
+        '''
+        ret = []
+        sig = [0x4f, 0xf0, 0x80, 0x40, 0x04, 0xf0, None, None, 0x20, 0x88]
+        ofs = FindPattern(self.data, sig) + 0xa
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm("adds r0,#1")[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["lower_light_step", hex(ofs), pre.hex(), post.hex()])
+
+        ofs += 6
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm("cmp r0,#5")[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["lower_light_cmp", hex(ofs), pre.hex(), post.hex()])
+
+        ofs += 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm("movs r0,#5")[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["lower_light_max", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def ampere_meter(self, shift=8):
+        '''
+        Original Author: D. Nandha
+        Description: Replace dashboard battery bars with amp meter
+        '''
+        ret = []
+
+        asm = """
+        ldr r1,[pc,#{}]
+        ldr r0,[r{},#{}]
+        asrs r0,r0,#{}
+        bmi #0xc
+        """
+        addr_table = {
+            # pre[0]: ofs1 reg ofs2
+            0x80: [0xa0, 0, -0x30],  # 247
+            0xa8: [0x9c, 5, -0x10],  # 319
+        }
+
+        sig = [None, 0x79, None, 0x49, 0x10, 0xb9, 0xfd, 0xf7, None, None, 0x48, 0x70]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+0xa]
+        post = bytes(self.ks.asm(asm.format(*addr_table[pre[0]], shift))[0])
+        self.data[ofs:ofs+0xa] = post
+        ret.append(["ampere_meter", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
     def cc_delay(self, seconds):
         '''
+        Original Author: BotoX
         '''
         ret = []
 
@@ -497,6 +654,7 @@ class FirmwarePatcher():
 
     def lever_resolution(self, brake=0x73):
         '''
+        Original Author: BotoX
         '''
         ret = []
 
@@ -554,12 +712,16 @@ if __name__ == "__main__":
         'alp': lambda: vlt.ampere_pedo(10000),
         'ald': lambda: vlt.ampere_drive(20000),
         'als': lambda: vlt.ampere_speed(30000),
-        'amm': lambda: vlt.ampere_max(10000, 30000, 55000),
+        'alm': lambda: vlt.ampere_max(10000, 30000, 55000),
         'rks': lambda: vlt.remove_kers(),
         'rab': lambda: vlt.remove_autobrake(),
         'rcm': lambda: vlt.remove_charging_mode(),
         'crc': lambda: vlt.current_raising_coeff(1000),
         'ccd': lambda: vlt.cc_delay(2),
+        'rfm': lambda: vlt.region_free(),
+        'llm': lambda: vlt.lower_light(),
+        'blm': lambda: vlt.brake_light(),
+        'amm': lambda: vlt.ampere_meter(shift=8),
         'lrb': lambda: vlt.lever_resolution(brake=0x9c),
     }
 
@@ -573,10 +735,12 @@ if __name__ == "__main__":
                            for x in vlt.cs.disasm(bytes.fromhex(pre), 0)]
                 post_dis = [' '.join([x.mnemonic, x.op_str])
                             for x in vlt.cs.disasm(bytes.fromhex(post), 0)]
-                print("<", pre_dis[0])
-                print(">", post_dis[0])
+                for pd in pre_dis:
+                    print("<", pd)
+                for pd in post_dis:
+                    print(">", pd)
         except SignatureException:
-            print("sigerr", k)
+            print("SIGERR", k)
 
     with open(outfile, 'wb') as fp:
         if outfile.endswith(".zip"):

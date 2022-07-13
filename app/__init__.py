@@ -162,6 +162,22 @@ def patch(data):
         res.append((f"CC Delay: {cc_delay}s",
                     patcher.cc_delay(cc_delay)))
 
+    amm = flask.request.form.get('ammeter', None)
+    if amm:
+        res.append(("Current-Meter", patcher.ampere_meter()))
+
+    rfm = flask.request.form.get('rfm', None)
+    if rfm:
+        res.append(("Region-Free", patcher.region_free()))
+
+    blm = flask.request.form.get('blm', None)
+    if blm:
+        res.append(("Static Brakelight", patcher.brake_light()))
+
+    alm = flask.request.form.get('blm_alm', None)
+    if alm:
+        res.append(("Auto-Light", patcher.lower_light()))
+
     return res, patcher.data
 
 
@@ -175,12 +191,22 @@ def patch_firmware():
 
     try:
         res, data_patched = patch(data)
+        if not res:
+            return 'Patches could not be applied. Please select correct input file.'
     except SignatureException:
-        return 'Patches could not be applied. Please select the correct input file.', 400
+        return 'Patches could not be applied. Please select correct input file.'
 
-    pod = flask.request.form.get('patchordoc', None)
-    if pod == "Patch!":
+    dev = flask.request.form.get('device', None)
+    pod = flask.request.form.get('patch', None)
+    if pod in ['Bin', 'Zip']:
+        filename = f.filename
+
         mem = io.BytesIO()
+        if pod == 'Zip':
+            from zip import Zippy
+            params = '\n'.join([x[0] for x in res]) + '\n'
+            data_patched = Zippy(data_patched, params=params, model=dev).zip_it('nice'.encode())
+            filename = filename[:-4] + '.zip'
         mem.write(data_patched)
         mem.seek(0)
 
@@ -191,9 +217,9 @@ def patch_firmware():
             mem,
             as_attachment=True,
             mimetype='application/octet-stream',
-            attachment_filename=f.filename,
+            attachment_filename=filename,
         )
-    elif pod == "Documentation":
+    elif pod in ['Doc']:
         return flask.render_template('doc.html', patches=res)
     else:
         return 'Invalid request.', 400

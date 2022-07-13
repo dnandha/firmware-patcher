@@ -52,6 +52,7 @@
     </div>
 
     <hr>
+    <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
     <div class="row text-center">
         <div class="col"><h5>Load Preset</h5></div>
         <div class="col">
@@ -63,11 +64,9 @@
             </select>
         </div>
     </div>
-
     <hr>
-    <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
-    <div class="card-group">
-        <div class="card text-center m-1">
+    <div class="card-group text-center">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="dpc" type="checkbox">
                 <label class="form-check-label"><b>DPC</b></label>
@@ -76,7 +75,7 @@
                 Activate/Deactivate DPC via register.
             </div>
         </div>
-        <div class="card text-center m-1">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="remove_autobrake">
                 <label class="form-check-label"><b>Remove Speed Check</b></label>
@@ -88,8 +87,8 @@
             </div>
         </div>
     </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
+    <div class="card-group text-center">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="remove_charging_mode">
                 <label class="form-check-label"><b>Remove Charging Mode</b></label>
@@ -100,50 +99,18 @@
                 </div>
             </div>
         </div>
-        <div class="card text-center m-1">
+        <div class="card border-info">
             <div class="card-header">
                 <input class="form-check-input" name="remove_kers" type="checkbox">
                 <label class="form-check-label"><b>No KERS</b></label>
             </div>
             <div class="card-body">
-                Deactivates KERS (Improved version).
+                Deactivates KERS (Improved version: Error 1 fix + KERS-Multiplier=0).
             </div>
         </div>
     </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
-                <label class="form-check-label"><b>Shutdown Time</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-			<div>Seconds</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="3" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">3</div>
-                </div>
-                <div class="card-text">
-                    Time you have to press the power button until the device turns off.
-                </div>
-            </div>
-        </div>
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" name="cc_delay_cb" type="checkbox" onchange="CheckForm('cc_delay', this);">
-                <label class="form-check-label"><b>Cruise Control Delay</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-			<div>Seconds</div>
-			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('cc_delay', 'cc_delay_val')">-</button><input class="form-range" name="cc_delay" type="range" step="1" min="1" max="9" value="5" onchange="OnSliderChange('cc_delay_val', this.value)" oninput="OnSliderChange('cc_delay_val', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('cc_delay', 'cc_delay_val')">+</button></span><div id="cc_delay_val">5</div>
-                </div>
-                <div class="card-text">
-                    Time needed for cruise control to kick in.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
+    <div class="card-group text-center">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="motor_start_speed_cb" type="checkbox" onchange="CheckForm('motor_start_speed', this);">
                 <label class="form-check-label"><b>Motor Start Speed</b></label>
@@ -163,7 +130,7 @@
                 </div>
             </div>
         </div>
-        <div class="card text-center m-1">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="crc_cb" type="checkbox" onchange="CheckForm('crc', this);">
                 <label class="form-check-label"><b>CRC</b></label>
@@ -178,13 +145,90 @@
                     </div>
                 </div>
                 <div class="card-text">
-                    Current raising coefficient defines the increments of current increase.
+                    Current raising coefficient, defines the increments of current increase.
                 </div>
             </div>
         </div>
     </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
+    <div class="card-group text-center">
+        <div class="card border-info">
+            <div class="card-header">
+                <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
+                <label class="form-check-label"><b>Shutdown Time</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+			<div>Seconds</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('shutdown_time', 'shutdown_value')">-</button><input class="form-range" name="shutdown_time" type="range" step="0.5" min="1" max="9" value="3" onchange="OnSliderChange('shutdown_value', this.value)" oninput="OnSliderChange('shutdown_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('shutdown_time', 'shutdown_value')">+</button></span><div id="shutdown_value">3</div>
+                </div>
+                <div class="card-text">
+                    Time you have to press the power button until the device turns off.
+                </div>
+            </div>
+        </div>
+        <div class="card border-info">
+            <div class="card-header">
+                <input class="form-check-input" name="cc_delay_cb" type="checkbox" onchange="CheckForm('cc_delay', this);">
+                <label class="form-check-label"><b>Cruise Control Delay</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+			<div>Seconds</div>
+			<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('cc_delay', 'cc_delay_val')">-</button><input class="form-range" name="cc_delay" type="range" step="1" min="1" max="9" value="5" onchange="OnSliderChange('cc_delay_val', this.value)" oninput="OnSliderChange('cc_delay_val', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('cc_delay', 'cc_delay_val')">+</button></span><div id="cc_delay_val">5</div>
+                </div>
+                <div class="card-text">
+                    Time needed for cruise control to kick in.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group text-center">
+        <div class="card border-info">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="ammeter">
+                <label class="form-check-label"><b>Current-Meter</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Replaces the battery percentage shown on dashboard by actual current consumption.
+                    No bars means no consumption, full bars means 25 amps consumption.<br/>
+                </div>
+                With this mod the battery percentage can only be read out using an app.
+                <span style="color: red;">&#9888;&nbsp;When charging the dashboard will show a constant "0", but charging works normally.</span>
+            </div>
+        </div>
+		<div class="card border-info">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="blm" onchange="CheckForm('blm_alm', this);">
+                <label class="form-check-label"><b>Static Brakelight</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Replaces the blinking backlight by a static backlight on braking (improved version).
+                    When "Auto-Light" is additionaly selected the default backlight brightness is lowered.
+                </div>
+                <div class="card-text">
+                    <input class="form-check-input" type="checkbox" name="blm_alm">
+                    <label class="form-check-label"><b>Auto-Light</b></label><br/>
+                    This mod gives the same effect as rear brakelights on a car when braking.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group text-center">
+		<div class="card border-info">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="rfm">
+                <label class="form-check-label"><b>Region-Free</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Remove regional restrictions normally imposed by the serial number, such as missing cruise control.
+                    Effectively converts a german device to an international device.
+                </div>
+            </div>
+        </div>
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
                 <label class="form-check-label"><b>Wheel Size</b></label>
@@ -206,9 +250,8 @@
             </div>
         </div>
     </div>
-
-    <div class="card-group">
-        <div class="card text-center m-1">
+    <div class="card-group text-center">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);">
                 <label class="form-check-label"><b>Speed Limit</b></label>
@@ -245,8 +288,8 @@
             </div>
         </div>
     </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
+    <div class="card-group text-center">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_speed', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this);">
                 <label class="form-check-label"><b>Nominal Current</b></label>
@@ -282,9 +325,7 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_speed_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this);">
                 <label class="form-check-label"><b>Maximum Current</b></label>
@@ -327,20 +368,22 @@
         <div class="col">
             <p class="text">
                 <span style="color: red;">&#9888;&nbsp;Warning:&nbsp;</span>
-                Before proceeding, please check all entered values! Select a file and press one of the two buttons: "Patch!" applies the selected patches on the uploaded file (returning the processed file for download), "Documentation" generates a full description of all selected mods.
+                Before proceeding, please check all entered values! Select a valid file and press one of the buttons: "Bin" applies the selected patches on the uploaded file and returns the patched file, "Zip" further packs the patched file for flashing, "Doc" generates a full documentation of all selected mods.
             </p>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <b><label id="drvselect" class="custom-file-label" for="file">Select Input File:</label></b>
+            <b><label id="drvselect" class="custom-file-label">Select Input File:</label></b>
         </div>
         <div class="col">
-            <input type="file" id="file" class="custom-file-input" name="filename">
+            <input type="file" class="custom-file-input" name="filename">
         </div>
         <div class="col">
-            <input type="submit" name="patchordoc" value="Patch!">
-            <input type="submit" name="patchordoc" value="Documentation">
+            <label id="drvselect" class="custom-file-label">Output:</label>
+            <input type="submit" name="patch" value="Bin">
+            <input type="submit" name="patch" value="Zip">
+            <input type="submit" name="patch" value="Doc">
         </div>
     </div>
     </form>
@@ -384,6 +427,11 @@
         "AMPS_SPEED_MAX": "amps_speed_max",
         "AMPS_DRIVE_MAX": "amps_drive_max",
         "AMPS_PEDO_MAX": "amps_pedo_max",
+
+        "AMMETER": "ammeter",
+        "RFM": "rfm",
+        "BLM": "blm",
+        "BLM_ALM": "blm_alm",
     };
 
     var formValues = Object.values(forms);
@@ -559,6 +607,11 @@
         ChangeForm(forms.AMPS_MAX, false);
         ChangeForm(forms.AMPS_PEDO, "7000", false);
         ChangeForm(forms.AMPS_PEDO_MAX, "8000", false);
+		
+        ChangeForm(forms.AMMETER, false);
+        ChangeForm(forms.RFM, false);
+        ChangeForm(forms.BLM, false);
+        ChangeForm(forms.BLM_ALM, false);
     }
 </script>
 
