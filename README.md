@@ -23,6 +23,9 @@ I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/B
 * Wheelsize
 * Speed limits
 * Phase currents
+* Current Meter
+* Region Free
+* Brakelight / Auto-Light
 * (Lever resolution (gas/brake))
 
 ## Instructions
