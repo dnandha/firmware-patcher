@@ -192,9 +192,9 @@ def patch_firmware():
     try:
         res, data_patched = patch(data)
         if not res:
-            return 'Patches could not be applied. Please select correct input file.'
+            return 'No patches applied. Make sure to select the correct input file and at least one patch.'
     except SignatureException:
-        return 'Patches could not be applied. Please select correct input file.'
+        return 'Some of the patches could not be applied. Please select unmodified input file.'
 
     dev = flask.request.form.get('device', None)
     pod = flask.request.form.get('patch', None)
