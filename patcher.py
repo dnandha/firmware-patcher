@@ -576,7 +576,31 @@ class FirmwarePatcher():
         self.data[ofs:ofs+2] = post
         self.data[ofs+2:ofs+4] = post
         post = self.data[ofs:ofs+4]
-        ret.append(["rfm", hex(ofs), pre.hex(), post.hex()])
+        ret.append(["rfm1", hex(ofs), pre.hex(), post.hex()])
+
+        try:
+            # 248
+            sig = self.ks.asm('STRB R2,[R1,#0x1e]')[0]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('NOP')[0])
+            self.data[ofs:ofs+2] = post
+            self.data[ofs+2:ofs+4] = post
+            post = self.data[ofs:ofs+4]
+            ret.append(["rfm2", hex(ofs), pre.hex(), post.hex()])
+        except SignatureException:
+            try:
+                # 016
+                sig = self.ks.asm('STRB.W R2,[R1,#0x41]')[0]
+                ofs = FindPattern(self.data, sig)
+                pre = self.data[ofs:ofs+4]
+                post = bytes(self.ks.asm('NOP')[0])
+                self.data[ofs:ofs+2] = post
+                self.data[ofs+2:ofs+4] = post
+                post = self.data[ofs:ofs+4]
+                ret.append(["rfm2", hex(ofs), pre.hex(), post.hex()])
+            except SignatureException:
+                pass
 
         return ret
 
@@ -679,6 +703,11 @@ class FirmwarePatcher():
             ret.append(["lever_res_brake3", hex(ofs), pre.hex(), post.hex()])
 
         return ret
+
+    def serial_unlock(self):
+        # 016: 0x3df6 -> NOP
+        # 321: 0x3cc0 -> NOP
+        pass
 
 
 if __name__ == "__main__":
