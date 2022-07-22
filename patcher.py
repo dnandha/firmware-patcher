@@ -578,29 +578,24 @@ class FirmwarePatcher():
         post = self.data[ofs:ofs+4]
         ret.append(["rfm1", hex(ofs), pre.hex(), post.hex()])
 
-        try:
-            # 248
-            sig = self.ks.asm('STRB R2,[R1,#0x1e]')[0]
-            ofs = FindPattern(self.data, sig)
-            pre = self.data[ofs:ofs+4]
-            post = bytes(self.ks.asm('NOP')[0])
-            self.data[ofs:ofs+2] = post
-            self.data[ofs+2:ofs+4] = post
-            post = self.data[ofs:ofs+4]
-            ret.append(["rfm2", hex(ofs), pre.hex(), post.hex()])
-        except SignatureException:
-            try:
-                # 016
-                sig = self.ks.asm('STRB.W R2,[R1,#0x41]')[0]
-                ofs = FindPattern(self.data, sig)
-                pre = self.data[ofs:ofs+4]
-                post = bytes(self.ks.asm('NOP')[0])
-                self.data[ofs:ofs+2] = post
-                self.data[ofs+2:ofs+4] = post
-                post = self.data[ofs:ofs+4]
-                ret.append(["rfm2", hex(ofs), pre.hex(), post.hex()])
-            except SignatureException:
-                pass
+        # 248 / 321 (unused in 016)
+        sig = self.ks.asm('STRB R2,[R1,#0x1e]')[0]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        post = self.data[ofs:ofs+2]
+        ret.append(["rfm2", hex(ofs), pre.hex(), post.hex()])
+
+        # 016 (unused in 248 / 321)
+        sig = self.ks.asm('STRB.W R2,[R1,#0x41]')[0]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        self.data[ofs+2:ofs+4] = post
+        post = self.data[ofs:ofs+4]
+        ret.append(["rfm3", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
