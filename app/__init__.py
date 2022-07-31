@@ -27,6 +27,59 @@ from patcher import FirmwarePatcher, SignatureException
 app = flask.Flask(__name__)
 
 
+mysql = None
+try:
+    from conf import config
+    from flask_mysqldb import MySQL
+    import urllib.request
+    import json
+
+    app.config.update(config)
+
+    mysql = MySQL(app)
+except Exception as ex:
+    print(ex.msg)
+
+
+def get_ip(request):
+    return request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+
+
+def save_ip(ip, table):
+    if mysql is None:
+        return
+    with urllib.request.urlopen('http://ipinfo.io/'+ip) as f:
+        country = json.loads(f.read()).get('country', '')
+        if country:
+            cursor = mysql.connection.cursor()
+            cursor.execute('CREATE TABLE if not exists '+table+'(country varchar(4))')
+            cursor.execute('INSERT INTO '+table+' VALUES(\''+country+'\')')
+            mysql.connection.commit()
+            cursor.close()
+
+
+def get_count(table):
+    if mysql is None:
+        return
+    cursor = mysql.connection.cursor()
+    query = 'SELECT COUNT(country) FROM ' + table
+    cursor.execute(query)
+    count = cursor.fetchall()[0][0]
+    cursor.close()
+    return count
+
+
+#def get_union_count(tables):
+#    if mysql is None:
+#        return
+#    cursor = mysql.connection.cursor()
+#    selects = ['SELECT country FROM ' + t for t in tables]
+#    query = 'SELECT COUNT(*) as UnionCount from (' + ' UNION ALL '.join(selects) + ")"
+#    cursor.execute(query)
+#    count = cursor.fetchall()[0]
+#    cursor.close()
+
+
 @app.errorhandler(Exception)
 def handle_bad_request(e):
     return 'Exception occured:\n{}'.format(traceback.format_exc()), \
@@ -51,7 +104,10 @@ def dated_url_for(endpoint, **values):
 
 @app.route('/')
 def home():
-    return flask.render_template('home.html')
+    return flask.render_template('home.html',
+                                 bincount=get_count('Bin'),
+                                 zipcount=get_count('Zip'),
+                                 doccount=get_count('Doc'))
 
 
 def patch(data):
@@ -213,6 +269,7 @@ def patch_firmware():
         #r = flask.Response(mem, mimetype="application/octet-stream")
         #r.headers['Content-Length'] = mem.getbuffer().nbytes
         #r.headers['Content-Disposition'] = "attachment; filename={}".format(f.filename)
+        save_ip(get_ip(flask.request), pod)
         return flask.send_file(
             mem,
             as_attachment=True,
@@ -220,6 +277,7 @@ def patch_firmware():
             attachment_filename=filename,
         )
     elif pod in ['Doc']:
+        save_ip(get_ip(flask.request), pod)
         return flask.render_template('doc.html', patches=res)
     else:
         return 'Invalid request.', 400
