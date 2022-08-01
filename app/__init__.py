@@ -261,7 +261,10 @@ def patch_firmware():
         if pod == 'Zip':
             from zip import Zippy
             params = '\n'.join([x[0] for x in res]) + '\n'
-            data_patched = Zippy(data_patched, params=params, model=dev).zip_it('nice'.encode())
+            zippy = Zippy(data_patched, params=params, model=dev)
+            if not zippy.check_valid(data):
+                return "Error: Invalid input file."
+            data_patched = zippy.zip_it('nice'.encode())
             filename = filename[:-4] + '.zip'
         mem.write(data_patched)
         mem.seek(0)
