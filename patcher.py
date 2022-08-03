@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# ##
+#
 # NGFW Patcher
 # Copyright (C) 2022 Daljeet Nandha
 #
@@ -15,13 +15,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-# ##
-
-# ##
+#
+#
 # Based on: https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
 # I introduced mods into the patcher either by studying existing patchers or creating new mods myself.
 # All original authors are mentioned in the function comments!
-# ##
+#
 
 from binascii import hexlify, unhexlify
 import struct
@@ -100,7 +99,7 @@ class FirmwarePatcher():
 
     def remove_kers(self):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Alternate (improved) version of No Kers Mod
         '''
         sig = [0x00, 0xeb, 0x80, 0x00, 0x80, 0x00, 0x80, 0x0a]
@@ -112,7 +111,7 @@ class FirmwarePatcher():
 
     def remove_autobrake(self):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
         ofs = FindPattern(self.data, sig) + 2
@@ -123,7 +122,7 @@ class FirmwarePatcher():
 
     def remove_charging_mode(self):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
         ofs = FindPattern(self.data, sig) + 4
@@ -134,7 +133,7 @@ class FirmwarePatcher():
 
     def current_raising_coeff(self, coeff):
         '''
-        Original Author: SH
+        Creator: SH
         '''
         ret = []
 
@@ -164,7 +163,7 @@ class FirmwarePatcher():
 
     def speed_limit_drive(self, kmh):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         ret = []
 
@@ -194,7 +193,7 @@ class FirmwarePatcher():
 
     def speed_limit_speed(self, kmh):
         '''
-        Original Author: SH
+        Creator: SH
         '''
         ret = []
 
@@ -224,7 +223,7 @@ class FirmwarePatcher():
 
     def speed_limit_pedo(self, kmh):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Speed limit of pedestrian mode
         '''
         ret = []
@@ -248,7 +247,7 @@ class FirmwarePatcher():
 
     def motor_start_speed(self, kmh):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         val = struct.pack('<H', round(kmh * 345))
         sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
@@ -258,7 +257,7 @@ class FirmwarePatcher():
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         ret = []
 
@@ -285,7 +284,7 @@ class FirmwarePatcher():
 
     def ampere_speed(self, amps, force=True):
         '''
-        Original Author: SH
+        Creator: SH
         '''
         ret = []
 
@@ -330,7 +329,7 @@ class FirmwarePatcher():
 
     def ampere_drive(self, amps, force=True):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         ret = []
 
@@ -365,7 +364,7 @@ class FirmwarePatcher():
 
     def ampere_pedo(self, amps, force=True):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Nominal current of pedestrian mode
         '''
         ret = []
@@ -389,7 +388,7 @@ class FirmwarePatcher():
 
     def ampere_max(self, amps_pedo, amps_drive, amps_speed):
         '''
-        Original Author: BotoX/SH
+        Creator: BotoX/SH
         '''
         ret = []
 
@@ -463,7 +462,7 @@ class FirmwarePatcher():
 
     def dpc(self):
         '''
-        Original Author: SH
+        Creator: SH
         '''
         ret = []
         sig = [0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
@@ -495,7 +494,7 @@ class FirmwarePatcher():
 
     def shutdown_time(self, seconds):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Time to press power button before shutdown
         '''
         delay = int(seconds * 200)
@@ -509,7 +508,7 @@ class FirmwarePatcher():
 
     def brake_light(self):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Alternate (improved) version,
                      instead of changing condition flags (hacky), replace code
         '''
@@ -565,7 +564,7 @@ class FirmwarePatcher():
 
     def region_free(self, persist=False):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Remove all region restrictions bound to serial number
         '''
         ret = []
@@ -601,7 +600,7 @@ class FirmwarePatcher():
 
     def lower_light(self):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Lowers light intensity, for auto-light effect
         '''
         ret = []
@@ -628,7 +627,7 @@ class FirmwarePatcher():
 
     def ampere_meter(self, shift=8):
         '''
-        Original Author: D. Nandha
+        Creator: NandTek
         Description: Replace dashboard battery bars with amp meter
         '''
         ret = []
@@ -656,7 +655,7 @@ class FirmwarePatcher():
 
     def cc_delay(self, seconds):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         ret = []
 
@@ -673,7 +672,7 @@ class FirmwarePatcher():
 
     def lever_resolution(self, brake=0x73):
         '''
-        Original Author: BotoX
+        Creator: BotoX
         '''
         ret = []
 
