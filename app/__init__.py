@@ -21,10 +21,40 @@ import traceback
 import os
 import io
 
-
 from patcher import FirmwarePatcher, SignatureException
 
 app = flask.Flask(__name__)
+
+mysql = None
+try:
+    from flask_mysqldb import MySQL
+    from conf import config
+
+    app.config.update(config)
+
+    mysql = MySQL(app)
+except Exception as ex:
+    print(ex.msg)
+
+
+def save_click(table):
+    if mysql is None:
+        return
+    cursor = mysql.connection.cursor()
+    cursor.execute('CREATE TABLE if not exists '+table+'(click BOOL)')
+    cursor.execute('INSERT INTO '+table+' VALUES(1)')
+    mysql.connection.commit()
+
+
+def get_count(table):
+    if mysql is None:
+        return 0
+    cursor = mysql.connection.cursor()
+    query = 'SELECT COUNT(click) FROM ' + table
+    cursor.execute(query)
+    count = cursor.fetchall()[0][0]
+    cursor.close()
+    return count
 
 
 @app.errorhandler(Exception)
@@ -59,7 +89,10 @@ def test():
 
 @app.route('/')
 def home():
-    return flask.render_template('home.html', bincount=0, zipcount=0, doccount=0)
+    return flask.render_template('home.html',
+                                 bincount=get_count('Bin'),
+                                 zipcount=get_count('Zip'),
+                                 doccount=get_count('Doc'))
 
 
 @app.route('/privacy')
@@ -229,6 +262,7 @@ def patch_firmware():
         #r = flask.Response(mem, mimetype="application/octet-stream")
         #r.headers['Content-Length'] = mem.getbuffer().nbytes
         #r.headers['Content-Disposition'] = "attachment; filename={}".format(f.filename)
+        save_click(pod)
         return flask.send_file(
             mem,
             as_attachment=True,
@@ -236,6 +270,7 @@ def patch_firmware():
             attachment_filename=filename,
         )
     elif pod in ['Doc']:
+        save_click(pod)
         return flask.render_template('doc.html', patches=res)
     else:
         return 'Invalid request.', 400
