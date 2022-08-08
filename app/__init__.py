@@ -62,6 +62,11 @@ def home():
     return flask.render_template('home.html', bincount=0, zipcount=0, doccount=0)
 
 
+@app.route('/privacy')
+def privacy():
+    return flask.render_template('privacy.html')
+
+
 def patch(data):
     res = []
 
