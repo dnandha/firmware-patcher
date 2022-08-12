@@ -254,6 +254,40 @@
         </div>
     </div>
     <div class="card-group text-center">
+		<div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="baud">
+                <label class="form-check-label"><b>Baudrate</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Change baudrate from 115200 to 76800 for OpenSource BMS.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <input class="form-check-input" name="volt_cb" type="checkbox" onchange="CheckForm('volt', this);">
+                <label class="form-check-label"><b>Voltage Limit</b></label>
+            </div>
+
+            <div class="card-body">
+                <div class="card-title">
+                    <div class="row">
+                        <div class="col">V</div>
+                        <div class="col" id="volt_value"></div>
+                    </div>
+                    <div class="row">
+                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('volt', 'volt_value')">-</button><input class="form-range" name="volt" type="range" step="0.01" min="10" max="100" value="43.01" onchange="OnSliderChange('volt_value', this.value)" oninput="OnSliderChange('volt_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('volt', 'volt_value')">+</button></span>
+                    </div>
+                </div>
+                <div class="card-text">
+                    Change when connecting a custom battery with a different voltage.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);">
@@ -435,6 +469,9 @@
         "RFM": "rfm",
         "BLM": "blm",
         "BLM_ALM": "blm_alm",
+
+        "BAUD": "baud",
+        "VOLT": "volt",
     };
 
     var formValues = Object.values(forms);
@@ -615,6 +652,9 @@
         ChangeForm(forms.RFM, false);
         ChangeForm(forms.BLM, false);
         ChangeForm(forms.BLM_ALM, false);
+
+        ChangeForm(forms.BAUD, false);
+        ChangeForm(forms.VOLT, "43.01", false);
     }
 </script>
 

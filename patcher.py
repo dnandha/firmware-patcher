@@ -703,6 +703,31 @@ class FirmwarePatcher():
         # 321: 0x3cc0 -> NOP
         pass
 
+    def bms_baudrate(self, val):
+        '''
+        Creator/Author: BotoX
+        '''
+        ret = []
+        sig = [0x00, 0xf0, 0xe6, 0xf8, 0x00, 0x21, 0x4f, 0xf4, 0xe1, 0x30]
+        ofs = FindPattern(self.data, sig) + 6
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('MOV.W R0,#{}'.format(val))[0])
+        self.data[ofs:ofs+4] = post
+        ret.append(["bms_baudrate", hex(ofs), pre.hex(), post.hex()])
+        return ret
+
+    def volt_limit(self, volts):
+        '''
+        Creator/Author: BotoX
+        '''
+        ret = []
+        val = struct.pack('<H', int(volts * 100) - 2600)
+        sig = [0x40, 0xF2, 0xA5, 0x61, 0xA0, 0xF6, 0x28, 0x20, 0x88, 0x42]
+        ofs = FindPattern(self.data, sig)
+        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        ret.append(["volt_limit", hex(ofs), pre.hex(), post.hex()])
+        return ret
+
 
 if __name__ == "__main__":
     import sys
@@ -746,6 +771,8 @@ if __name__ == "__main__":
         'blm': lambda: vlt.brake_light(),
         'amm': lambda: vlt.ampere_meter(shift=8),
         'lrb': lambda: vlt.lever_resolution(brake=0x9c),
+        'bud': lambda: vlt.bms_baudrate(76800),
+        'vlt': lambda: vlt.volt_limit(43.01),
     }
 
     for k in patches:

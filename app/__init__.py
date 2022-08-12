@@ -224,6 +224,16 @@ def patch(data):
     if alm:
         res.append(("Auto-Light", patcher.lower_light()))
 
+    baud = flask.request.form.get('baud', None)
+    if baud:
+        res.append(("Baudrate", patcher.bms_baudrate(76800)))
+
+    volt = flask.request.form.get('volt', None)
+    if volt is not None:
+        volt = float(volt)
+        assert volt >= 0 and volt <= 100
+        res.append((f"Voltage Limit: {volt}V", patcher.volt_limit(volt)))
+
     return res, patcher.data
 
 
