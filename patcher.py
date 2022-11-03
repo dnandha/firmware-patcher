@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
-#
+#####
 # Based on: https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/patcher.py
 # I introduced mods into the patcher either by studying existing patchers or creating new mods myself.
 # All original mod authors are mentioned in the function comments!
-#
+#####
 
 from binascii import hexlify, unhexlify
 import struct

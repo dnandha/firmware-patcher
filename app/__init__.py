@@ -1,3 +1,4 @@
+#
 # XNG Firmware Patcher
 # Copyright (C) 2021-2022 Daljeet Nandha
 #
@@ -13,8 +14,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+#
+#####
 # Based on https://github.com/BotoX/xiaomi-m365-firmware-patcher/blob/master/web/app.py
+# Optional MYSQL and 'flask_mysql' module for click counter
+#####
 
 import flask
 import traceback
