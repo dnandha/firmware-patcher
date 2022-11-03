@@ -37,20 +37,20 @@ except Exception as ex:
     print(ex.msg)
 
 
-def save_click(table):
+def save_click(pod):
     if mysql is None:
         return
     cursor = mysql.connection.cursor()
-    cursor.execute('CREATE TABLE if not exists '+table+'(click BOOL)')
-    cursor.execute('INSERT INTO '+table+' VALUES(1)')
+    cursor.execute('CREATE TABLE if not exists XNG(Zip int, Bin int, Doc int)')
+    cursor.execute('UPDATE XNG SET '+pod+'='+pod+'+1')
     mysql.connection.commit()
 
 
-def get_count(table):
+def get_count(pod):
     if mysql is None:
         return 0
     cursor = mysql.connection.cursor()
-    query = 'SELECT COUNT(click) FROM ' + table
+    query = 'SELECT '+pod+' FROM XNG'
     cursor.execute(query)
     count = cursor.fetchall()[0][0]
     cursor.close()
