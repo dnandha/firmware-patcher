@@ -281,7 +281,7 @@ def patch_firmware():
             mem,
             as_attachment=True,
             mimetype='application/octet-stream',
-            attachment_filename=filename,
+            download_name=filename,
         )
     elif pod in ['Doc']:
         save_click(pod)
