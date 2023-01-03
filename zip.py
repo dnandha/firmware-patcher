@@ -77,9 +77,7 @@ class Zippy():
             "aa70bd3bcd329eb00953afa1e0cc1888",
             "26d8eb9abc836ee709cf9abdb2cd463a"
         ]
-        if md5.hexdigest() not in valid_md5s:
-            return False
-        return True
+        return md5.hexdigest() in valid_md5s
 
     def encrypt(self, in_memory=False):
         if in_memory:
@@ -96,13 +94,12 @@ class Zippy():
 
     @staticmethod
     def get_v3(name, model, md5, md5e):
-        schema = '''
-        {
+        data = {
             "schemaVersion": 1,
             "firmware": {
-                "displayName": "",
-                "model": "",
-                "enforceModel": true,
+                "displayName": name,
+                "model": model,
+                "enforceModel": True,
                 "type": "DRV",
                 "compatible": [
                     "mi_DRV_STM32F103CxT6",
@@ -111,18 +108,12 @@ class Zippy():
                 ],
                 "encryption": "both",
                 "md5": {
-                    "bin": "",
-                    "enc": ""
+                    "bin": md5,
+                    "enc": md5e
                 }
             }
         }
-        '''
-        v3 = json.loads(schema)
-        v3['firmware']['displayName'] = name
-        v3['firmware']['model'] = model
-        v3['firmware']['md5']['bin'] = md5
-        v3['firmware']['md5']['enc'] = md5e
-        return json.dumps(v3)
+        return json.dumps(data)
 
     def zip_it(self, comment, offline=False):
         md5 = hashlib.md5()
