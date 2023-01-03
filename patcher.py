@@ -641,6 +641,7 @@ class FirmwarePatcher():
         addr_table = {
             # pre[0]: ofs1 reg ofs2
             0x80: [0xa0, 0, -0x30],  # 247
+            0x90: [0xa0, 2, -0x30],  # 252
             0xa8: [0x9c, 5, -0x10],  # 319
         }
 
