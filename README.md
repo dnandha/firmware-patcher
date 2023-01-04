@@ -9,14 +9,11 @@ The mod will then be integrated into the XNG patcher.
 ## Supported DRVs
 * DRV016
 * DRV017
-
 * DRV242
 * DRV245
-
 * DRV247
 * DRV248
 * DRV252
-
 * DRV319
 * DRV321
 
