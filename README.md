@@ -20,19 +20,20 @@ The mod will then be integrated into the XNG patcher.
 ## Available Mods
 * DPC (register)
 * No KERS (improved)
-* No charging fix
-* Remove speed check
-* Shutdown time
-* Motor start speed
-* Cruise control delay
-* Current raising coefficient
+* No Charging Fix
+* Remove Speed Check
+* Shutdown Time
+* Motor Start Speed
+* Cruise Control Delay
+* Current Raising Coefficient
 * Wheelsize
-* Speed limits
-* Phase currents
+* Speed Limits
+* Phase Currents
 * Current Meter
 * Region Free
 * Brakelight / Auto-Light
 * (Lever resolution (gas/brake))
+* Remove Model Lock
 
 ## Instructions
 1. `FLASK_APP=app/__init__.py`

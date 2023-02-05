@@ -220,6 +220,10 @@ def patch(data):
     if rfm:
         res.append(("Region-Free", patcher.region_free()))
 
+    rml = flask.request.form.get('rml', None)
+    if rml:
+        res.append(("Remove Model Lock", patcher.remove_modellock()))
+
     blm = flask.request.form.get('blm', None)
     if blm:
         res.append(("Static Brakelight", patcher.brake_light()))

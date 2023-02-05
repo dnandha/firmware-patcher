@@ -97,6 +97,29 @@ class FirmwarePatcher():
         self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
 
+    def remove_modellock(self):
+        '''
+        Creator/Author: NandTek
+        Description: (New DRVs only) Removes the check that prevents cross-flashing DRV from another model
+        '''
+        try:
+            # 017
+            sig = [0x01, 0xeb, 0x00, 0x0c, 0x13, 0xf8, 0x00, 0x80,
+                   0x9c, 0xf8, 0x04, 0xc0, 0xc4, 0x45]
+            ofs = FindPattern(self.data, sig) + len(sig)
+        except SignatureException:
+            # 016 / 252 / 245
+            sig = [None, 0x18, None, 0xf8, 0x00, 0xc0, None, 0x79, None, 0x45]
+            ofs = FindPattern(self.data, sig) + len(sig)
+
+        pre = self.data[ofs:ofs+2]
+        post = pre.copy()
+        if pre[-1] != 0xd0:
+            raise Exception(f"invalid firmware file: {hex(pre)}")
+        post[-1] = 0xe0
+        self.data[ofs:ofs+2] = post
+        return [("no_modellock", hex(ofs), pre.hex(), post.hex())]
+
     def remove_kers(self):
         '''
         Creator/Author: NandTek
@@ -762,6 +785,7 @@ if __name__ == "__main__":
         'ald': lambda: vlt.ampere_drive(20000),
         'als': lambda: vlt.ampere_speed(30000),
         'alm': lambda: vlt.ampere_max(10000, 30000, 55000),
+        'rml': lambda: vlt.remove_modellock(),
         'rks': lambda: vlt.remove_kers(),
         'rab': lambda: vlt.remove_autobrake(),
         'rcm': lambda: vlt.remove_charging_mode(),

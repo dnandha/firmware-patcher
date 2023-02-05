@@ -399,6 +399,20 @@
             </div>
         </div>
     </div>
+    <br/>
+    <div class="card-group text-center">
+		<div class="card border-info">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="rml">
+                <label class="form-check-label"><b>Remove Model Lock (latest DRVs)</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Remove the cross-flash restriction of the latest DRVs to allow flashing DRVs of a different model.
+                </div>
+            </div>
+        </div>
+    </div>
 
     <hr>
     <div class="row">
@@ -467,6 +481,7 @@
 
         "AMMETER": "ammeter",
         "RFM": "rfm",
+        "RML": "rml",
         "BLM": "blm",
         "BLM_ALM": "blm_alm",
 
@@ -650,6 +665,7 @@
 		
         ChangeForm(forms.AMMETER, false);
         ChangeForm(forms.RFM, false);
+        ChangeForm(forms.RML, false);
         ChangeForm(forms.BLM, false);
         ChangeForm(forms.BLM_ALM, false);
 
