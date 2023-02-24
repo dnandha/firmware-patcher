@@ -71,12 +71,14 @@ class Zippy():
         md5.update(data)
         valid_md5s = [
             "116381392460d655b6a76c24d4afd694", # mi3/DRV016
+            "69673d4463659d531837e7fb9a4300b6", # mi3/DRV017
             "ab83621ad43d493504359e69c3911b6c", # lite/DRV242
             "0e6268dfcb539b6c7319da3a7bc5bbe3", # lite/DRV245
             "3dbd7af96d90aaab326765ea367e586a", # pro2/DRV247
-            "39d256fd99a7670d57b957b007cca42c",
+            "39d256fd99a7670d57b957b007cca42c", # pro2/DRV248
+            "cbf77ea3557f8231d957e4a87fca63f7", # pro2/DRV252
             "aa70bd3bcd329eb00953afa1e0cc1888", # 1s/DRV319
-            "26d8eb9abc836ee709cf9abdb2cd463a"
+            "26d8eb9abc836ee709cf9abdb2cd463a", # 1s/DRV321
         ]
         return md5.hexdigest() in valid_md5s
 
