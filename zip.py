@@ -93,13 +93,13 @@ class Zippy():
             return XiaoTea().encrypt(self.data)
 
     @staticmethod
-    def get_v3(name, model, md5, md5e):
+    def get_v3(name, model, md5, md5e, enforce):
         data = {
             "schemaVersion": 1,
             "firmware": {
                 "displayName": name,
                 "model": model,
-                "enforceModel": True,
+                "enforceModel": enforce,
                 "type": "DRV",
                 "compatible": [
                     "mi_DRV_STM32F103CxT6",
@@ -115,7 +115,7 @@ class Zippy():
         }
         return json.dumps(data)
 
-    def zip_it(self, comment, offline=False):
+    def zip_it(self, comment, offline=False, enforce=True):
         md5 = hashlib.md5()
         md5.update(self.data)
 
@@ -133,7 +133,7 @@ class Zippy():
             self.model, self.name, md5.hexdigest(), md5e.hexdigest())
         zip_file.writestr('info.txt', info_txt.encode())
 
-        info_json = Zippy.get_v3(self.name, self.model, md5.hexdigest(), md5e.hexdigest())
+        info_json = Zippy.get_v3(self.name, self.model, md5.hexdigest(), md5e.hexdigest(), enforce)
         zip_file.writestr('info.json', info_json.encode())
 
         if self.params is not None:
