@@ -4,7 +4,7 @@ Little firmware modifications to make your day  nicer.
 I wrote this patcher based on BotoX [m365 firmware patcher](https://github.com/BotoX/xiaomi-m365-firmware-patcher).
 
 New mods / contributions highly welcome, simply open PR and present your mod!
-The mod will then be integrated into the XNG patcher.
+The mod will then be integrated into the NGFW patcher.
 
 ## Supported DRVs
 * DRV016
