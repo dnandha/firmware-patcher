@@ -249,6 +249,9 @@ def patch(data):
 def patch_firmware():
     f = flask.request.files['filename']
 
+    if not f.filename.lower().endswith(".bin"):
+        return "Wrong file selected.", 400
+
     data = f.read()
     if not len(data) > 0xf:
         return 'No file selected.', 400
