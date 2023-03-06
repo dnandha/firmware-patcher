@@ -24,8 +24,9 @@ import flask
 import traceback
 import os
 import io
-
 from patcher import FirmwarePatcher, SignatureException
+
+pwd = os.path.expanduser('~')
 
 app = flask.Flask(__name__)
 
@@ -92,7 +93,7 @@ def dated_url_for(endpoint, **values):
 @app.route('/update_server', methods=['POST'])
 def webhook():
     if flask.request.method == 'POST':
-        repo = git.Repo('https://github.com/dnandha/firmware-patcher')
+        repo = git.Repo(pwd)
         origin = repo.remotes.origin
         origin.pull()
 
