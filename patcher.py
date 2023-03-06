@@ -115,7 +115,7 @@ class FirmwarePatcher():
         pre = self.data[ofs:ofs+2]
         post = pre.copy()
         if pre[-1] != 0xd0:
-            raise Exception(f"invalid firmware file: {hex(pre)}")
+            raise Exception(f"invalid firmware file: {pre.hex()}")
         post[-1] = 0xe0
         self.data[ofs:ofs+2] = post
         return [("no_modellock", hex(ofs), pre.hex(), post.hex())]
