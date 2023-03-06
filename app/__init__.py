@@ -40,6 +40,11 @@ try:
 except Exception as ex:
     print(ex.msg)
 
+try:
+    import git
+except Exception as ex:
+    print(ex.msg)
+
 
 def save_click(pod):
     if mysql is None:
@@ -81,6 +86,19 @@ def dated_url_for(endpoint, **values):
                                      endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return flask.url_for(endpoint, **values)
+
+
+# https://dev.to/aadibajpai/deploying-to-pythonanywhere-via-github-1j7b
+@app.route('/update_server', methods=['POST'])
+def webhook():
+    if flask.request.method == 'POST':
+        repo = git.Repo('https://github.com/dnandha/firmware-patcher')
+        origin = repo.remotes.origin
+        origin.pull()
+
+        return 'Updated successfully', 200
+    else:
+        return 'Wrong event type', 400
 
 
 @app.route('/test')
