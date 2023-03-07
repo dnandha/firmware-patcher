@@ -679,9 +679,9 @@
 </body>
 <footer class="text-center">
     <p>---------- NGFW Counter ----------<br/>
-    Bin: {{ bincount }} | Zip: {{ zipcount }} | Doc: {{ doccount }}</p>
-    <p>--------------- GIT --------------<br/>
-    {{ gitinfo['date'] }}: {{ gitinfo['summary'] }} ({{ gitinfo['sha'] }})
+    Bin: {{ counts['bin'] }} | Zip: {{ counts['zip'] }} | Doc: {{ counts['doc'] }}</p>
+    <p>----------- GIT Summary ----------<br/>
+    {{ gitinfo['date'] }}: {{ gitinfo['summary'] }} [{{ gitinfo['sha'] }}]</p>
     <a href="/privacy">Privacy</a>
 </footer>
 </html>

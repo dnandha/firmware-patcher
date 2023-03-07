@@ -49,7 +49,7 @@ git_info = {
 try:
     import git
     repo = git.Repo(pwd)
-    commit = repo.commit('master')
+    commit = list(git.Repo('./').iter_commits())[0]
     git_info['sha'] = commit.hexsha
     git_info['date'] = commit.committed_datetime.strftime("%B %d, %Y")
     git_info['summary'] = commit.summary
@@ -123,11 +123,12 @@ def test():
 
 @app.route('/')
 def home():
-    return flask.render_template('home.html',
-                                 bincount=get_count('Bin'),
-                                 zipcount=get_count('Zip'),
-                                 doccount=get_count('Doc'),
-                                 gitinfo=git_info)
+    counts = {
+        'bin': get_count('Bin'),
+        'zip': get_count('Zip'),
+        'doc': get_count('Doc')
+    }
+    return flask.render_template('home.html', counts=counts, gitinfo=git_info)
 
 
 @app.route('/privacy')
