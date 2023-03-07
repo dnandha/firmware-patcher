@@ -41,8 +41,18 @@ try:
 except Exception as ex:
     print(ex.msg)
 
+git_info = {
+    'sha': '',
+    'date': '',
+    'summary': '',
+}
 try:
     import git
+    repo = git.Repo(pwd)
+    commit = repo.commit('master')
+    git_info['sha'] = commit.hexsha
+    git_info['date'] = commit.committed_datetime.strftime("%B %d, %Y")
+    git_info['summary'] = commit.summary
 except Exception as ex:
     print(ex.msg)
 
@@ -93,11 +103,12 @@ def dated_url_for(endpoint, **values):
 @app.route('/update_server', methods=['POST'])
 def webhook():
     if flask.request.method == 'POST':
-        repo = git.Repo(pwd)
-        origin = repo.remotes.origin
-        origin.pull()
+        if repo:
+            origin = repo.remotes.origin
+            origin.pull()
 
-        return 'Updated successfully', 200
+            return 'Updated successfully', 200
+        return 'Repo missing', 400
     else:
         return 'Wrong event type', 400
 
@@ -115,7 +126,8 @@ def home():
     return flask.render_template('home.html',
                                  bincount=get_count('Bin'),
                                  zipcount=get_count('Zip'),
-                                 doccount=get_count('Doc'))
+                                 doccount=get_count('Doc'),
+                                 gitinfo=git_info)
 
 
 @app.route('/privacy')
