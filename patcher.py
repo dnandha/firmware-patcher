@@ -529,6 +529,35 @@ class FirmwarePatcher():
         self.data[ofs:ofs+4] = post
         return [("shutdown", hex(ofs), pre.hex(), post.hex())]
 
+    def pedo_noblink(self):
+        '''
+        Creator/Author: NandTek
+        Description: Don't force backlight / blinking in pedo mode
+        '''
+        ret = []
+
+        sig = [0x01, 0x29, None, 0xd0, 0xa1, 0x79, 0x01, 0x29, None, 0xd0, 0x90, 0xf8, 0x34, 0x10, 0x01, 0x29]
+        ofs = FindPattern(self.data, sig) + len(sig)
+
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('NOP')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["pnb", hex(ofs), pre.hex(), post.hex()])
+
+        try:
+            #ofs += 30
+            sig = [0x89, 0x07, 0x02, 0xd5, 0x90, 0xf8, 0x43, 0x10, 0x19, 0xb3, 0x90, 0xf8, 0x34, 0x00, 0x01, 0x28]
+            ofs = FindPattern(self.data, sig) + len(sig)
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('NOP')[0])
+            self.data[ofs:ofs+2] = post
+            ret.append(["pnb2", hex(ofs), pre.hex(), post.hex()])
+        except SignatureException:
+            # n/a on lite
+            pass
+
+        return ret
+
     def brake_light(self):
         '''
         Creator/Author: NandTek
@@ -798,6 +827,7 @@ if __name__ == "__main__":
         'lrb': lambda: vlt.lever_resolution(brake=0x9c),
         'bud': lambda: vlt.bms_baudrate(76800),
         'vlt': lambda: vlt.volt_limit(43.01),
+        'pnb': lambda: vlt.pedo_noblink(),
     }
 
     for k in patches:

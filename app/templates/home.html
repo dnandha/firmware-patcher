@@ -67,9 +67,11 @@
             </select>
         </div>
     </div>
-    <hr>
+
+    <hr/>
+    <h5 class="text-center">FW</h5>
     <div class="card-group text-center">
-		<div class="card border-info">
+		<div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="rml">
                 <label class="form-check-label"><b>Remove Model Lock (Latest DRVs)</b></label>
@@ -79,8 +81,9 @@
             </div>
         </div>
     </div>
-    <hr>
 
+    <br/>
+    <h5 class="text-center">ESC</h5>
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
@@ -198,21 +201,38 @@
             </div>
         </div>
     </div>
+
+    <br/>
+    <h5 class="text-center">Special</h5>
     <div class="card-group text-center">
-        <div class="card">
+		<div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="ammeter">
-                <label class="form-check-label"><b>Current-Meter</b></label>
+                <input class="form-check-input" type="checkbox" name="rfm">
+                <label class="form-check-label"><b>Region-Free</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Replaces the battery percentage shown on dashboard by actual current consumption.
-                    No bars means no consumption, full bars means 25 amps consumption.<br/>
+                    Remove regional restrictions normally imposed by the serial number, such as 20 km/h speed limit, missing cruise control and backlight-on feature.
+                    Effectively converts a european device to an international device.
                 </div>
-                With this mod the battery percentage can only be read out using an app.
-                <span style="color: red;">&#9888;&nbsp;When charging the dashboard will show a constant "0", but charging works normally.</span>
             </div>
         </div>
+		<div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="eco_mode" onclick="Pedo_To_Eco(this)">
+                <label class="form-check-label"><b>Pedestrian -> ECO Mode</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Replace pedestrian mode with ECO mode. This gives you another driveable mode with slightly reduced consumption at 15 km/h.
+                </div>
+                <div class="card-text">
+                    This is a convenience function! The same effect can be achieved by setting nominal+maximum current and speed limit higher for the pedestrian mode manually.<br/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group text-center">
 		<div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="blm" onchange="CheckForm('blm_alm', this);">
@@ -230,92 +250,40 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="card-group text-center">
 		<div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="rfm">
-                <label class="form-check-label"><b>Region-Free</b></label>
+                <input class="form-check-input" type="checkbox" name="pnb">
+                <label class="form-check-label"><b>Pedestrian No-Blink</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Remove regional restrictions normally imposed by the serial number, such as 20 km/h speed limit, missing cruise control and backlight-on feature.
-                    Effectively converts a european device to an international device.
+                    Remove flashing / blinking taillight in pedestrian mode.
+                </div>
+                <div class="card-text">
+                    Makes the taillight togglable like in every other mode. Can be combined with static brakelight to remove blinking on brake (when region-free).
                 </div>
             </div>
         </div>
+    </div>
+    <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
-                <label class="form-check-label"><b>Wheel Size</b></label>
+                <input class="form-check-input" type="checkbox" name="ammeter">
+                <label class="form-check-label"><b>Current-Meter</b></label>
             </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Replaces the battery percentage shown on dashboard by actual current consumption.
+                    No bars means no consumption, full bars means 25 amps consumption.<br/>
+                </div>
+                With this mod the battery percentage can only be read out using an app.<br/>
+                <span style="color: red;">&#9888;&nbsp;When charging the dashboard will show a constant "0", but charging works normally.</span>
+            </div>
+        </div>
+    </div>
 
-            <div class="card-body">
-                <div class="card-title">
-                    <div class="row">
-                        <div class="col">Inches</div>
-                        <div class="col" id="wheelsize_value"></div>
-                    </div>
-                    <div class="row">
-                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button><input class="form-range" name="wheelsize" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button></span>
-                    </div>
-                </div>
-                <div class="card-text">
-                    When upgrading / changing the stock wheels, this parameter has to be adjusted to match GPS speed and torque.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-group text-center">
-		<div class="card">
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="baud">
-                <label class="form-check-label"><b>Baudrate</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-                    Change baudrate from 115200 to 76800 for OpenSource BMS.
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-header">
-                <input class="form-check-input" name="volt_cb" type="checkbox" onchange="CheckForm('volt', this);">
-                <label class="form-check-label"><b>Voltage Limit</b></label>
-            </div>
-
-            <div class="card-body">
-                <div class="card-title">
-                    <div class="row">
-                        <div class="col">V</div>
-                        <div class="col" id="volt_value"></div>
-                    </div>
-                    <div class="row">
-                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('volt', 'volt_value')">-</button><input class="form-range" name="volt" type="range" step="0.01" min="10" max="100" value="43.01" onchange="OnSliderChange('volt_value', this.value)" oninput="OnSliderChange('volt_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('volt', 'volt_value')">+</button></span>
-                    </div>
-                </div>
-                <div class="card-text">
-                    Change when connecting a custom battery with a different voltage.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-group text-center">
-		<div class="card">
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="eco_mode" onclick="Pedo_To_Eco(this)">
-                <label class="form-check-label"><b>Pedestrian -> ECO Mode</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-                    Replace pedestrian mode with ECO mode. This gives you another driveable mode with slightly reduced consumption at 15 km/h.
-                </div>
-                <div class="card-text">
-                    This is a convenience function! The same effect can be achieved by setting nominal+maximum current and speed limit higher for the pedestrian mode manually.<br/>
-                </div>
-            </div>
-        </div>
-    </div>
+    <br/>
+    <h5 class="text-center">Limits</h5>
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
@@ -428,6 +396,69 @@
             </div>
         </div>
     </div>
+
+    <br/>
+    <h5 class="text-center">Hardware</h5>
+    <div class="card-group text-center">
+        <div class="card">
+            <div class="card-header">
+                <input class="form-check-input" name="wheelsize_cb" type="checkbox" onchange="CheckForm('wheelsize', this);">
+                <label class="form-check-label"><b>Wheel Size</b></label>
+            </div>
+
+            <div class="card-body">
+                <div class="card-title">
+                    <div class="row">
+                        <div class="col">Inches</div>
+                        <div class="col" id="wheelsize_value"></div>
+                    </div>
+                    <div class="row">
+                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('wheelsize', 'wheelsize_value')">-</button><input class="form-range" name="wheelsize" type="range" step="0.1" min="0" max="30" value="8.5" onchange="OnSliderChange('wheelsize_value', this.value)" oninput="OnSliderChange('wheelsize_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('wheelsize', 'wheelsize_value')">+</button></span>
+                    </div>
+                </div>
+                <div class="card-text">
+                    When upgrading / changing the stock wheels, this parameter has to be adjusted to match GPS speed and torque.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group text-center">
+		<div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="baud">
+                <label class="form-check-label"><b>Baudrate</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Change baudrate from 115200 to 76800.
+                </div>
+                <div class="card-text">
+                    Required for OpenSource BMS.
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <input class="form-check-input" name="volt_cb" type="checkbox" onchange="CheckForm('volt', this);">
+                <label class="form-check-label"><b>Voltage Limit</b></label>
+            </div>
+
+            <div class="card-body">
+                <div class="card-title">
+                    <div class="row">
+                        <div class="col">V</div>
+                        <div class="col" id="volt_value"></div>
+                    </div>
+                    <div class="row">
+                        <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('volt', 'volt_value')">-</button><input class="form-range" name="volt" type="range" step="0.01" min="10" max="100" value="43.01" onchange="OnSliderChange('volt_value', this.value)" oninput="OnSliderChange('volt_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('volt', 'volt_value')">+</button></span>
+                    </div>
+                </div>
+                <div class="card-text">
+                    Change when connecting a custom battery with a different voltage.
+                </div>
+            </div>
+        </div>
+    </div>
     <br/>
     <hr>
     <div class="row">
@@ -504,6 +535,7 @@
         "VOLT": "volt",
 
         "ECO_MODE": "eco_mode",
+        "PNB": "pnb",
     };
 
     var formValues = Object.values(forms);
@@ -671,6 +703,7 @@
         if (!GetFormValue(forms.AMPS_MAX)) {
             CheckForm(forms.AMPS_PEDO_MAX, cb);
         }
+        ChangeForm(forms.PNB, cb.checked);
         if (cb.checked) {
             ChangeForm(forms.SL_PEDO, "15", false);
             ChangeForm(forms.AMPS_PEDO, "13000", false);
@@ -707,6 +740,7 @@
         ChangeForm(forms.VOLT, "43.01", false);
 
         ChangeForm(forms.ECO_MODE, false);
+        ChangeForm(forms.PNB, false);
     }
 </script>
 

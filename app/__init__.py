@@ -265,6 +265,10 @@ def patch(data):
     if alm is not None:
         res.append(("Auto-Light", patcher.lower_light()))
 
+    pnb = flask.request.form.get('pnb', None)
+    if pnb is not None:
+        res.append(("Pedestrian No-Blink", patcher.pedo_noblink()))
+
     baud = flask.request.form.get('baud', None)
     if baud is not None:
         res.append(("Baudrate", patcher.bms_baudrate(76800)))
