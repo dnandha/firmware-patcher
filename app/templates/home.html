@@ -55,7 +55,7 @@
     </div>
 
     <hr>
-    <form action="/cfw"  method = "POST" enctype = "multipart/form-data">
+    <form action="/cfw"  method="POST" enctype="multipart/form-data">
     <div class="row text-center">
         <div class="col"><h5>Load Preset</h5></div>
         <div class="col">
@@ -115,7 +115,7 @@
                 </div>
             </div>
         </div>
-        <div class="card border-info">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="remove_kers" type="checkbox">
                 <label class="form-check-label"><b>No KERS</b></label>
@@ -167,7 +167,7 @@
         </div>
     </div>
     <div class="card-group text-center">
-        <div class="card border-info">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="shutdown_time_cb" type="checkbox" onchange="CheckForm('shutdown_time', this);">
                 <label class="form-check-label"><b>Shutdown Time</b></label>
@@ -182,7 +182,7 @@
                 </div>
             </div>
         </div>
-        <div class="card border-info">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="cc_delay_cb" type="checkbox" onchange="CheckForm('cc_delay', this);">
                 <label class="form-check-label"><b>Cruise Control Delay</b></label>
@@ -199,7 +199,7 @@
         </div>
     </div>
     <div class="card-group text-center">
-        <div class="card border-info">
+        <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="ammeter">
                 <label class="form-check-label"><b>Current-Meter</b></label>
@@ -213,7 +213,7 @@
                 <span style="color: red;">&#9888;&nbsp;When charging the dashboard will show a constant "0", but charging works normally.</span>
             </div>
         </div>
-		<div class="card border-info">
+		<div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="blm" onchange="CheckForm('blm_alm', this);">
                 <label class="form-check-label"><b>Static Brakelight</b></label>
@@ -232,7 +232,7 @@
         </div>
     </div>
     <div class="card-group text-center">
-		<div class="card border-info">
+		<div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="rfm">
                 <label class="form-check-label"><b>Region-Free</b></label>
@@ -301,9 +301,25 @@
         </div>
     </div>
     <div class="card-group text-center">
+		<div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="eco_mode" onclick="Pedo_To_Eco(this)">
+                <label class="form-check-label"><b>Pedestrian -> ECO Mode</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Replace pedestrian mode with ECO mode. This gives you another driveable mode with slightly reduced consumption at 10 km/h.
+                </div>
+                <div class="card-text">
+                    This is a convenience function! The same effect can be achieved by setting nominal+maximum current and speed limit higher for the pedestrian mode manually.<br/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);">
+                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this); ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Speed Limit</b></label>
             </div>
             <div class="card-body">
@@ -341,17 +357,17 @@
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_speed', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this);">
+                <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_sport', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this); ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Nominal Current</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
                         <div class="row">
                             <div class="col"><label class="form-check-label">Sport Mode, mA</label></div>
-                            <div class="col" id="amps_speed_value"></div>
+                            <div class="col" id="amps_sport_value"></div>
                         </div>
                         <div class="row">
-                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_speed', 'amps_speed_value')">-</button><input class="form-range" name="amps_speed" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_speed_value', this.value)" oninput="OnSliderChange('amps_speed_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_speed', 'amps_speed_value')">+</button></span>
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_sport', 'amps_sport_value')">-</button><input class="form-range" name="amps_sport" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_sport_value', this.value)" oninput="OnSliderChange('amps_sport_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_sport', 'amps_sport_value')">+</button></span>
                         </div>
 
                         <div class="row">
@@ -377,17 +393,17 @@
         </div>
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_speed_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this);">
+                <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_sport_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this); ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Maximum Current</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
                         <div class="row">
                             <div class="col"><label class="form-check-label">Sport Mode, max. mA</label></div>
-                            <div class="col" id="amps_speed_max_value"></div>
+                            <div class="col" id="amps_sport_max_value"></div>
                         </div>
                         <div class="row">
-                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_speed_max', 'amps_speed_max_value')">-</button><input class="form-range" name="amps_speed_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_speed_max_value', this.value)" oninput="OnSliderChange('amps_speed_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_speed_max', 'amps_speed_max_value')">+</button></span>
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_sport_max', 'amps_sport_max_value')">-</button><input class="form-range" name="amps_sport_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_sport_max_value', this.value)" oninput="OnSliderChange('amps_sport_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_sport_max', 'amps_sport_max_value')">+</button></span>
                         </div>
 
                         <div class="row">
@@ -470,11 +486,11 @@
         "SL_DRIVE": "sl_drive",
         "SL_PEDO": "sl_pedo",
         "AMPS": "amps_cb",
-        "AMPS_SPEED": "amps_speed",
+        "AMPS_SPORT": "amps_sport",
         "AMPS_DRIVE": "amps_drive",
         "AMPS_PEDO": "amps_pedo",
         "AMPS_MAX": "amps_max_cb",
-        "AMPS_SPEED_MAX": "amps_speed_max",
+        "AMPS_SPORT_MAX": "amps_sport_max",
         "AMPS_DRIVE_MAX": "amps_drive_max",
         "AMPS_PEDO_MAX": "amps_pedo_max",
 
@@ -486,6 +502,8 @@
 
         "BAUD": "baud",
         "VOLT": "volt",
+
+        "ECO_MODE": "eco_mode",
     };
 
     var formValues = Object.values(forms);
@@ -614,33 +632,48 @@
     }
 
     function Preset_1S() {
-        ChangeForm(forms.AMPS_SPEED, "20000", false);
+        ChangeForm(forms.AMPS_SPORT, "20000", false);
         ChangeForm(forms.AMPS_DRIVE, "15000", false);
-        ChangeForm(forms.AMPS_SPEED_MAX, "35000", false);
+        ChangeForm(forms.AMPS_SPORT_MAX, "35000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
     }
 
     function Preset_Pro2() {
-        ChangeForm(forms.AMPS_SPEED, "25000", false);
+        ChangeForm(forms.AMPS_SPORT, "25000", false);
         ChangeForm(forms.AMPS_DRIVE, "17000", false);
-        ChangeForm(forms.AMPS_SPEED_MAX, "55000", false);
+        ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "32000", false);
     }
 
     function Preset_Lite() {
         ChangeForm(forms.SL_SPEED, "20", false);
         ChangeForm(forms.SL_DRIVE, "15", false);
-        ChangeForm(forms.AMPS_SPEED, "17000", false);
+        ChangeForm(forms.AMPS_SPORT, "17000", false);
         ChangeForm(forms.AMPS_DRIVE, "0", false);
-        ChangeForm(forms.AMPS_SPEED_MAX, "32000", false);
+        ChangeForm(forms.AMPS_SPORT_MAX, "32000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "0", false);
     }
 
     function Preset_Mi3() {
-        ChangeForm(forms.AMPS_SPEED, "26500", false);
+        ChangeForm(forms.AMPS_SPORT, "26500", false);
         ChangeForm(forms.AMPS_DRIVE, "15000", false);
-        ChangeForm(forms.AMPS_SPEED_MAX, "55000", false);
+        ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
+    }
+
+    function Pedo_To_Eco(cb) {
+        if (!cb.checked) {
+            return;
+        }
+        const drive_reduction = 2000;
+        ChangeForm(forms.SL_PEDO, "10", false);
+        ChangeForm(forms.AMPS_PEDO,
+            (GetFormValue(forms.AMPS_DRIVE) - drive_reduction).toString(), false);
+        ChangeForm(forms.AMPS_PEDO_MAX,
+            (GetFormValue(forms.AMPS_DRIVE_MAX) - drive_reduction).toString(), false);
+        CheckForm('sl_pedo', cb);
+        CheckForm('amps_pedo', cb);
+        CheckForm('amps_pedo_max', cb);
     }
 
     function Preset_Default() {
@@ -670,6 +703,8 @@
 
         ChangeForm(forms.BAUD, false);
         ChangeForm(forms.VOLT, "43.01", false);
+
+        ChangeForm(forms.ECO_MODE, false);
     }
 </script>
 

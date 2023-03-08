@@ -385,7 +385,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_pedo(self, amps, force=True):
+    def ampere_pedo(self, amps, force=False):
         '''
         Creator/Author: NandTek
         Description: Nominal current of pedestrian mode
@@ -409,15 +409,11 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_max(self, amps_pedo, amps_drive, amps_speed):
+    def ampere_max(self, amps_pedo=None, amps_drive=None, amps_speed=None):
         '''
         Creator/Author: BotoX/SH
         '''
         ret = []
-
-        #val_pedo = struct.pack('<H', amps_pedo)
-        #val_drive = struct.pack('<H', amps_drive)
-        #val_speed = struct.pack('<H', amps_speed)
 
         sig = [0xa4, 0xf8, None, None, 0x4f, 0xf4, 0xfa]
         ofs_p = FindPattern(self.data, sig) + 4
@@ -439,23 +435,26 @@ class FirmwarePatcher():
             else:
                 raise Exception(f"invalid firmware file: {hex(b)}")
 
-            #pre, post = PatchImm(self.data, ofs, 4, val_pedo, MOVW_T3_IMM)
-            pre = self.data[ofs_p:ofs_p+4]
-            post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_pedo))[0])
-            self.data[ofs_p:ofs_p+4] = post
-            ret.append(["amp_max_pedo", hex(ofs_p), pre.hex(), post.hex()])
+            if amps_pedo is not None:
+                #pre, post = PatchImm(self.data, ofs, 4, val_pedo, MOVW_T3_IMM)
+                pre = self.data[ofs_p:ofs_p+4]
+                post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_pedo))[0])
+                self.data[ofs_p:ofs_p+4] = post
+                ret.append(["amp_max_pedo", hex(ofs_p), pre.hex(), post.hex()])
 
-            #pre, post = PatchImm(self.data, ofs, 4, val_drive, MOVW_T3_IMM)
-            pre = self.data[ofs_d:ofs_d+4]
-            post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_drive))[0])
-            self.data[ofs_d:ofs_d+4] = post
-            ret.append(["amp_max_drive", hex(ofs_d), pre.hex(), post.hex()])
+            if amps_drive is not None:
+                #pre, post = PatchImm(self.data, ofs, 4, val_drive, MOVW_T3_IMM)
+                pre = self.data[ofs_d:ofs_d+4]
+                post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_drive))[0])
+                self.data[ofs_d:ofs_d+4] = post
+                ret.append(["amp_max_drive", hex(ofs_d), pre.hex(), post.hex()])
         except SignatureException:
             # 242 / 016
-            pre = self.data[ofs_p:ofs_p+4]
-            post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_pedo))[0])
-            self.data[ofs_p:ofs_p+4] = post
-            ret.append(["amp_max_pedo", hex(ofs_p), pre.hex(), post.hex()])
+            if amps_pedo is not None:
+                pre = self.data[ofs_p:ofs_p+4]
+                post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_pedo))[0])
+                self.data[ofs_p:ofs_p+4] = post
+                ret.append(["amp_max_pedo", hex(ofs_p), pre.hex(), post.hex()])
 
             try:
                 # 242
@@ -470,16 +469,17 @@ class FirmwarePatcher():
                 sig = [0x95, 0xf8, 0x43, 0xc0, 0x4d, 0xf2, 0xd8, 0x60]
                 ofs_s = FindPattern(self.data, sig) + 4
 
-                pre = self.data[ofs_d:ofs_d+4]
-                post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_drive))[0])
-                self.data[ofs_d:ofs_d+4] = post
-                ret.append(["amp_max_drive", hex(ofs_d), pre.hex(), post.hex()])
-
-        #pre, post = PatchImm(self.data, ofs, 4, val_speed, MOVW_T3_IMM)
-        pre = self.data[ofs_s:ofs_s+4]
-        post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_speed))[0])
-        self.data[ofs_s:ofs_s+4] = post
-        ret.append(["amp_max_speed", hex(ofs_s), pre.hex(), post.hex()])
+                if amps_drive is not None:
+                    pre = self.data[ofs_d:ofs_d+4]
+                    post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_drive))[0])
+                    self.data[ofs_d:ofs_d+4] = post
+                    ret.append(["amp_max_drive", hex(ofs_d), pre.hex(), post.hex()])
+        if amps_speed is not None:
+            #pre, post = PatchImm(self.data, ofs, 4, val_speed, MOVW_T3_IMM)
+            pre = self.data[ofs_s:ofs_s+4]
+            post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_speed))[0])
+            self.data[ofs_s:ofs_s+4] = post
+            ret.append(["amp_max_speed", hex(ofs_s), pre.hex(), post.hex()])
 
         return ret
 
@@ -781,10 +781,11 @@ if __name__ == "__main__":
         'sld': lambda: vlt.speed_limit_drive(22),
         'sls': lambda: vlt.speed_limit_speed(27),
         'slp': lambda: vlt.speed_limit_pedo(9),
-        'alp': lambda: vlt.ampere_pedo(10000),
-        'ald': lambda: vlt.ampere_drive(20000),
-        'als': lambda: vlt.ampere_speed(30000),
+        'amp': lambda: vlt.ampere_pedo(10000),
+        'amd': lambda: vlt.ampere_drive(20000),
+        'ams': lambda: vlt.ampere_speed(30000),
         'alm': lambda: vlt.ampere_max(10000, 30000, 55000),
+        'alp': lambda: vlt.ampere_max(amps_pedo=13000),
         'rml': lambda: vlt.remove_modellock(),
         'rks': lambda: vlt.remove_kers(),
         'rab': lambda: vlt.remove_autobrake(),
