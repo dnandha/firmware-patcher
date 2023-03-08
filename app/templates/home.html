@@ -308,7 +308,7 @@
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Replace pedestrian mode with ECO mode. This gives you another driveable mode with slightly reduced consumption at 10 km/h.
+                    Replace pedestrian mode with ECO mode. This gives you another driveable mode with slightly reduced consumption at 15 km/h.
                 </div>
                 <div class="card-text">
                     This is a convenience function! The same effect can be achieved by setting nominal+maximum current and speed limit higher for the pedestrian mode manually.<br/>
@@ -665,12 +665,12 @@
         if (!cb.checked) {
             return;
         }
-        ChangeForm(forms.SL_PEDO, "10", false);
+        ChangeForm(forms.SL_PEDO, "15", false);
         ChangeForm(forms.AMPS_PEDO, "13000", false);
         ChangeForm(forms.AMPS_PEDO_MAX, "26000", false);
-        CheckForm('sl_pedo', cb);
-        CheckForm('amps_pedo', cb);
-        CheckForm('amps_pedo_max', cb);
+        CheckForm(forms.SL_PEDO, cb);
+        CheckForm(forms.AMPS_PEDO, cb);
+        CheckForm(forms.AMPS_PEDO_MAX, cb);
     }
 
     function Preset_Default() {
