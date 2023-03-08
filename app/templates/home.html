@@ -319,17 +319,17 @@
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_speed', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this); ChangeForm('eco_mode', false);">
+                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_sport', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this); ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Speed Limit</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
                         <div class="row">
                             <div class="col"><label class="form-check-label">Sport Mode, km/h</label></div>
-                            <div class="col" id="sl_speed_value"></div>
+                            <div class="col" id="sl_sport_value"></div>
                         </div>
                         <div class="row">
-                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_speed', 'sl_speed_value')">-</button><input class="form-range" name="sl_speed" type="range" step="1" min="0" max="65" value="0" onchange="OnSliderChange('sl_speed_value', this.value)" oninput="OnSliderChange('sl_speed_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_speed', 'sl_speed_value')">+</button></span>
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_sport', 'sl_sport_value')">-</button><input class="form-range" name="sl_sport" type="range" step="1" min="0" max="65" value="0" onchange="OnSliderChange('sl_sport_value', this.value)" oninput="OnSliderChange('sl_sport_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_sport', 'sl_sport_value')">+</button></span>
                         </div>
 
                         <div class="row">
@@ -482,7 +482,7 @@
         "WHEELSIZE": "wheelsize",
         "SHUTDOWN_TIME": "shutdown_time",
         "SL": "sl_cb",
-        "SL_SPEED": "sl_speed",
+        "SL_SPORT": "sl_sport",
         "SL_DRIVE": "sl_drive",
         "SL_PEDO": "sl_pedo",
         "AMPS": "amps_cb",
@@ -646,7 +646,7 @@
     }
 
     function Preset_Lite() {
-        ChangeForm(forms.SL_SPEED, "20", false);
+        ChangeForm(forms.SL_SPORT, "20", false);
         ChangeForm(forms.SL_DRIVE, "15", false);
         ChangeForm(forms.AMPS_SPORT, "17000", false);
         ChangeForm(forms.AMPS_DRIVE, "0", false);
@@ -665,12 +665,9 @@
         if (!cb.checked) {
             return;
         }
-        const drive_reduction = 2000;
         ChangeForm(forms.SL_PEDO, "10", false);
-        ChangeForm(forms.AMPS_PEDO,
-            (GetFormValue(forms.AMPS_DRIVE) - drive_reduction).toString(), false);
-        ChangeForm(forms.AMPS_PEDO_MAX,
-            (GetFormValue(forms.AMPS_DRIVE_MAX) - drive_reduction).toString(), false);
+        ChangeForm(forms.AMPS_PEDO, "13000", false);
+        ChangeForm(forms.AMPS_PEDO_MAX, "26000", false);
         CheckForm('sl_pedo', cb);
         CheckForm('amps_pedo', cb);
         CheckForm('amps_pedo_max', cb);
@@ -687,7 +684,7 @@
         ChangeForm(forms.WHEELSIZE, "8.5", false);
         ChangeForm(forms.SHUTDOWN_TIME, "3.0", false);
         ChangeForm(forms.SL, false);
-        ChangeForm(forms.SL_SPEED, "25", false);
+        ChangeForm(forms.SL_SPORT, "25", false);
         ChangeForm(forms.SL_DRIVE, "20", false);
         ChangeForm(forms.SL_PEDO, "5", false);
         ChangeForm(forms.AMPS, false);
@@ -716,7 +713,8 @@
     <p>---------- NGFW Counter ----------<br/>
     Bin: {{ counts['bin'] }} | Zip: {{ counts['zip'] }} | Doc: {{ counts['doc'] }}</p>
     <p>----------- GIT Summary ----------<br/>
-    {{ gitinfo['date'] }}: {{ gitinfo['summary'] }} [{{ gitinfo['sha'] }}]</p>
+    {{ gitinfo['date'] }}: {{ gitinfo['summary'] }}<br/>
+    [Commit: {{ gitinfo['sha'] }}]</p>
     <a href="/privacy">Privacy</a>
 </footer>
 </html>

@@ -214,7 +214,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def speed_limit_speed(self, kmh):
+    def speed_limit_sport(self, kmh):
         '''
         Creator/Author: SH
         '''
@@ -305,7 +305,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_speed(self, amps, force=True):
+    def ampere_sport(self, amps, force=True):
         '''
         Creator/Author: SH
         '''
@@ -409,7 +409,7 @@ class FirmwarePatcher():
 
         return ret
 
-    def ampere_max(self, amps_pedo=None, amps_drive=None, amps_speed=None):
+    def ampere_max(self, amps_pedo=None, amps_drive=None, amps_sport=None):
         '''
         Creator/Author: BotoX/SH
         '''
@@ -474,10 +474,10 @@ class FirmwarePatcher():
                     post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_drive))[0])
                     self.data[ofs_d:ofs_d+4] = post
                     ret.append(["amp_max_drive", hex(ofs_d), pre.hex(), post.hex()])
-        if amps_speed is not None:
+        if amps_sport is not None:
             #pre, post = PatchImm(self.data, ofs, 4, val_speed, MOVW_T3_IMM)
             pre = self.data[ofs_s:ofs_s+4]
-            post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_speed))[0])
+            post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_sport))[0])
             self.data[ofs_s:ofs_s+4] = post
             ret.append(["amp_max_speed", hex(ofs_s), pre.hex(), post.hex()])
 
@@ -779,13 +779,12 @@ if __name__ == "__main__":
         'mss': lambda: vlt.motor_start_speed(3),
         'wsc': lambda: vlt.wheel_speed_const(mult),
         'sld': lambda: vlt.speed_limit_drive(22),
-        'sls': lambda: vlt.speed_limit_speed(27),
+        'sls': lambda: vlt.speed_limit_sport(27),
         'slp': lambda: vlt.speed_limit_pedo(9),
         'amp': lambda: vlt.ampere_pedo(10000),
         'amd': lambda: vlt.ampere_drive(20000),
-        'ams': lambda: vlt.ampere_speed(30000),
+        'ams': lambda: vlt.ampere_sport(30000),
         'alm': lambda: vlt.ampere_max(10000, 30000, 55000),
-        'alp': lambda: vlt.ampere_max(amps_pedo=13000),
         'rml': lambda: vlt.remove_modellock(),
         'rks': lambda: vlt.remove_kers(),
         'rab': lambda: vlt.remove_autobrake(),
