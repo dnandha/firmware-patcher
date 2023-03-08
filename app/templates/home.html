@@ -662,15 +662,20 @@
     }
 
     function Pedo_To_Eco(cb) {
-        if (!cb.checked) {
-            return;
+        if (!GetFormValue(forms.SL)) {
+            CheckForm(forms.SL_PEDO, cb);
         }
-        ChangeForm(forms.SL_PEDO, "15", false);
-        ChangeForm(forms.AMPS_PEDO, "13000", false);
-        ChangeForm(forms.AMPS_PEDO_MAX, "26000", false);
-        CheckForm(forms.SL_PEDO, cb);
-        CheckForm(forms.AMPS_PEDO, cb);
-        CheckForm(forms.AMPS_PEDO_MAX, cb);
+        if (!GetFormValue(forms.AMPS)) {
+            CheckForm(forms.AMPS_PEDO, cb);
+        }
+        if (!GetFormValue(forms.AMPS_MAX)) {
+            CheckForm(forms.AMPS_PEDO_MAX, cb);
+        }
+        if (cb.checked) {
+            ChangeForm(forms.SL_PEDO, "15", false);
+            ChangeForm(forms.AMPS_PEDO, "13000", false);
+            ChangeForm(forms.AMPS_PEDO_MAX, "26000", false);
+        }
     }
 
     function Preset_Default() {
