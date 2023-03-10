@@ -269,6 +269,10 @@ def patch(data):
     if pnb is not None:
         res.append(("Pedestrian No-Blink", patcher.pedo_noblink()))
 
+    bts = flask.request.form.get('bts', None)
+    if bts is not None:
+        res.append(("Button Swap", patcher.button_swap()))
+
     baud = flask.request.form.get('baud', None)
     if baud is not None:
         res.append(("Baudrate", patcher.bms_baudrate(76800)))

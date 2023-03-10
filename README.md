@@ -18,22 +18,31 @@ The mod will then be integrated into the NGFW patcher.
 * DRV321
 
 ## Available Mods
+### BoToX/SH
 * DPC (register)
-* No KERS (improved)
 * No Charging Fix
 * Remove Speed Check
-* Shutdown Time
 * Motor Start Speed
 * Cruise Control Delay
 * Current Raising Coefficient
 * Wheelsize
 * Speed Limits
 * Phase Currents
+* (Lever resolution (gas/brake))
+
+### NandTek
+* Shutdown Time
+* No KERS (improved)
 * Current Meter
 * Region Free
-* Brakelight / Auto-Light
-* (Lever resolution (gas/brake))
+* Brakelight + Auto-Light
+* Pedestrian -> ECO Mode
+* Pedestrian No-Blink
+* Button Swap
 * Remove Model Lock
+
+### Your Mods??
+Contribute your mod to this project!
 
 ## Instructions
 1. `FLASK_APP=app/__init__.py`

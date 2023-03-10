@@ -8,7 +8,7 @@
 <meta name="author" content="D. Nandha">
 <meta name="description" content="XNG Custom Firmware Toolkit">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='ngfw.ico') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='bootstrap.min.css') }}">
 
@@ -276,8 +276,25 @@
                     Replaces the battery percentage shown on dashboard by actual current consumption.
                     No bars means no consumption, full bars means 25 amps consumption.<br/>
                 </div>
-                With this mod the battery percentage can only be read out using an app.<br/>
-                <span style="color: red;">&#9888;&nbsp;When charging the dashboard will show a constant "0", but charging works normally.</span>
+                <div class="card-text">
+                    With this mod the battery percentage can only be read out using an app.<br/>
+                    <span style="color: red;">&#9888;&nbsp;When charging the dashboard will show a constant "0", but charging works normally.</span>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="bts">
+                <label class="form-check-label"><b>Button Swap</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Swaps the function of single and double button tap.
+                </div>
+                <div class="card-text">
+                    A single button tap switches mode, two button taps turn light on/off.<br/>
+                    Useful if you want to be able to switch modes more easily.
+                </div>
             </div>
         </div>
     </div>
@@ -536,6 +553,7 @@
 
         "ECO_MODE": "eco_mode",
         "PNB": "pnb",
+        "BTS": "bts",
     };
 
     var formValues = Object.values(forms);
@@ -741,6 +759,7 @@
 
         ChangeForm(forms.ECO_MODE, false);
         ChangeForm(forms.PNB, false);
+        ChangeForm(forms.BTS, false);
     }
 </script>
 

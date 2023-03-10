@@ -781,6 +781,103 @@ class FirmwarePatcher():
         ret.append(["volt_limit", hex(ofs), pre.hex(), post.hex()])
         return ret
 
+    def button_swap(self):
+        '''
+        Creator/Author: NandTek
+        Description: Switch function of single/double click -> next level hackery! Props if you understand this :)
+        '''
+        ret = []
+
+        sig = [None, 0x00, 0x00, 0x20, 0x10, 0xb5, 0x00, 0x23, 0x1a, 0x46, 0x03, 0xe0]
+        ofs_dat = FindPattern(self.data, sig)
+
+        sig = [0x22, 0x71, 0x22, 0x81, 0xb8, 0x78, 0x10, 0xb1, 0xba, 0x70, 0x2a, 0x72,
+               0x37, 0xe0, 0x64, 0x20, 0xb8, 0x70, 0x2e, 0x72, 0x33, 0xe0]
+        ofs_light = FindPattern(self.data, sig)
+
+        sig = [0x22, 0x71, 0x22, 0x81, 0x01, 0x78, 0x21, 0xb1, 0x01, 0x29, 0x07, 0xd0,
+               0x02, 0x29, 0x10, 0xd1, 0x0a, 0xe0, 0x02, 0x21, 0x01, 0x70, 0x85, 0xf8,
+               0x3d, 0x60, 0x02, 0xe0, 0x02, 0x70, 0x85, 0xf8, 0x3d, 0x20, 0x85, 0xf8,
+               0x3c, 0x20, 0x04, 0xe0, 0x06, 0x70, 0x85, 0xf8, 0x3d, 0x20, 0x85, 0xf8,
+               0x3c, 0x60, 0x22, 0x70, 0xe2, 0x80]
+        ofs_mode = FindPattern(self.data, sig) - 2
+
+        diff = ofs_mode - ofs_light
+        fofs = diff + 2
+        fj2 = fofs + 0x6
+        fj4 = fj2 + 0xc
+
+        # ldr offsets have to be rounded to words...
+        dat = (ofs_dat - ofs_mode - 2) // 4 * 4
+        dat += diff
+
+        asm_light = f"""
+         THIS:
+             ldr        r0,[pc,{dat}]
+             strb       r2,[r4,#0x4]
+             strh       r2,[r4,#0x8]
+             ldrb       r1,[r0,#0x0]
+             cbz        r1,J1
+             cmp        r1,#0x1
+             beq        {fj2}
+             b          {fj4}
+         J1:
+             movs       r1,#0x2
+             strb       r1,[r0,#0x0]
+             b          {fofs}
+        """
+
+        asm_mode = """
+         FORK:
+             b          OTHER
+
+         THIS_:
+             strb.w     r6,[r5,#0x3d]
+             b          J3
+         J2:
+             strb       r2,[r0,#0x0]
+             strb.w     r2,[r5,#0x3d]
+         J3:
+             strb.w     r2,[r5,#0x3c]
+             b          EXIT2
+         J4:
+             strb       r6,[r0,#0x0]
+             strb.w     r2,[r5,#0x3d]
+             strb.w     r6,[r5,#0x3c]
+             b          EXIT2
+
+        OTHER:
+             strb       r2,[r4,#0x4]
+             strh       r2,[r4,#0x8]
+             ldrb       r0,[r7,#0x2]
+             cbz        r0,J5
+             strb       r2,[r7,#0x2]
+             strb       r2,[r5,#0x8]
+             b          EXIT
+         J5:
+             movs       r0,#0x64
+             strb       r0,[r7,#0x2]
+             strb       r6,[r5,#0x8]
+         EXIT:
+             strb       r2,[r4,#0x0]
+         EXIT2:
+        """
+        post_light = bytes(self.ks.asm(asm_light)[0])
+        post_mode = bytes(self.ks.asm(asm_mode)[0])
+        assert len(post_light) == 22
+        assert len(post_mode) == 54
+
+        pre_light = self.data[ofs_light:ofs_light+len(post_light)]
+        pre_mode = self.data[ofs_mode:ofs_mode+len(post_mode)]
+
+        self.data[ofs_light:ofs_light+len(post_light)] = post_light
+        self.data[ofs_mode:ofs_mode+len(post_mode)] = post_mode
+
+        ret.append(["bts_light", hex(ofs_light), pre_light.hex(), post_light.hex()])
+        ret.append(["bts_mode", hex(ofs_mode), pre_mode.hex(), post_mode.hex()])
+
+        return ret
+
 
 if __name__ == "__main__":
     import sys
@@ -828,6 +925,7 @@ if __name__ == "__main__":
         'bud': lambda: vlt.bms_baudrate(76800),
         'vlt': lambda: vlt.volt_limit(43.01),
         'pnb': lambda: vlt.pedo_noblink(),
+        'bts': lambda: vlt.button_swap(),
     }
 
     for k in patches:
@@ -836,9 +934,9 @@ if __name__ == "__main__":
         try:
             for desc, ofs, pre, post in patches[k]():
                 print(desc, ofs, pre, post)
-                pre_dis = [' '.join([x.mnemonic, x.op_str])
+                pre_dis = [' '.join([x.bytes.hex(), x.mnemonic, x.op_str])
                            for x in vlt.cs.disasm(bytes.fromhex(pre), 0)]
-                post_dis = [' '.join([x.mnemonic, x.op_str])
+                post_dis = [' '.join([x.bytes.hex(), x.mnemonic, x.op_str])
                             for x in vlt.cs.disasm(bytes.fromhex(post), 0)]
                 for pd in pre_dis:
                     print("<", pd)
