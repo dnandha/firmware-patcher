@@ -1,6 +1,6 @@
 #
-# XNG Firmware Patcher
-# Copyright (C) 2021-2022 Daljeet Nandha
+# NGFW Patcher
+# Copyright (C) 2021-2023 Daljeet Nandha
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
