@@ -24,9 +24,10 @@ import flask
 import traceback
 import os
 import io
+import pathlib
 from patcher import FirmwarePatcher, SignatureException
 
-pwd = os.path.expanduser('~')
+pwd = pathlib.Path(__file__).parent.parent.resolve()
 
 app = flask.Flask(__name__)
 
@@ -49,12 +50,13 @@ git_info = {
 try:
     import git
     repo = git.Repo(pwd)
-    commit = list(git.Repo('./').iter_commits())[0]
-    git_info['sha'] = commit.hexsha
-    git_info['date'] = commit.committed_datetime.strftime("%B %d, %Y")
-    git_info['summary'] = commit.summary
+    for commit in repo.iter_commits():
+        git_info['sha'] = commit.hexsha
+        git_info['date'] = commit.committed_datetime.isoformat()
+        git_info['summary'] = commit.summary
+        break
 except Exception as ex:
-    print(ex.msg)
+    print("Exception importing git repo:", ex)
 
 
 def save_click(pod):
