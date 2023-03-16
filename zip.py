@@ -50,10 +50,10 @@ class Zippy():
 
     def check_valid(self):
         try:
-            id_ = data[0x100:0x10f].decode('ascii')
+            id_ = self.data[0x100:0x10f].decode('ascii')
         except UnicodeDecodeError:
             try:
-                id_ = data[0x400:0x40e].decode('ascii')
+                id_ = self.data[0x400:0x40e].decode('ascii')
             except UnicodeDecodeError:
                 return False
 
