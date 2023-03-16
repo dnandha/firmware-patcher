@@ -314,7 +314,7 @@ def patch_firmware():
             from zip import Zippy
             params = '\n'.join([x[0] for x in res]) + '\n'
             zippy = Zippy(data_patched, params=params, model=dev)
-            if not zippy.check_valid(data):
+            if not zippy.check_valid():
                 return "Error: Invalid input file."
             data_patched = zippy.zip_it('nice'.encode())
             filename = filename[:-4] + '.zip'
