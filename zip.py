@@ -46,27 +46,24 @@ class Zippy():
 
         self.params = params
 
-        self.model = model
-
-    def check_valid(self):
         try:
             id_ = self.data[0x100:0x10f].decode('ascii')
         except UnicodeDecodeError:
             try:
                 id_ = self.data[0x400:0x40e].decode('ascii')
             except UnicodeDecodeError:
-                return False
+                pass
 
+        self.model = None
         if id_ == "Scooter_MiP2_V0":
             self.model = "pro2"
         elif id_ == "Scooter_Mi1S_V0":
             self.model = "1s"
         elif id_ == "Scooter_Mi3_V0":
             self.model = "mi3"
-        else:
-            return False
 
-        return True
+    def check_valid(self):
+        return self.model is not None
 
     def encrypt(self, in_memory=False):
         if in_memory:
@@ -156,4 +153,4 @@ if __name__ == "__main__":
         data = fp.read()
 
     with open(outfile, 'wb') as fp:
-        fp.write(Zippy(data, name="ngfw").zip_it("nice".encode(), offline=True))
+        fp.write(Zippy(data, name="ngfw").zip_it("nice".encode(), offline=True, enforce=False))
