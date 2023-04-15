@@ -413,6 +413,48 @@
             </div>
         </div>
     </div>
+    <div class="card-group text-center">
+        <div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="amps_brake_min_cb" onchange="CheckForm('amps_brake_min', this);">
+                <label class="form-check-label"><b>Minimum Brake Current</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                        <div class="row">
+                            <div class="col"><label class="form-check-label">Brake, min. mA</label></div>
+                            <div class="col" id="amps_brake_min_value"></div>
+                        </div>
+                        <div class="row">
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_brake_min', 'amps_brake_min_value')">-</button><input class="form-range" name="amps_brake_min" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_brake_min_value', this.value)" oninput="OnSliderChange('amps_brake_min_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_brake_min', 'amps_brake_min_value')">+</button></span>
+                        </div>
+                </div>
+                <div class="card-text">
+                    <span style="color: red;">&#9888;&nbsp;These values are SAFETY-RELEVANT! Modify / test at your own risk!!</span>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="amps_brake_max_cb" onchange="CheckForm('amps_brake_max', this);">
+                <label class="form-check-label"><b>Maximum Brake Current</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                        <div class="row">
+                            <div class="col"><label class="form-check-label">Brake, min. mA</label></div>
+                            <div class="col" id="amps_brake_max_value"></div>
+                        </div>
+                        <div class="row">
+                            <span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_brake_max', 'amps_brake_max_value')">-</button><input class="form-range" name="amps_brake_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_brake_max_value', this.value)" oninput="OnSliderChange('amps_brake_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_brake_max', 'amps_brake_max_value')">+</button></span>
+                        </div>
+                </div>
+                <div class="card-text">
+                    <span style="color: red;">&#9888;&nbsp;These values affect SAFETY! Change at your own risk!!</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <br/>
     <h5 class="text-center">Hardware</h5>
@@ -541,6 +583,9 @@
         "AMPS_SPORT_MAX": "amps_sport_max",
         "AMPS_DRIVE_MAX": "amps_drive_max",
         "AMPS_PEDO_MAX": "amps_pedo_max",
+
+        "AMPS_BRAKE_MIN": "amps_brake_min",
+        "AMPS_BRAKE_MAX": "amps_brake_max",
 
         "AMMETER": "ammeter",
         "RFM": "rfm",
@@ -686,6 +731,7 @@
         ChangeForm(forms.AMPS_DRIVE, "15000", false);
         ChangeForm(forms.AMPS_SPORT_MAX, "35000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
+        ChangeForm(forms.AMPS_BRAKE_MAX, "52000", false);
     }
 
     function Preset_Pro2() {
@@ -693,6 +739,7 @@
         ChangeForm(forms.AMPS_DRIVE, "17000", false);
         ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "32000", false);
+        ChangeForm(forms.AMPS_BRAKE_MAX, "52000", false);
     }
 
     function Preset_Lite() {
@@ -702,6 +749,7 @@
         ChangeForm(forms.AMPS_DRIVE, "0", false);
         ChangeForm(forms.AMPS_SPORT_MAX, "32000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "0", false);
+        ChangeForm(forms.AMPS_BRAKE_MAX, "22000", false);
     }
 
     function Preset_Mi3() {
@@ -709,6 +757,7 @@
         ChangeForm(forms.AMPS_DRIVE, "15000", false);
         ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
+        ChangeForm(forms.AMPS_BRAKE_MAX, "47000", false);
     }
 
     function Pedo_To_Eco(cb) {
@@ -747,6 +796,7 @@
         ChangeForm(forms.AMPS_MAX, false);
         ChangeForm(forms.AMPS_PEDO, "7000", false);
         ChangeForm(forms.AMPS_PEDO_MAX, "8000", false);
+        ChangeForm(forms.AMPS_BRAKE_MIN, "8000", false);
 		
         ChangeForm(forms.AMMETER, false);
         ChangeForm(forms.RFM, false);

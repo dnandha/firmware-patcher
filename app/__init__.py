@@ -201,6 +201,20 @@ def patch(data):
         res.append((f"Max-Currents Pedestrian/Drive/Sport: {amps_pedo_max}mA/{amps_drive_max}mA/{amps_sport_max}mA",
                     patcher.ampere_max(amps_pedo_max, amps_drive_max, amps_sport_max)))
 
+    amps_brake_max = flask.request.form.get('amps_brake_max', None)
+    if amps_brake_max is not None:
+        amps_brake_max = int(amps_brake_max)
+        assert amps_brake_max >= 5000 and amps_brake_max <= 65000, amps_brake_max
+        res.append((f"Max-Current Brake: {amps_brake_max}mA",
+                    patcher.ampere_brake(max_=amps_brake_max)))
+
+    amps_brake_min = flask.request.form.get('amps_brake_min', None)
+    if amps_brake_min is not None:
+        amps_brake_min = int(amps_brake_min)
+        assert amps_brake_min >= 0 and amps_brake_min <= 65000, amps_brake_min
+        res.append((f"Min-Current Brake: {amps_brake_min}mA",
+                    patcher.ampere_brake(min_=amps_brake_min)))
+
     crc = flask.request.form.get('crc', None)
     if crc is not None:
         crc = int(crc)

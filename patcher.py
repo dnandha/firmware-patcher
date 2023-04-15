@@ -32,6 +32,10 @@ MOVW_T3_IMM = [*[None]*5, 11, *[None]*6, 15, 14, 13, 12, None, 10, 9, 8, *[None]
 MOVS_T1_IMM = [*[None]*8, 7, 6, 5, 4, 3, 2, 1, 0]
 
 
+class SignatureException(Exception):
+    pass
+
+
 def PatchImm(data, ofs, size, imm, signature):
     assert size % 2 == 0, 'size must be power of 2!'
     assert len(signature) == size * 8, 'signature must be exactly size * 8 long!'
@@ -63,10 +67,6 @@ def PatchImm(data, ofs, size, imm, signature):
     return (orig, packed)
 
 
-class SignatureException(Exception):
-    pass
-
-
 def FindPattern(data, signature, mask=None, start=None, maxit=None):
     sig_len = len(signature)
     if start is None:
@@ -89,6 +89,18 @@ def FindPattern(data, signature, mask=None, start=None, maxit=None):
                 return i
 
     raise SignatureException('Pattern not found!')
+
+
+def NearestConst(x):
+    n_dist, n_sign = 0xffff, 1
+    for s in range(32-8):
+        for i in range(0xff):
+            y = i << s
+            assert y <= 0xffffffff, "error while rounding"
+            dist, sign = abs(y - x), 1 if y - x >= 0 else -1
+            n_dist, n_sign = (dist, sign)\
+                if dist < n_dist else (n_dist, n_sign)
+    return x + n_sign * n_dist
 
 
 class FirmwarePatcher():
@@ -878,6 +890,83 @@ class FirmwarePatcher():
 
         return ret
 
+    def fake_uid(self, uid):
+        '''
+        Creator/Author: NandTek
+        Description: Fake MCU UID
+        '''
+        ret = []
+        sig = [0xfd, 0xf7, None, None, None, 0x48, 0xb0, 0xf9, 0x00, 0x10, 0xb4, 0xf9, 0xb4, 0x21, 0x91, 0x42]
+        ofs = FindPattern(self.data, sig)
+
+        asm = """
+            ldr             r0,[pc, #0x244]
+            adds.w          r1,r4,#0x1b4
+            bl              FUN
+            b               LAB
+            nop
+        FUN:
+            push.w          {r4,r5,r6,lr}
+            adr             r2,#0x30
+            ldm.w           r2,{r4,r5,r6}
+            str             r4,[r0,#0x0]
+            str             r5,[r0,#0x4]
+            str             r6,[r0,#0x8]
+            str             r4,[r1,#0x0]
+            str             r5,[r1,#0x4]
+            str             r6,[r1,#0x8]
+            nop; nop; nop; nop; nop; nop; nop; nop;
+            nop; nop; nop; nop; nop; nop; nop; nop;
+            pop             {r4,r5,r6,pc}
+        DAT:
+            str.w          r0,[r0]
+            str.w          r0,[r0]
+            str.w          r0,[r0]
+        LAB:
+            nop
+        """
+
+        post = bytearray(self.ks.asm(asm)[0])
+        pre = self.data[ofs:ofs+len(post)]
+
+        # postfix
+        ldr = pre[4:6]
+        ldr[0] += 1  # ldr shifted down up one instruction
+        post[0:2] = ldr  # copy correct ldr address
+        post[-2-12:-2] = bytes.fromhex(uid)  # inject uid
+
+        self.data[ofs:ofs+len(post)] = post
+        ret.append(["fud", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
+    def ampere_brake(self, min_=None, max_=None):
+        '''
+        Creator/Author: SH
+        Description: Set brake current limits (patch min+max or max first)
+        '''
+
+        ret = []
+        sig = [0x73, 0x20, None, None, None, None, 0x50, 0x43, 0x73, 0x22, 0x90, 0xfb, 0xf2, 0xf0, None, None, 0x10, 0x1a, None, None, 0xa0, 0xf5, 0xfa, 0x50]
+
+        ofs = FindPattern(self.data, sig) + 2
+        if max_ is not None:
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('MOVW R2,#{}'.format(max_))[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["abr_max", hex(ofs), pre.hex(), post.hex()])
+
+        if min_ is not None:
+            ofs += 18
+            pre = self.data[ofs:ofs+4]
+            val = NearestConst(min_)
+            assert abs(val-min_) < 100, "rounding outside tolerance"
+            post = bytes(self.ks.asm('SUB.W R0,R0,#{}'.format(val))[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["abr_min", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
 
 if __name__ == "__main__":
     import sys
@@ -926,6 +1015,8 @@ if __name__ == "__main__":
         'vlt': lambda: vlt.volt_limit(43.01),
         'pnb': lambda: vlt.pedo_noblink(),
         'bts': lambda: vlt.button_swap(),
+        'fud': lambda: vlt.fake_uid("0102030405060708090A0B0C"),
+        'abr': lambda: vlt.ampere_brake(min_=25000, max_=60000),
     }
 
     for k in patches:
