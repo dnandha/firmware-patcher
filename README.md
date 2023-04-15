@@ -28,6 +28,7 @@ The mod will then be integrated into the NGFW patcher.
 * Wheelsize
 * Speed Limits
 * Phase Currents
+* Brake Currents
 * (Lever resolution (gas/brake))
 
 ### NandTek
