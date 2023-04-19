@@ -715,6 +715,8 @@
         Preset_Default();
 
         var dev = document.getElementById("devselect").value;
+        GetForm(forms.RFM).disabled = (dev === "lite");
+
         if (dev === "pro2") {
             Preset_Pro2();
         } else if (dev === "1s") {
