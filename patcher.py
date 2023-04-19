@@ -589,12 +589,16 @@ class FirmwarePatcher():
         ofs_2 = struct.unpack("<L", ofs_2)[0]
         adds = ofs_1 - ofs_2
 
+        ofs = 0
         len_ = 46
         try:
             sig = [0x90, 0xf8, None, None, None, 0x28, None, 0xd1]
             ofs = FindPattern(self.data, sig) + 0x8
         except SignatureException:
-            # 242
+            pass
+
+        if not (ofs > 0 and ofs < 0x1000):
+            # 242 / 245
             sig = [0xa0, 0x7d, 0x40, 0x1c, 0xc0, 0xb2, 0xa0, 0x75]
             ofs = FindPattern(self.data, sig)
 
