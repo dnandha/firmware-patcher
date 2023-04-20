@@ -334,7 +334,7 @@
                         </div>
                 </div>
                 <div class="card-text">
-                    These values define the maximum speed of each mode.
+                    These values define the maximum speed of each mode. Note: DPC mode ignores speed limits.
                 </div>
             </div>
         </div>
@@ -372,7 +372,8 @@
                         </div>
                 </div>
                 <div class="card-text">
-                    <span style="color: red;">&#9888;&nbsp;These values affect battery life and setting them too high can toast your controller!</span>
+                    These values define the maximum current that is applied when the throttle lever is fully pressed (for each mode). Increasing the value will give a better acceleration and up-hill performance, at the cost of battery life.<br/>
+                    <span style="color: red;">&#9888;&nbsp;Affects battery life! Too high currents can toast your cables or controller!!</span>
                 </div>
             </div>
         </div>
@@ -408,7 +409,8 @@
                         </div>
                 </div>
                 <div class="card-text">
-                    <span style="color: red;">&#9888;&nbsp;These values affect battery life and setting them too high can toast your controller!</span>
+                    These values the define the hard upper current limit of each mode. Upon reaching these values, the current is fully cut - the motor can't draw currents higher than this.<br/>
+                    <span style="color: red;">&#9888;&nbsp;Affects battery life! Too high currents can toast your cables or controller!!</span>
                 </div>
             </div>
         </div>
@@ -430,7 +432,8 @@
                         </div>
                 </div>
                 <div class="card-text">
-                    <span style="color: red;">&#9888;&nbsp;This value affects SAFETY! Modify at your own risk!!</span>
+                    This value defines the brake current that is always added whenever you touch the brake. Gives you control over the lower end of brake. When lowering this value, you should increase the <b>Maximum Brake Current</b> by the same amount!<br/>
+                    <span style="color: red;">&#9888;&nbsp;Affects SAFETY! Modify at your own risk!!</span>
                 </div>
             </div>
         </div>
@@ -442,7 +445,7 @@
             <div class="card-body">
                 <div class="card-title">
                         <div class="row">
-                            <div class="col"><label class="form-check-label">Brake, min. mA</label></div>
+                            <div class="col"><label class="form-check-label">Brake, max. mA</label></div>
                             <div class="col" id="amps_brake_max_value"></div>
                         </div>
                         <div class="row">
@@ -450,7 +453,8 @@
                         </div>
                 </div>
                 <div class="card-text">
-                    <span style="color: red;">&#9888;&nbsp;This value affects SAFETY! Modify at your own risk!!</span>
+                    This value defines the maximum current that is substracted, when the brake lever is fully pulled. Decreasing the value will result in the brake being less effective overall! Only decrease if you think the brake is way too strong.<br/>
+                    <span style="color: red;">&#9888;&nbsp;Affects SAFETY! Modify at your own risk!!</span>
                 </div>
             </div>
         </div>
@@ -476,7 +480,7 @@
                     </div>
                 </div>
                 <div class="card-text">
-                    When upgrading / changing the stock wheels, this parameter has to be adjusted to match GPS speed and torque.
+                    When upgrading / changing the stock wheels, this parameter has to be adjusted to match the GPS speed and torque.
                 </div>
             </div>
         </div>
