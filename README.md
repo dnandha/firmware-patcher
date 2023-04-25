@@ -41,6 +41,7 @@ The mod will then be integrated into the NGFW patcher.
 * Pedestrian No-Blink
 * Button Swap
 * Remove Model Lock
+* Custom KERS
 
 ### Your Mods??
 Contribute your mod to this project!

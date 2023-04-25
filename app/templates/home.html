@@ -120,7 +120,7 @@
         </div>
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" name="remove_kers" type="checkbox">
+                <input class="form-check-input" name="remove_kers" type="checkbox" onclick="ChangeForm('kml', false)">
                 <label class="form-check-label"><b>No KERS</b></label>
             </div>
             <div class="card-body">
@@ -298,13 +298,32 @@
             </div>
         </div>
     </div>
+    <div class="card-group">
+        <div class="card text-center m-1">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="kml" onchange="CheckForm('kml_l0', this);CheckForm('kml_l1', this);CheckForm('kml_l2', this);" onclick="ChangeForm('remove_kers', false);">
+                <label class="form-check-label"><b>Custom KERS</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    <span class="input-group-text">Weak:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l0', 'kml_l0_value')">-</button><input class="form-range" name="kml_l0" type="range" step="1" min="0" max="30" value="6" onchange="OnSliderChange('kml_l0_value', this.value)" oninput="OnSliderChange('kml_l0_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l0', 'kml_l0_value')">+</button></span><div id="kml_l0_value">6</div>
+                    <span class="input-group-text">Middle:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l1', 'kml_l1_value')">-</button><input class="form-range" name="kml_l1" type="range" step="1" min="0" max="30" value="12" onchange="OnSliderChange('kml_l1_value', this.value)" oninput="OnSliderChange('kml_l1_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l1', 'kml_l1_value')">+</button></span><div id="kml_l1_value">12</div>
+                    <span class="input-group-text">Strong:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l2', 'kml_l2_value')">-</button><input class="form-range" name="kml_l2" type="range" step="1" min="0" max="30" value="20" onchange="OnSliderChange('kml_l2_value', this.value)" oninput="OnSliderChange('kml_l2_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l2', 'kml_l2_value')">+</button></span><div id="kml_l2_value">20</div>
+                </div>
+
+                <div class="card-text">
+                    Set the three KERS multiplier levels individually. Set value to "0" to turn KERS off. <b>Note:</b> Overrides <b>No KERS</b> mod!
+                </div>
+            </div>
+        </div>
+    </div>
 
     <br/>
     <h5 class="text-center">Limits</h5>
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_sport', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this); ChangeForm('eco_mode', false);">
+                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_sport', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);" onclick="ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Speed Limit</b></label>
             </div>
             <div class="card-body">
@@ -334,7 +353,7 @@
                         </div>
                 </div>
                 <div class="card-text">
-                    These values define the maximum speed of each mode. Note: DPC mode ignores speed limits.
+                    These values define the maximum speed of each mode. <b>Note:</b> DPC mode ignores speed limits.
                 </div>
             </div>
         </div>
@@ -342,7 +361,7 @@
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_sport', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this); ChangeForm('eco_mode', false);">
+                <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_sport', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this);" onclick="ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Nominal Current</b></label>
             </div>
             <div class="card-body">
@@ -379,7 +398,7 @@
         </div>
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_sport_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this); ChangeForm('eco_mode', false);">
+                <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_sport_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this);" onclick="ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Maximum Current</b></label>
             </div>
             <div class="card-body">
@@ -603,6 +622,11 @@
         "ECO_MODE": "eco_mode",
         "PNB": "pnb",
         "BTS": "bts",
+
+        "KML": "kml",
+        "KML_L0": "kml_l0",
+        "KML_L1": "kml_l1",
+        "KML_L2": "kml_l2",
     };
 
     var formValues = Object.values(forms);
@@ -816,6 +840,11 @@
         ChangeForm(forms.ECO_MODE, false);
         ChangeForm(forms.PNB, false);
         ChangeForm(forms.BTS, false);
+
+        ChangeForm(forms.KML, false);
+        ChangeForm(forms.KML_L0, "6", null);
+        ChangeForm(forms.KML_L1, "12", null);
+        ChangeForm(forms.KML_L2, "20", null);
     }
 </script>
 

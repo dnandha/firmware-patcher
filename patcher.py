@@ -971,6 +971,36 @@ class FirmwarePatcher():
 
         return ret
 
+    def kers_multi(self, l0=6, l1=12, l2=20):
+        '''
+        Creator/Author: NandTek
+        Description: Set multiplier values for KERS
+        '''
+        ret = []
+
+        asm = f"""
+        nop
+        nop
+        movs	r1, #{l0}
+        b	MULT
+        nop
+        movs	r1, #{l1}
+        b	MULT
+        nop
+        movs	r1, #{l2}
+        MULT:
+        muls	r0, r0, r1
+        """
+        sig = [0x00, 0xeb, 0x40, 0x00, 0x40, 0x00, 0x05, 0xe0, 0x00, 0xeb, 0x40, 0x00, 0x01, 0xe0, 0x00, 0xeb, 0x80, 0x00, 0x80, 0x00]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+len(sig)]
+        post = bytes(self.ks.asm(asm)[0])
+        assert len(pre) == len(post), f"{len(pre)}, {len(post)}"
+        self.data[ofs:ofs+len(sig)] = post
+        ret.append(["kers_multi", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
 
 if __name__ == "__main__":
     import sys
@@ -1021,6 +1051,7 @@ if __name__ == "__main__":
         'bts': lambda: vlt.button_swap(),
         'fud': lambda: vlt.fake_uid("0102030405060708090A0B0C"),
         'abr': lambda: vlt.ampere_brake(min_=25000, max_=60000),
+        'kml': lambda: vlt.kers_multi(2, 5, 10),
     }
 
     for k in patches:

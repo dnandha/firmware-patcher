@@ -228,9 +228,22 @@ def patch(data):
         res.append((f"Motor Start Speed: {motor_start_speed}km/h",
                     patcher.motor_start_speed(motor_start_speed)))
 
-    remove_kers = flask.request.form.get('remove_kers', None)
-    if remove_kers is not None:
-        res.append(("Remove KERS", patcher.remove_kers()))
+    kml = flask.request.form.get('kml', None)
+    if kml:
+        l0 = flask.request.form.get('kml_l0', None)
+        l1 = flask.request.form.get('kml_l1', None)
+        l2 = flask.request.form.get('kml_l2', None)
+        if l0 and l1 and l2:
+            l0, l1, l2 = int(l0), int(l1), int(l2)
+            assert l0 >= 0 and l0 <= 30
+            assert l1 >= 0 and l1 <= 30
+            assert l2 >= 0 and l2 <= 30
+            res.append((f"KERS Multiplier ({l0}, {l1}, {l2})",
+                        patcher.kers_multi(l0, l1, l2)))
+    else:
+        remove_kers = flask.request.form.get('remove_kers', None)
+        if remove_kers is not None:
+            res.append(("Remove KERS", patcher.remove_kers()))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake is not None:
