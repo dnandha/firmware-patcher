@@ -159,8 +159,8 @@ class FirmwarePatcher():
         '''
         Creator/Author: BotoX
         '''
-        sig = [0xB8, 0xF8, 0x12, 0x00, 0x20, 0xB1, 0x84, 0xF8, 0x3A]
-        ofs = FindPattern(self.data, sig) + 4
+        sig = [0xF8, 0x12, 0x00, 0x20, 0xB1, None, 0xF8, 0x3A, None, None, 0x7b]
+        ofs = FindPattern(self.data, sig) + 3
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
