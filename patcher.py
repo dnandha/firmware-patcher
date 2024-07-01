@@ -137,8 +137,13 @@ class FirmwarePatcher():
         Creator/Author: NandTek
         Description: Alternate (improved) version of No Kers Mod
         '''
-        sig = [0x00, 0xeb, 0x80, 0x00, 0x80, 0x00, 0x80, 0x0a]
-        ofs = FindPattern(self.data, sig) + 6
+        try:
+            sig = [0x00, 0xeb, 0x80, 0x00, 0x80, 0x00, 0x80, 0x0a]
+            ofs = FindPattern(self.data, sig) + 6
+        except SignatureException:
+            # 022
+            sig = [0x01, 0xeb, 0x90, 0x20, 0x08, 0xbd, 0x80, 0x0a]
+            ofs = FindPattern(self.data, sig) + 6
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('MOVS R0, #0')[0])
         self.data[ofs:ofs+2] = post
@@ -148,8 +153,13 @@ class FirmwarePatcher():
         '''
         Creator/Author: BotoX
         '''
-        sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
-        ofs = FindPattern(self.data, sig) + 2
+        try:
+            sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
+            ofs = FindPattern(self.data, sig) + 2
+        except SignatureException:
+            # 022
+            sig = [0x18, 0x68, 0x42, 0xf6, 0xd0, 0x7b]
+            ofs = FindPattern(self.data, sig) + 2
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('MOVW IP, #0xffff')[0])
         self.data[ofs:ofs+4] = post
