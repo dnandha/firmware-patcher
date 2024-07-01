@@ -50,20 +50,26 @@ class Zippy():
             id_ = self.data[0x100:0x10f].decode('ascii')
         except UnicodeDecodeError:
             try:
-                id_ = self.data[0x400:0x40e].decode('ascii')
+                id_ = self.data[0x400:0x417].decode("ascii")
             except UnicodeDecodeError:
-                pass
+                try:
+                    id_ = self.data[0x400:0x40e].decode('ascii')
+                except UnicodeDecodeError:
+                    pass
 
         self.model = None
         if model is not None:
             self.model = model
         else:
-            if id_ == "Scooter_MiP2_V0":
-                self.model = "pro2"
-            elif id_ == "Scooter_Mi1S_V0":
-                self.model = "1s"
-            elif id_ == "Scooter_Mi3_V0":
-                self.model = "mi3"
+            match id_:
+                case "Scooter_MiP2_V0":
+                    self.model = "pro2"
+                case "Scooter_Mi1S_V0":
+                    self.model = "1s"
+                case "Scooter_Mi3_V0":
+                    self.model = "mi3"
+                case "Scooter_Mi4P_ST_F103_V8":
+                    self.model = "pro4"
 
     def check_valid(self):
         return self.model is not None
