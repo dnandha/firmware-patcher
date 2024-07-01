@@ -184,15 +184,22 @@ class FirmwarePatcher():
                 ofs = FindPattern(self.data, sig) + 0x8
                 reg = 2
             except SignatureException:
-                # 016
-                sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
-                ofs = FindPattern(self.data, sig) + 0xa
-                reg = 1
+                try:
+                    # 016
+                    sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
+                    ofs = FindPattern(self.data, sig) + 0xa
+                    reg = 1
+                except SignatureException:
+                    # 022
+                    sig = [0x95, 0xf8, 0x34, 0xc0, 0x4f, 0xf4, 0x96, 0x73]
+                    ofs = FindPattern(self.data, sig) + 4
+                    reg = 3
 
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('MOVW R{}, #{}'.format(reg, coeff))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["crc", hex(ofs), pre.hex(), post.hex()])
+        print(["crc", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -214,10 +221,16 @@ class FirmwarePatcher():
                 ofs = FindPattern(self.data, sig) + 0x8
                 reg = 2
             except SignatureException:
-                # 242
-                sig = [0xa1, 0x85, 0x0f, 0x20, 0x20, 0x84]
-                ofs = FindPattern(self.data, sig) + 2
-                reg = 0
+                try:
+                    # 242
+                    sig = [0xa1, 0x85, 0x0f, 0x20, 0x20, 0x84]
+                    ofs = FindPattern(self.data, sig) + 2
+                    reg = 0
+                except SignatureException:
+                    # 022
+                    sig = [0x59, 0x00, 0x14, 0x22, 0x46]
+                    ofs = FindPattern(self.data, sig) + 2
+                    reg = 2
 
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('MOVS R{}, #{}'.format(reg, kmh))[0])
@@ -233,7 +246,7 @@ class FirmwarePatcher():
         ret = []
 
         # TODO: all trying to find same position
-        reg = 8
+        reg = "R8"
         try:
             # for 319 this moved to the top and 'movs' became 'mov.w'
             sig = [0x95, 0xf8, 0x34, None, None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
@@ -243,14 +256,20 @@ class FirmwarePatcher():
                 # 242
                 sig = [0x85, 0xf8, 0x40, 0x60, 0x95, 0xf8, 0x34, 0x30]
                 ofs = FindPattern(self.data, sig) + 0xc
-                reg = 12
+                reg = "R12"
             except SignatureException:
-                # 016
-                sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
-                ofs = FindPattern(self.data, sig) + 0x12
+                try:
+                    # 016
+                    sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
+                    ofs = FindPattern(self.data, sig) + 0x12
+                except SignatureException:
+                    # 022
+                    sig = [0x4f, 0xf0, 0x19, 0x0e, 0x4f, 0xf0, 0x05, 0x09]
+                    ofs = FindPattern(self.data, sig)
+                    reg = "LR"
+
         pre = self.data[ofs:ofs+4]
-        assert pre[-1] == reg
-        post = bytes(self.ks.asm('MOVW R{}, #{}'.format(reg, kmh))[0])
+        post = bytes(self.ks.asm('MOVW {}, #{}'.format(reg, kmh))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["sl_speed", hex(ofs), pre.hex(), post.hex()])
 
@@ -268,9 +287,14 @@ class FirmwarePatcher():
             sig = [0x4f, 0xf0, 0x05, None, 0x01, None, 0x02, 0xd1]
             ofs = FindPattern(self.data, sig)
         except SignatureException:
-            # 016
-            sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
-            ofs = FindPattern(self.data, sig) + 0x16
+            try:
+                # 016
+                sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
+                ofs = FindPattern(self.data, sig) + 0x16
+            except SignatureException:
+                # 0x22
+                sig = [0x4f, 0xf0, 0x05, 0x09, 0xbc, 0xf1, 0x01, 0x0f]
+                ofs = FindPattern(self.data, sig)
 
         pre = self.data[ofs:ofs+4]
         reg = pre[-1]
