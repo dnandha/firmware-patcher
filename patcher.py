@@ -764,10 +764,17 @@ class FirmwarePatcher():
 
         delay = int(seconds * 200)
 
-        sig = [0xb0, 0xf8, 0xf8, 0x10, None, 0x4b, 0x4f, 0xf4, 0x7a, 0x70]
-        ofs = FindPattern(self.data, sig) + 6
+        reg = 0
+        try:
+            sig = [0xb0, 0xf8, 0xf8, 0x10, None, 0x4b, 0x4f, 0xf4, 0x7a, 0x70]
+            ofs = FindPattern(self.data, sig) + 6
+        except SignatureException:
+            # 022
+            sig = [0xf8, 0x00, 0x89, 0x46, 0x60, 0x4b, 0x4f, 0xf4, 0x7a, 0x71]
+            ofs = FindPattern(self.data, sig) + 6
+            reg = 1
         pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('MOV.W R0,#{}'.format(delay))[0])
+        post = bytes(self.ks.asm('MOV.W R{},#{}'.format(reg, delay))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["cc_delay", hex(ofs), pre.hex(), post.hex()])
 
