@@ -16,6 +16,7 @@ The mod will then be integrated into the NGFW patcher.
 * DRV252
 * DRV319
 * DRV321
+* DRV022 (Experimental)
 
 ## Available Mods
 ### BoToX/SH
