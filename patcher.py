@@ -1007,9 +1007,9 @@ class FirmwarePatcher():
         '''
 
         ret = []
-        sig = [0x73, 0x20, None, None, None, None, 0x50, 0x43, 0x73, 0x22, 0x90, 0xfb, 0xf2, 0xf0, None, None, 0x10, 0x1a, None, None, 0xa0, 0xf5, 0xfa, 0x50]
+        sig = [0x00, 0xdd, 0x73, 0x20, None, None, None, None, 0x50, 0x43, 0x73, 0x22, 0x90, 0xfb, 0xf2, 0xf0, None, None, 0x10, 0x1a]
 
-        ofs = FindPattern(self.data, sig) + 2
+        ofs = FindPattern(self.data, sig) + 4
         if max_ is not None:
             pre = self.data[ofs:ofs+4]
             post = bytes(self.ks.asm('MOVW R2,#{}'.format(max_))[0])
@@ -1017,7 +1017,12 @@ class FirmwarePatcher():
             ret.append(["abr_max", hex(ofs), pre.hex(), post.hex()])
 
         if min_ is not None:
-            ofs += 18
+            try:
+                # 022
+                sig = [0xf2, 0xf0, None, None, 0x10, 0x1a, 0xa0, 0xf5, 0xfa, 0x50]
+                ofs = FindPattern(self.data, sig) + 5
+            except SignatureException:
+                ofs += 18
             pre = self.data[ofs:ofs+4]
             val = NearestConst(min_)
             assert abs(val-min_) < 100, "rounding outside tolerance"
