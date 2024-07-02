@@ -142,7 +142,7 @@ class FirmwarePatcher():
             ofs = FindPattern(self.data, sig) + 6
         except SignatureException:
             # 022
-            sig = [0x01, 0xeb, 0x90, 0x20, 0x08, 0xbd, 0x80, 0x0a]
+            sig = [0x00, 0xdd, 0x80, 0x20, 0xc0, 0x04, 0x00, 0x0c]
             ofs = FindPattern(self.data, sig) + 6
         pre = self.data[ofs:ofs+2]
         post = bytes(self.ks.asm('MOVS R0, #0')[0])
