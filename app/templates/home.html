@@ -64,7 +64,7 @@
                 <option value="pro2">Pro2</option>
                 <option value="lite">Lite/Essential</option>
                 <option value="mi3">Mi3</option>
-                <option value="pro4">Pro4</option>
+                <option value="4pro">4 Pro</option>
             </select>
         </div>
     </div>
@@ -754,8 +754,8 @@
             Preset_Lite();
         } else if (dev === "mi3") {
             Preset_Mi3();
-        } else if (dev === "pro4") {
-            Preset_Pro4();
+        } else if (dev === "4pro") {
+            Preset_4Pro();
         }
     }
 
@@ -793,7 +793,7 @@
         ChangeForm(forms.AMPS_BRAKE_MAX, "47000", false);
     }
 
-    function Preset_Pro4() {
+    function Preset_4Pro() {
         ChangeForm(forms.AMPS_SPORT, "26500", false);
         ChangeForm(forms.AMPS_DRIVE, "19000", false);
         ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);

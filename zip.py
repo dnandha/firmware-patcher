@@ -69,7 +69,7 @@ class Zippy():
                 case "Scooter_Mi3_V0":
                     self.model = "mi3"
                 case "Scooter_Mi4P_ST_F103_V8":
-                    self.model = "pro4"
+                    self.model = "4pro"
 
     def check_valid(self):
         return self.model is not None
