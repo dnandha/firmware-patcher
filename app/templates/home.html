@@ -794,7 +794,12 @@
     }
 
     function Preset_Pro4() {
-        console.log("I haven't yet found the default values for this model :(");
+        ChangeForm(forms.AMPS_SPORT, "26500", false);
+        ChangeForm(forms.AMPS_DRIVE, "19000", false);
+        ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);
+        ChangeForm(forms.AMPS_DRIVE_MAX, "35000", false);
+        ChangeForm(forms.AMPS_BRAKE_MAX, "57000", false);
+        ChangeForm(forms.WHEELSIZE, "10.0", false);
     }
 
     function Pedo_To_Eco(cb) {
