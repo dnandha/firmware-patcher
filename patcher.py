@@ -369,9 +369,14 @@ class FirmwarePatcher():
                     sig = [0x88, 0x42, 0x01, 0xd2, 0xa0, 0x85, 0x00, 0xe0]
                     ofs = FindPattern(self.data, sig)
                 except SignatureException:
-                    # 016
-                    sig = [0x98, 0x42, 0x01, 0xd2, 0xe0, 0x85, 0x00, 0xe0]
-                    ofs = FindPattern(self.data, sig)
+                    try:
+                        # 016
+                        sig = [0x98, 0x42, 0x01, 0xd2, 0xe0, 0x85, 0x00, 0xe0]
+                        ofs = FindPattern(self.data, sig)
+                    except SignatureException:
+                        # 022
+                        sig = [0x60, 0x86, 0x2d, 0xe0, 0x58, 0x45, 0x01, 0xd2]
+                        ofs = FindPattern(self.data, sig) + 4
 
             pre = self.data[ofs:ofs+2]
             post = bytes(self.ks.asm('CMP R0, R0')[0])
@@ -387,9 +392,14 @@ class FirmwarePatcher():
                 sig = [0x85, 0xf8, 0x40, 0x60, 0x95, 0xf8, 0x34, 0x30]
                 ofs = FindPattern(self.data, sig) + 0x10
             except SignatureException:
-                # 016
-                sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
-                ofs = FindPattern(self.data, sig) + 0xe
+                try:
+                    # 016
+                    sig = [0x00, 0xe0, 0x2e, 0x72, 0x95, 0xf8, 0x34, 0xc0]
+                    ofs = FindPattern(self.data, sig) + 0xe
+                except SignatureException:
+                    # 022
+                    sig = [0x59, 0x00, None, 0x22, 0x46, 0xf2, 0x84, 0x7b]
+                    ofs = FindPattern(self.data, sig) + 4
 
         pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
         ret.append(["amp_speed", hex(ofs), pre.hex(), post.hex()])
