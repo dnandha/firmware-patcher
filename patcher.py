@@ -254,7 +254,7 @@ class FirmwarePatcher():
         ret = []
 
         # TODO: all trying to find same position
-        reg = "R8"
+        reg = 8
         try:
             # for 319 this moved to the top and 'movs' became 'mov.w'
             sig = [0x95, 0xf8, 0x34, None, None, 0x21, 0x4f, 0xf4, 0x96, 0x70]
@@ -264,7 +264,7 @@ class FirmwarePatcher():
                 # 242
                 sig = [0x85, 0xf8, 0x40, 0x60, 0x95, 0xf8, 0x34, 0x30]
                 ofs = FindPattern(self.data, sig) + 0xc
-                reg = "R12"
+                reg = 12
             except SignatureException:
                 try:
                     # 016
@@ -274,10 +274,11 @@ class FirmwarePatcher():
                     # 022
                     sig = [0x4f, 0xf0, 0x19, 0x0e, 0x4f, 0xf0, 0x05, 0x09]
                     ofs = FindPattern(self.data, sig)
-                    reg = "LR"
+                    reg = 14
 
         pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('MOVW {}, #{}'.format(reg, kmh))[0])
+        assert pre[-1] == reg
+        post = bytes(self.ks.asm('MOVW R{}, #{}'.format(reg, kmh))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["sl_speed", hex(ofs), pre.hex(), post.hex()])
 
