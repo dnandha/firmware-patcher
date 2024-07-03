@@ -209,8 +209,6 @@ class FirmwarePatcher():
         post = bytes(self.ks.asm('MOVW R{}, #{}'.format(reg, coeff))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["crc", hex(ofs), pre.hex(), post.hex()])
-        print(["crc", hex(ofs), pre.hex(), post.hex()])
-
         return ret
 
     def speed_limit_drive(self, kmh):
