@@ -543,8 +543,13 @@ class FirmwarePatcher():
         Creator/Author: SH
         '''
         ret = []
-        sig = [0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
-        ofs = FindPattern(self.data, sig) + 4
+        try:
+            sig = [0x00, 0x21, 0xa1, 0x71, 0xa2, 0xf8, 0xec, 0x10, 0x63, 0x79]
+            ofs = FindPattern(self.data, sig) + 4
+        except SignatureException:
+            # 022
+            sig = [0xdf, 0xf8, 0x28, 0x91, 0xa9, 0xf8, 0xec, 0x70, 0x69, 0x79]
+            ofs = FindPattern(self.data, sig) + 4
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('NOP')[0])
         self.data[ofs:ofs+2] = post
@@ -552,8 +557,8 @@ class FirmwarePatcher():
         post = self.data[ofs:ofs+4]
         ret.append(["dpc_nop", hex(ofs), pre.hex(), post.hex()])
 
-        sig = [0xa4, 0xf8, 0xe2, None, 0xa4, 0xf8, 0xf0, None, 0xa4, 0xf8, 0xee, None]
-        ofs = FindPattern(self.data, sig) + 4
+        sig = [0xf8, 0xe2, None, None, 0xf8, 0xf0, None, None, 0xf8, 0xee, None]
+        ofs = FindPattern(self.data, sig) + 3
 
         b = self.data[ofs+3]
         reg = 0
@@ -561,10 +566,22 @@ class FirmwarePatcher():
             reg = 7  # 236 / 319
         elif b == 0x50:
             reg = 5  # 242
+        elif b == 0x80:
+            reg = 8
         else:
             raise Exception(f"invalid firmware file: {hex(b)}")
+
+        b = self.data[ofs]
+        reg2 = 0
+        if b == 0xa4:
+            reg2 = 4
+        elif b == 0xa5:
+            reg2 = 5 # 022
+        else:
+            raise Exception(f"Invalid firmware file: {hex(b)}")
+
         pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('STRH.W R{}, [R4, #0xEC]'.format(reg))[0])
+        post = bytes(self.ks.asm('STRH.W R{}, [R{}, #0xEC]'.format(reg, reg2))[0])
         self.data[ofs:ofs+4] = post
         ret.append(["dpc_reset", hex(ofs), pre.hex(), post.hex()])
 
