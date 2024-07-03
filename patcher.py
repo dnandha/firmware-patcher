@@ -517,16 +517,27 @@ class FirmwarePatcher():
                 ofs_s = FindPattern(self.data, sig) + 4
                 reg = 3  # TODO: cleanup
             except SignatureException:
-                # 016
-                sig = [0x95, 0xf8, 0x43, 0xc0, 0x46, 0xf6, 0x60, 0x50]
-                ofs_d = FindPattern(self.data, sig) + 4
+                try:
+                    # 016
+                    sig = [0x95, 0xf8, 0x43, 0xc0, 0x46, 0xf6, 0x60, 0x50]
+                    ofs_d = FindPattern(self.data, sig) + 4
 
-                sig = [0x95, 0xf8, 0x43, 0xc0, 0x4d, 0xf2, 0xd8, 0x60]
-                ofs_s = FindPattern(self.data, sig) + 4
+                    sig = [0x95, 0xf8, 0x43, 0xc0, 0x4d, 0xf2, 0xd8, 0x60]
+                    ofs_s = FindPattern(self.data, sig) + 4
+                except SignatureException:
+                    # 022
+                    sig = [0x95, 0xf8, 0x41, 0x00, 0x48, 0xf6, 0xb8, 0x0c]
+                    ofs_d = FindPattern(self.data, sig) + 4
+
+                    sig = [0x95, 0xf8, 0x41, 0x30, 0x4d, 0xf2, 0xd8, 0x60]
+                    ofs_s = FindPattern(self.data, sig) + 4
 
                 if amps_drive is not None:
                     pre = self.data[ofs_d:ofs_d+4]
-                    post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg, amps_drive))[0])
+                    reg_d = reg
+                    if pre[-1] == 12:
+                        reg_d = 12
+                    post = bytes(self.ks.asm('MOVW R{},#{}'.format(reg_d, amps_drive))[0])
                     self.data[ofs_d:ofs_d+4] = post
                     ret.append(["amp_max_drive", hex(ofs_d), pre.hex(), post.hex()])
         if amps_sport is not None:
