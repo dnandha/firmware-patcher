@@ -263,7 +263,7 @@ def patch(data):
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
         shutdown_time = float(shutdown_time)
-        assert shutdown_time >= 0 and shutdown_time <= 5
+        assert shutdown_time >= 0 and shutdown_time <= 20
         res.append((f"Shutdown Time: {shutdown_time}s",
                     patcher.shutdown_time(shutdown_time)))
 

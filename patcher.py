@@ -594,8 +594,8 @@ class FirmwarePatcher():
         '''
         delay = int(seconds * 200)
         assert delay.bit_length() <= 12, 'bit length overflow'
-        sig = [0x0a, 0x60, 0xb0, 0xf5, 0xfa, 0x7f, 0x08, 0xd9]
-        ofs = FindPattern(self.data, sig) + 2
+        sig = [0xb0, 0xf5, 0xfa, 0x7f, 0x08, 0xd9, None, 0x79, 0x30, 0xb9]
+        ofs = FindPattern(self.data, sig)
         pre = self.data[ofs:ofs+4]
         post = bytes(self.ks.asm('CMP.W R0, #{:n}'.format(delay))[0])
         self.data[ofs:ofs+4] = post
