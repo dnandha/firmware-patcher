@@ -1047,7 +1047,7 @@ class FirmwarePatcher():
             try:
                 # 022
                 sig = [0xf2, 0xf0, None, None, 0x10, 0x1a, 0xa0, 0xf5, 0xfa, 0x50]
-                ofs = FindPattern(self.data, sig) + 5
+                ofs = FindPattern(self.data, sig) + 6
             except SignatureException:
                 ofs += 18
             pre = self.data[ofs:ofs+4]
