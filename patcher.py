@@ -874,8 +874,13 @@ class FirmwarePatcher():
         '''
         ret = []
         val = struct.pack('<H', int(volts * 100) - 2600)
-        sig = [0x40, 0xF2, 0xA5, 0x61, 0xA0, 0xF6, 0x28, 0x20, 0x88, 0x42]
-        ofs = FindPattern(self.data, sig)
+        try:
+            sig = [0x40, 0xF2, 0xA5, 0x61, 0xA0, 0xF6, 0x28, 0x20, 0x88, 0x42]
+            ofs = FindPattern(self.data, sig)
+        except SignatureException:
+            # 022
+            sig = [0x40, 0xf2, 0xa5, 0x61, 0x88, 0x42, 0x04, 0xd3, 0x18, 0x20]
+            ofs = FindPattern(self.data, sig)
         pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
         ret.append(["volt_limit", hex(ofs), pre.hex(), post.hex()])
         return ret
