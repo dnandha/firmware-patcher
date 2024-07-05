@@ -317,10 +317,18 @@ class FirmwarePatcher():
         '''
         Creator/Author: BotoX
         '''
-        val = struct.pack('<H', round(kmh * 345))
-        sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
-        ofs = FindPattern(self.data, sig) + 2
-        pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        try:
+            sig = [0x01, 0x68, 0x40, 0xF2, 0xBD, 0x62]
+            ofs = FindPattern(self.data, sig) + 2
+            val = struct.pack('<H', round(kmh * 345))
+            pre, post = PatchImm(self.data, ofs, 4, val, MOVW_T3_IMM)
+        except SignatureException:
+            # 022
+            sig = [0x01, 0x08, 0xb1, 0xf5, 0xff, 0x6f]
+            ofs = FindPattern(self.data, sig) + 2
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm("CMP.W R1, #{}".format(round(kmh*408)))[0])
+            self.data[ofs:ofs+4] = post
         return [("mss", hex(ofs), pre.hex(), post.hex())]
 
     def wheel_speed_const(self, factor, def1=345, def2=1387):
