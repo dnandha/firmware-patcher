@@ -331,30 +331,57 @@ class FirmwarePatcher():
             self.data[ofs:ofs+4] = post
         return [("mss", hex(ofs), pre.hex(), post.hex())]
 
-    def wheel_speed_const(self, factor, def1=345, def2=1387):
+    def wheel_speed_const(self, factor):
         '''
         Creator/Author: BotoX
         '''
         ret = []
 
-        val1 = struct.pack('<H', round(def1/factor))
-        val2 = struct.pack('<H', round(def2*factor))
+        try:
+            sig = [0xB4, 0xF9, None, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x48, 0x43]
+            ofs = FindPattern(self.data, sig) + 4
 
-        sig = [0xB4, 0xF9, None, 0x00, 0x40, 0xF2, 0x59, 0x11, 0x48, 0x43]
-        ofs = FindPattern(self.data, sig) + 4
-        pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
-        ret.append(["wheel_speed_const_0", hex(ofs), pre.hex(), post.hex()])
+            val1 = struct.pack('<H', round(345/factor))
+            val2 = struct.pack('<H', round(1387*factor))
 
-        ofs -= 0x18
-        pre = self.data[ofs+2:ofs+4]
-        if pre[0] == 0x59 and pre[1] == 0x11:  # not in 247
             pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
-            ret.append(["wheel_speed_const_1", hex(ofs), pre.hex(), post.hex()])
+            ret.append(["wheel_speed_const_0", hex(ofs), pre.hex(), post.hex()])
 
-        sig = [0x60, 0x60, 0x60, 0x68, 0x40, 0xF2, 0x6B, 0x51, 0x48, 0x43]
-        ofs = FindPattern(self.data, sig) + 4
-        pre, post = PatchImm(self.data, ofs, 4, val2, MOVW_T3_IMM)
-        ret.append(["wheel_other_const", hex(ofs), pre.hex(), post.hex()])
+            ofs -= 0x18
+            pre = self.data[ofs+2:ofs+4]
+            if pre[0] == 0x59 and pre[1] == 0x11:  # not in 247
+                pre, post = PatchImm(self.data, ofs, 4, val1, MOVW_T3_IMM)
+                ret.append(["wheel_speed_const_1", hex(ofs), pre.hex(), post.hex()])
+
+            sig = [0x60, 0x60, 0x60, 0x68, 0x40, 0xF2, 0x6B, 0x51, 0x48, 0x43]
+            ofs = FindPattern(self.data, sig) + 4
+            pre, post = PatchImm(self.data, ofs, 4, val2, MOVW_T3_IMM)
+            ret.append(["wheel_other_const", hex(ofs), pre.hex(), post.hex()])
+        except SignatureException:
+            # 022
+            sig = [0xA4, 0xF8, 0x4A, 0x50, 0x6F, 0xF4, 0xCC, 0x70]
+            ofs = FindPattern(self.data, sig) + 4
+
+            val1 = int(round(408/factor))
+            val2 = int(round(1774*factor))
+
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm(f'MVN R0,#{val1}')[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(['wheel_speed_const_0', hex(ofs), pre.hex(), post.hex()])
+
+            sig = [0xBD, 0xF9, 0x24, 0x50, 0x40, 0xF2, 0xEE, 0x66]
+            ofs = FindPattern(self.data, sig) + 4
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm(f'MOVW R6,#{val2}')[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["wheel_other_const_0", hex(ofs), pre.hex(), post.hex()])
+
+            sig = [0xBD, 0xF9, 0x24, 0x60, 0x40, 0xF2, 0xEE, 0x67]
+            ofs = FindPattern(self.data, sig) + 4
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm(f"MOVW R7,#{val2}")[0])
+            ret.append(["wheel_other_const_1", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 

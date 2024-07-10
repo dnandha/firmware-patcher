@@ -257,7 +257,9 @@ def patch(data):
     if wheelsize is not None:
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
-        mult = wheelsize/8.5  # 8.5" is default
+        old_wheel = 8.5
+        if flask.request.form.get('device') == "4pro": old_wheel = 10.0
+        mult = wheelsize/old_wheel  # 8.5" is default
         res.append((f"Wheel Size: {wheelsize}\"", patcher.wheel_speed_const(mult)))
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
