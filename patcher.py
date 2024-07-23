@@ -1122,21 +1122,41 @@ class FirmwarePatcher():
         '''
         ret = []
 
-        asm = f"""
-        nop
-        nop
-        movs	r1, #{l0}
-        b	MULT
-        nop
-        movs	r1, #{l1}
-        b	MULT
-        nop
-        movs	r1, #{l2}
-        MULT:
-        muls	r0, r0, r1
-        """
-        sig = [0x00, 0xeb, 0x40, 0x00, 0x40, 0x00, 0x05, 0xe0, 0x00, 0xeb, 0x40, 0x00, 0x01, 0xe0, 0x00, 0xeb, 0x80, 0x00, 0x80, 0x00]
-        ofs = FindPattern(self.data, sig)
+        try:
+            asm = f"""
+            nop
+            movs  r1, #{l0}
+            b  MULT
+            nop
+            movs  r1, #{l1}
+            b  MULT
+            nop
+            movs  r1, #{l2}
+            MULT:
+            muls  r0, r0, r1
+            """
+            sig = [0x00, 0xeb, 0x40, 0x00, 0x40, 0x00, 0x05, 0xe0, 0x00, 0xeb, 0x40, 0x00, 0x01, 0xe0, 0x00, 0xeb, 0x80, 0x00, 0x80, 0x00]
+            ofs = FindPattern(self.data, sig)
+        except SignatureException:
+            asm = f"""
+            nop.w
+            nop.w
+            movs  r1, #{l0}
+            b  MULT
+            nop.w
+            nop.w
+            movs  r1, #{l1}
+            b  MULT
+            nop
+            movs  r1, #{l2}
+            MULT:
+            muls  r0, r0, r1
+            lsrs    r0, r0, #0xa
+            """
+            # 022
+            sig = [0x00, 0xeb, 0x40, 0x00, 0xc0, 0xf3, 0x55, 0x20, 0x20, 0x86, 0x0a, 0xe0, 0x00, 0xeb, 0x40, 0x00, 0xc0, 0xf3, 0x15, 0x20, 0x20, 0x86, 0x04, 0xe0, 0x00, 0xeb, 0x80, 0x00, 0xc0, 0xf3, 0x15, 0x20]
+            ofs = FindPattern(self.data, sig)
+
         pre = self.data[ofs:ofs+len(sig)]
         post = bytes(self.ks.asm(asm)[0])
         assert len(pre) == len(post), f"{len(pre)}, {len(post)}"
@@ -1144,6 +1164,7 @@ class FirmwarePatcher():
         ret.append(["kers_multi", hex(ofs), pre.hex(), post.hex()])
 
         return ret
+
 
 
 if __name__ == "__main__":
