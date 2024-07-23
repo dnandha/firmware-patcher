@@ -89,6 +89,9 @@ class Zippy():
 
     @staticmethod
     def get_v3(name, model, md5, md5e, enforce):
+        compatible_list = ["mi_DRV_STM32F103CxT6"]
+        if model != "4pro":
+            compatible_list += ["mi_DRV_GD32F103CxT6", "mi_DRV_GD32E103CxT6"]
         data = {
             "schemaVersion": 1,
             "firmware": {
@@ -96,11 +99,7 @@ class Zippy():
                 "model": model,
                 "enforceModel": enforce,
                 "type": "DRV",
-                "compatible": [
-                    "mi_DRV_STM32F103CxT6",
-                    "mi_DRV_GD32F103CxT6",
-                    "mi_DRV_GD32E103CxT6"
-                ],
+                "compatible": compatible_list,
                 "encryption": "both",
                 "md5": {
                     "bin": md5,
