@@ -23,6 +23,7 @@
 import flask
 import traceback
 import os
+import inspect
 import io
 import pathlib
 from patcher import FirmwarePatcher, SignatureException
@@ -333,7 +334,7 @@ def patch_firmware():
         if not res:
             return 'No patches applied. Make sure to select the correct input file and at least one patch.'
     except SignatureException:
-        return 'Some of the patches could not be applied. Please select unmodified input file.'
+        return f'Some of the patches (patcher.{inspect.trace()[-2][3]}()) could not be applied. Please select unmodified input file.'
 
     dev = flask.request.form.get('device', None)
     pod = flask.request.form.get('patch', None)
