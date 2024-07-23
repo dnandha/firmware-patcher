@@ -153,15 +153,17 @@ class FirmwarePatcher():
         '''
         Creator/Author: BotoX
         '''
+        reg = 12
         try:
             sig = [None, 0x68, 0x42, 0xf6, 0x6e, 0x0c]
             ofs = FindPattern(self.data, sig) + 2
         except SignatureException:
             # 022
-            sig = [0x44, 0x00, 0xad, 0x4b, 0x43, 0xf2, 0xc8, 0x7c]
+            sig = [0x2C, 0xE0, 0x18, 0x68, 0x42, 0xF6, 0xD0, 0x7b]
             ofs = FindPattern(self.data, sig) + 4
+            reg = 11
+        post = bytes(self.ks.asm(f'MOVW R{reg}, #0xffff')[0])
         pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('MOVW IP, #0xffff')[0])
         self.data[ofs:ofs+4] = post
         return [("no_autobrake", hex(ofs), pre.hex(), post.hex())]
 
