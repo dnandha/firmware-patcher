@@ -744,35 +744,49 @@ class FirmwarePatcher():
         Description: Remove all region restrictions bound to serial number
         '''
         ret = []
-        sig = self.ks.asm('STRB.W R2,[R1,#0x43]')[0]
-        ofs = FindPattern(self.data, sig)
-        pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('NOP')[0])
-        self.data[ofs:ofs+2] = post
-        self.data[ofs+2:ofs+4] = post
-        post = self.data[ofs:ofs+4]
-        ret.append(["rfm1", hex(ofs), pre.hex(), post.hex()])
 
-        # 248 / 321 (unused in 016)
-        sig = self.ks.asm('STRB R2,[R1,#0x1e]')[0]
-        ofs = FindPattern(self.data, sig)
-        pre = self.data[ofs:ofs+2]
-        post = bytes(self.ks.asm('NOP')[0])
-        self.data[ofs:ofs+2] = post
-        post = self.data[ofs:ofs+2]
-        ret.append(["rfm2", hex(ofs), pre.hex(), post.hex()])
+        try:
+            sig = self.ks.asm('STRB.W R2,[R1,#0x43]')[0]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('NOP')[0])
+            self.data[ofs:ofs+2] = post
+            self.data[ofs+2:ofs+4] = post
+            post = self.data[ofs:ofs+4]
+            ret.append(["rfm1", hex(ofs), pre.hex(), post.hex()])
 
-        # 016 (unused in 248 / 321)
-        sig = self.ks.asm('STRB.W R2,[R1,#0x41]')[0]
-        ofs = FindPattern(self.data, sig)
-        pre = self.data[ofs:ofs+4]
-        post = bytes(self.ks.asm('NOP')[0])
-        self.data[ofs:ofs+2] = post
-        self.data[ofs+2:ofs+4] = post
-        post = self.data[ofs:ofs+4]
-        ret.append(["rfm3", hex(ofs), pre.hex(), post.hex()])
+            # 248 / 321 (unused in 016)
+            sig = self.ks.asm('STRB R2,[R1,#0x1e]')[0]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+2]
+            post = bytes(self.ks.asm('NOP')[0])
+            self.data[ofs:ofs+2] = post
+            post = self.data[ofs:ofs+2]
+            ret.append(["rfm2", hex(ofs), pre.hex(), post.hex()])
+
+            # 016 (unused in 248 / 321)
+            sig = self.ks.asm('STRB.W R2,[R1,#0x41]')[0]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('NOP')[0])
+            self.data[ofs:ofs+2] = post
+            self.data[ofs+2:ofs+4] = post
+            post = self.data[ofs:ofs+4]
+            ret.append(["rfm3", hex(ofs), pre.hex(), post.hex()])
+        except SignatureException:
+            # 022
+            flag_offsets = [0x3e, 0x41, 0x43, 0x44, 0x45]
+            for i, f_ofs in enumerate(flag_offsets):
+                sig = self.ks.asm(f"STRB.W R7,[R6,#{f_ofs}]")[0]
+                ofs = FindPattern(self.data, sig)
+                pre = self.data[ofs:ofs+4]
+                post = bytes(self.ks.asm('NOP.W')[0])
+                self.data[ofs:ofs+4] = post
+                post = self.data[ofs:ofs+4]
+                ret.append([f"rfm{i}", hex(ofs), pre.hex(), post.hex()])
 
         return ret
+
 
     def lower_light(self):
         '''
