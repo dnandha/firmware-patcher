@@ -23,6 +23,7 @@
 import flask
 import traceback
 import os
+import inspect
 import io
 import pathlib
 from patcher import FirmwarePatcher, SignatureException
@@ -257,13 +258,15 @@ def patch(data):
     if wheelsize is not None:
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
-        mult = wheelsize/8.5  # 8.5" is default
+        old_wheel = 8.5
+        if flask.request.form.get('device') == "4pro": old_wheel = 10.0
+        mult = wheelsize/old_wheel  # 8.5" is default
         res.append((f"Wheel Size: {wheelsize}\"", patcher.wheel_speed_const(mult)))
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
     if shutdown_time is not None:
         shutdown_time = float(shutdown_time)
-        assert shutdown_time >= 0 and shutdown_time <= 5
+        assert shutdown_time >= 0 and shutdown_time <= 20
         res.append((f"Shutdown Time: {shutdown_time}s",
                     patcher.shutdown_time(shutdown_time)))
 
@@ -331,7 +334,7 @@ def patch_firmware():
         if not res:
             return 'No patches applied. Make sure to select the correct input file and at least one patch.'
     except SignatureException:
-        return 'Some of the patches could not be applied. Please select unmodified input file.'
+        return f'Some of the patches (patcher.{inspect.trace()[-2][3]}()) could not be applied. Please select unmodified input file.'
 
     dev = flask.request.form.get('device', None)
     pod = flask.request.form.get('patch', None)
