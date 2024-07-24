@@ -259,8 +259,9 @@ def patch(data):
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
         old_wheel = 8.5
-        if flask.request.form.get('device') == "4pro": old_wheel = 10.0
-        mult = wheelsize/old_wheel  # 8.5" is default
+        if flask.request.form.get('device') == "4pro":
+            old_wheel = 10.0
+        mult = wheelsize/old_wheel
         res.append((f"Wheel Size: {wheelsize}\"", patcher.wheel_speed_const(mult)))
 
     shutdown_time = flask.request.form.get('shutdown_time', None)
@@ -291,7 +292,11 @@ def patch(data):
 
     blm = flask.request.form.get('blm', None)
     if blm is not None:
-        res.append(("Static Brakelight", patcher.brake_light()))
+        # TEMPORARY WORKAROUND FOR 4PRO
+        if flask.request.form.get('device') == "4pro":
+            res.append(("Static Brakelight", patcher.brake_light_static()))
+        else:
+            res.append(("Static Brakelight", patcher.brake_light()))
 
     alm = flask.request.form.get('blm_alm', None)
     if alm is not None:

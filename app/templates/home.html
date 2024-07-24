@@ -711,6 +711,12 @@
     function CheckForm(name, cb) {
         var o = GetForm(name);
         if (o.value != 0) {
+            // temp
+            var dev = document.getElementById("devselect").value;
+            if (dev == '4pro') {
+                return
+            }
+
             o.disabled = !cb.checked;
         }
     }
@@ -746,7 +752,6 @@
         Preset_Default();
 
         var dev = document.getElementById("devselect").value;
-        GetForm(forms.RFM).disabled = (dev === "lite");
 
         if (dev === "pro2") {
             Preset_Pro2();
@@ -785,6 +790,8 @@
         ChangeForm(forms.AMPS_SPORT_MAX, "32000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "0", false);
         ChangeForm(forms.AMPS_BRAKE_MAX, "22000", false);
+
+        GetForm(forms.RFM).disabled = true;
     }
 
     function Preset_Mi3() {
@@ -802,6 +809,10 @@
         ChangeForm(forms.AMPS_DRIVE_MAX, "35000", false);
         ChangeForm(forms.AMPS_BRAKE_MAX, "57000", false);
         ChangeForm(forms.WHEELSIZE, "10.0", false);
+
+        GetForm(forms.RML).disabled = true;
+        GetForm(forms.BTS).disabled = true;
+        GetForm(forms.BLM_ALM).disabled = true;
     }
 
     function Pedo_To_Eco(cb) {

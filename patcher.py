@@ -365,6 +365,7 @@ class FirmwarePatcher():
             ofs = FindPattern(self.data, sig) + 4
 
             val1 = int(round(408/factor))
+            # TODO: val1 can be incompatible with MVN instruction
             val2 = int(round(1774*factor))
 
             pre = self.data[ofs:ofs+4]
@@ -675,6 +676,35 @@ class FirmwarePatcher():
         except SignatureException:
             # n/a on lite
             pass
+
+        return ret
+
+    def brake_light_static(self):
+        '''
+        Creator/Author: SH
+        Description: Old mod version, fixed by NandTek
+        '''
+        ret = []
+
+        sig = [0x01, 0x29, None, 0xd0, 0xa1, 0x79, 0x01, 0x29]
+        ofs = FindPattern(self.data, sig) + 6
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R1, #0xff')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["blm_throttle", hex(ofs), pre.hex(), post.hex()])
+
+        ofs += 8
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R1, #0xff')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["blm_pedo", hex(ofs), pre.hex(), post.hex()])
+
+        sig = [0x90, 0xf8, None, None, 0x00, 0x28, None, 0xd1]
+        ofs = FindPattern(self.data, sig) + 4
+        pre = self.data[ofs:ofs+2]
+        post = bytes(self.ks.asm('CMP R0, #0xff')[0])
+        self.data[ofs:ofs+2] = post
+        ret.append(["blm_glob", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
