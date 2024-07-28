@@ -139,6 +139,11 @@ def privacy():
     return flask.render_template('privacy.html')
 
 
+@app.route('/disclaimer')
+def disclaimer():
+    return flask.render_template('disclaimer.html')
+
+
 def patch(data):
     res = []
 
