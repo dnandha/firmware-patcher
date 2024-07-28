@@ -52,4 +52,4 @@ Contribute your mod to this project!
 2. `flask run` to start the flask app
 
 ## License
-Licensed under AGPLv3 (see LICENSE.md)
+Licensed under AGPLv3, see [LICENSE.md](LICENSE.md).
