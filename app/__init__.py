@@ -27,6 +27,9 @@ import inspect
 import io
 import pathlib
 from patcher import FirmwarePatcher, SignatureException
+from zip import Zippy
+from datetime import datetime
+
 
 pwd = pathlib.Path(__file__).parent.parent.resolve()
 
@@ -100,6 +103,13 @@ def dated_url_for(endpoint, **values):
                                      endpoint, filename)
             values['q'] = int(os.stat(file_path).st_mtime)
     return flask.url_for(endpoint, **values)
+
+
+def get_datetime():
+    # Get the current UTC time
+    current_time = datetime.utcnow()
+    # Format the time in a way that's suitable for filenames
+    return current_time.strftime("%Y%m%d_%H%M%S")
 
 
 # https://dev.to/aadibajpai/deploying-to-pythonanywhere-via-github-1j7b
@@ -332,34 +342,38 @@ def patch(data):
 def patch_firmware():
     f = flask.request.files['filename']
 
-    if not f.filename.lower().endswith(".bin"):
+    fname = f.filename.lower()
+    if not (fname.endswith(".bin") or fname.endswith(".zip")):
         return "Wrong file selected.", 400
 
     data = f.read()
     if not len(data) > 0xf:
         return 'No file selected.', 400
 
+    dev = flask.request.form.get('device', None)
+    pod = flask.request.form.get('patch', None)
+
+    zippy = Zippy(data, model=dev)
+    zippy.try_extract()
+
     try:
-        res, data_patched = patch(data)
+        res, data_patched = patch(zippy.data)
         if not res:
             return 'No patches applied. Make sure to select the correct input file and at least one patch.'
+        params = '\n'.join([x[0] for x in res]) + '\n'
+        zippy.params = params
+        zippy.data = data_patched
     except SignatureException:
         return f'Some of the patches (patcher.{inspect.trace()[-2][3]}()) could not be applied. Please select unmodified input file.'
 
-    dev = flask.request.form.get('device', None)
-    pod = flask.request.form.get('patch', None)
     if pod in ['Bin', 'Zip']:
-        filename = f.filename
-
+        #filename = f.filename
         mem = io.BytesIO()
         if pod == 'Zip':
-            from zip import Zippy
-            params = '\n'.join([x[0] for x in res]) + '\n'
-            zippy = Zippy(data_patched, params=params, model=dev)
             if not zippy.check_valid():
                 return "Error: Invalid input file."
             data_patched = zippy.zip_it('nice'.encode())
-            filename = filename[:-4] + '.zip'
+            filename = f"ngfw_{dev}_{get_datetime()}.zip"
         mem.write(data_patched)
         mem.seek(0)
 

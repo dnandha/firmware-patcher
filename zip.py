@@ -29,6 +29,7 @@ import sys
 import json
 from urllib import request
 import os
+from io import BytesIO
 
 
 ROOTPATH = os.path.dirname(os.path.dirname(
@@ -46,6 +47,13 @@ class Zippy():
 
         self.params = params
 
+        if model is not None:
+            self.model = model
+        else:
+            self.decode_model()
+
+    def decode_model(self):
+        id_ = None
         try:
             id_ = self.data[0x100:0x10f].decode('ascii')
         except UnicodeDecodeError:
@@ -58,9 +66,7 @@ class Zippy():
                     pass
 
         self.model = None
-        if model is not None:
-            self.model = model
-        else:
+        if id_ is not None:
             match id_:
                 case "Scooter_MiP2_V0":
                     self.model = "pro2"
@@ -70,9 +76,37 @@ class Zippy():
                     self.model = "mi3"
                 case "Scooter_Mi4P_ST_F103_V8":
                     self.model = "4pro"
+            return True
+
+        return False
 
     def check_valid(self):
         return self.model is not None
+
+    def _is_zip_file(self):
+        return self.data[:4] == b'PK\x03\x04'
+
+    def try_extract(self, decrypt=True):
+        """Extract the first file from a ZIP archive and return its content as bytes."""
+
+        if not self._is_zip_file():
+            return
+
+        with zipfile.ZipFile(BytesIO(self.data), 'r') as zip_ref:
+            # List all files and directories in the ZIP file
+            file_list = zip_ref.namelist()
+            if not file_list:
+                raise ValueError("The ZIP file is empty.")
+            # Extract the first file (assuming non-directory)
+            first_file_name = file_list[0]
+            with zip_ref.open(first_file_name) as first_file:
+                self.data = first_file.read()
+                if not self.decode_model() and decrypt:
+                    try:
+                        self.data = self.decrypt()
+                        self.decode_model()
+                    except:
+                        pass
 
     def encrypt(self, in_memory=False):
         if in_memory:
@@ -86,6 +120,19 @@ class Zippy():
         else:
             from xiaotea import XiaoTea
             return XiaoTea().encrypt(self.data)
+
+    def decrypt(self, in_memory=False):
+        if in_memory:
+            url = 'https://github.com/BotoX/xiaomi-m365-firmware-patcher/raw/master/xiaotea/xiaotea.py'
+            response = request.urlopen(url)
+            data = response.read()
+            txt = data.decode('utf-8')
+            xt = types.ModuleType('XT')
+            exec(txt, xt.__dict__)
+            return xt.XiaoTea().decrypt(self.data)
+        else:
+            from xiaotea import XiaoTea
+            return XiaoTea().decrypt(self.data)
 
     @staticmethod
     def get_v3(name, model, md5, md5e, enforce):
@@ -160,5 +207,9 @@ if __name__ == "__main__":
     with open(infile, 'rb') as fp:
         data = fp.read()
 
+    zippy = Zippy(data, name="ngfw")
+    if zippy.try_extract:
+        zippy.decode_model()
+
     with open(outfile, 'wb') as fp:
-        fp.write(Zippy(data, name="ngfw").zip_it("nice".encode(), offline=True, enforce=False))
+        fp.write(zippy.zip_it("nice".encode(), offline=True, enforce=False))
