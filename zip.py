@@ -21,7 +21,6 @@
 # (https://github.com/BotoX/xiaomi-m365-firmware-patcher/tree/master/xiaotea)
 #####
 
-import io
 import zipfile
 import hashlib
 import types
@@ -83,16 +82,14 @@ class Zippy():
     def check_valid(self):
         return self.model is not None
 
-    def _is_zip_file(self):
-        return self.data[:4] == b'PK\x03\x04'
-
     def try_extract(self, decrypt=True):
         """Extract the first file from a ZIP archive and return its content as bytes."""
 
-        if not self._is_zip_file():
+        file_ = BytesIO(self.data)
+        if not zipfile.is_zipfile(file_):
             return
 
-        with zipfile.ZipFile(BytesIO(self.data), 'r') as zip_ref:
+        with zipfile.ZipFile(file_, 'r') as zip_ref:
             # List all files and directories in the ZIP file
             file_list = zip_ref.namelist()
             if not file_list:
@@ -160,7 +157,7 @@ class Zippy():
         md5 = hashlib.md5()
         md5.update(self.data)
 
-        zip_buffer = io.BytesIO()
+        zip_buffer = BytesIO()
         zip_file = zipfile.ZipFile(zip_buffer, 'a', zipfile.ZIP_DEFLATED, False)
 
         zip_file.writestr('FIRM.bin', self.data)
@@ -208,8 +205,7 @@ if __name__ == "__main__":
         data = fp.read()
 
     zippy = Zippy(data, name="ngfw")
-    if zippy.try_extract:
-        zippy.decode_model()
+    zippy.try_extract()
 
     with open(outfile, 'wb') as fp:
         fp.write(zippy.zip_it("nice".encode(), offline=True, enforce=False))
