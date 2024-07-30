@@ -66,15 +66,14 @@ class Zippy():
 
         self.model = None
         if id_ is not None:
-            match id_:
-                case "Scooter_MiP2_V0":
-                    self.model = "pro2"
-                case "Scooter_Mi1S_V0":
-                    self.model = "1s"
-                case "Scooter_Mi3_V0":
-                    self.model = "mi3"
-                case "Scooter_Mi4P_ST_F103_V8":
-                    self.model = "4pro"
+            if id_ == "Scooter_MiP2_V0":
+                self.model = "pro2"
+            elif id_ == "Scooter_Mi1S_V0":
+                self.model = "1s"
+            elif id_ == "Scooter_Mi3_V0":
+                self.model = "mi3"
+            elif id_ == "Scooter_Mi4P_ST_F103_V8":
+                self.model = "4pro"
             return True
 
         return False
