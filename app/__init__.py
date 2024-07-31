@@ -26,7 +26,8 @@ import os
 import inspect
 import io
 import pathlib
-from patcher import FirmwarePatcher, SignatureException
+from mi_patcher import MiPatcher
+from util import SignatureException
 from zip import Zippy
 from datetime import datetime
 
@@ -157,7 +158,7 @@ def disclaimer():
 def patch(data):
     res = []
 
-    patcher = FirmwarePatcher(data)
+    patcher = MiPatcher(data)
 
     dpc = flask.request.form.get('dpc', None)
     if dpc is not None:
@@ -175,11 +176,11 @@ def patch(data):
         assert sl_drive >= 0 and sl_drive <= 65, sl_drive
         res.append((f"Speed-Limit Drive: {sl_drive}km/h", patcher.speed_limit_drive(sl_drive)))
 
-    sl_pedo = flask.request.form.get('sl_pedo', None)
-    if sl_pedo is not None:
-        sl_pedo = int(sl_pedo)
-        assert sl_pedo >= 0 and sl_pedo <= 65, sl_pedo
-        res.append((f"Speed-Limit Pedestrian: {sl_pedo}km/h", patcher.speed_limit_pedo(sl_pedo)))
+    sl_ped = flask.request.form.get('sl_ped', None)
+    if sl_ped is not None:
+        sl_ped = int(sl_ped)
+        assert sl_ped >= 0 and sl_ped <= 65, sl_ped
+        res.append((f"Speed-Limit Pedestrian: {sl_ped}km/h", patcher.speed_limit_ped(sl_ped)))
 
     amps_sport = flask.request.form.get('amps_sport', None)
     if amps_sport is not None:
@@ -193,18 +194,18 @@ def patch(data):
         assert amps_drive >= 5000 and amps_drive <= 35000, amps_drive
         res.append((f"Current Drive: {amps_drive}mA", patcher.ampere_drive(amps_drive)))
 
-    amps_pedo = flask.request.form.get('amps_pedo', None)
-    if amps_pedo is not None:
-        amps_pedo = int(amps_pedo)
-        assert amps_pedo >= 5000 and amps_pedo <= 35000, amps_pedo
-        res.append((f"Current Pedestrian: {amps_pedo}mA", patcher.ampere_pedo(amps_pedo)))
+    amps_ped = flask.request.form.get('amps_ped', None)
+    if amps_ped is not None:
+        amps_ped = int(amps_ped)
+        assert amps_ped >= 5000 and amps_ped <= 35000, amps_ped
+        res.append((f"Current Pedestrian: {amps_ped}mA", patcher.ampere_ped(amps_ped)))
 
     amps_sport_max = flask.request.form.get('amps_sport_max', None)
     amps_drive_max = flask.request.form.get('amps_drive_max', None)
-    amps_pedo_max = flask.request.form.get('amps_pedo_max', None)
-    if amps_pedo_max is not None:
-        amps_pedo_max = int(amps_pedo_max)
-        assert amps_pedo_max >= 5000 and amps_pedo_max <= 65000, amps_pedo_max
+    amps_ped_max = flask.request.form.get('amps_ped_max', None)
+    if amps_ped_max is not None:
+        amps_ped_max = int(amps_ped_max)
+        assert amps_ped_max >= 5000 and amps_ped_max <= 65000, amps_ped_max
         if amps_sport_max is not None:
             amps_sport_max = int(amps_sport_max)
             assert amps_sport_max >= 5000 and amps_sport_max <= 65000, amps_sport_max
@@ -214,8 +215,8 @@ def patch(data):
             else:
                 amps_drive_max = amps_sport_max
             assert amps_drive_max >= 5000 and amps_drive_max <= 65000, amps_drive_max
-        res.append((f"Max-Currents Pedestrian/Drive/Sport: {amps_pedo_max}mA/{amps_drive_max}mA/{amps_sport_max}mA",
-                    patcher.ampere_max(amps_pedo_max, amps_drive_max, amps_sport_max)))
+        res.append((f"Max-Currents Pedestrian/Drive/Sport: {amps_ped_max}mA/{amps_drive_max}mA/{amps_sport_max}mA",
+                    patcher.ampere_max(amps_ped_max, amps_drive_max, amps_sport_max)))
 
     amps_brake_max = flask.request.form.get('amps_brake_max', None)
     if amps_brake_max is not None:
@@ -319,7 +320,7 @@ def patch(data):
 
     pnb = flask.request.form.get('pnb', None)
     if pnb is not None:
-        res.append(("Pedestrian No-Blink", patcher.pedo_noblink()))
+        res.append(("Pedestrian No-Blink", patcher.ped_noblink()))
 
     bts = flask.request.form.get('bts', None)
     if bts is not None:

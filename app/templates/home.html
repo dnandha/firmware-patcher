@@ -220,7 +220,7 @@
         </div>
 		<div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="eco_mode" onclick="Pedo_To_Eco(this)">
+                <input class="form-check-input" type="checkbox" name="eco_mode" onclick="Ped_To_Eco(this)">
                 <label class="form-check-label"><b>Pedestrian -> ECO Mode</b></label>
             </div>
             <div class="card-body">
@@ -324,7 +324,7 @@
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_sport', this);CheckForm('sl_drive', this); CheckForm('sl_pedo', this);" onclick="ChangeForm('eco_mode', false);">
+                <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_sport', this);CheckForm('sl_drive', this); CheckForm('sl_ped', this);" onclick="ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Speed Limit</b></label>
             </div>
             <div class="card-body">
@@ -347,10 +347,10 @@
 
                         <div class="row">
                             <div class="col"><label class="form-check-label">Pedestrian Mode, km/h</label></div>
-                            <div class="col" id="sl_pedo_value"></div>
+                            <div class="col" id="sl_ped_value"></div>
                         </div>
                         <div class="row">
-				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_pedo', 'sl_pedo_value')">-</button><input class="form-range" name="sl_pedo" type="range" step="1" min="0" max="65" value="0" onchange="OnSliderChange('sl_pedo_value', this.value)" oninput="OnSliderChange('sl_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_pedo', 'sl_pedo_value')">+</button></span>
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('sl_ped', 'sl_ped_value')">-</button><input class="form-range" name="sl_ped" type="range" step="1" min="0" max="65" value="0" onchange="OnSliderChange('sl_ped_value', this.value)" oninput="OnSliderChange('sl_ped_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('sl_ped', 'sl_ped_value')">+</button></span>
                         </div>
                 </div>
                 <div class="card-text">
@@ -362,7 +362,7 @@
     <div class="card-group text-center">
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_sport', this);CheckForm('amps_drive', this); CheckForm('amps_pedo', this);" onclick="ChangeForm('eco_mode', false);">
+                <input class="form-check-input" type="checkbox" name="amps_cb" onchange="CheckForm('amps_sport', this);CheckForm('amps_drive', this); CheckForm('amps_ped', this);" onclick="ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Nominal Current</b></label>
             </div>
             <div class="card-body">
@@ -385,10 +385,10 @@
 
                         <div class="row">
                             <div class="col"><label class="form-check-label">Pedestrian Mode, mA</label></div>
-                            <div class="col" id="amps_pedo_value"></div>
+                            <div class="col" id="amps_ped_value"></div>
                         </div>
                         <div class="row">
-				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo', 'amps_pedo_value')">-</button><input class="form-range" name="amps_pedo" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_pedo_value', this.value)" oninput="OnSliderChange('amps_pedo_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo', 'amps_pedo_value')">+</button></span>
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_ped', 'amps_ped_value')">-</button><input class="form-range" name="amps_ped" type="range" step="500" min="0" max="35000" value="0" onchange="OnSliderChange('amps_ped_value', this.value)" oninput="OnSliderChange('amps_ped_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_ped', 'amps_ped_value')">+</button></span>
                         </div>
                 </div>
                 <div class="card-text">
@@ -399,7 +399,7 @@
         </div>
         <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_sport_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_pedo_max', this);" onclick="ChangeForm('eco_mode', false);">
+                <input class="form-check-input" type="checkbox" name="amps_max_cb" onchange="CheckForm('amps_sport_max', this);CheckForm('amps_drive_max', this); CheckForm('amps_ped_max', this);" onclick="ChangeForm('eco_mode', false);">
                 <label class="form-check-label"><b>Maximum Current</b></label>
             </div>
             <div class="card-body">
@@ -422,10 +422,10 @@
 
                         <div class="row">
                             <div class="col"><label class="form-check-label">Pedestrian Mode, max. mA</label></div>
-                            <div class="col" id="amps_pedo_max_value"></div>
+                            <div class="col" id="amps_ped_max_value"></div>
                         </div>
                         <div class="row">
-				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_pedo_max', 'amps_pedo_max_value')">-</button><input class="form-range" name="amps_pedo_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_pedo_max_value', this.value)" oninput="OnSliderChange('amps_pedo_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_pedo_max', 'amps_pedo_max_value')">+</button></span>
+				<span class="input-group-text"><button type="button" class="btn btn-secondary" onclick="SliderDown('amps_ped_max', 'amps_ped_max_value')">-</button><input class="form-range" name="amps_ped_max" type="range" step="500" min="0" max="65000" value="0" onchange="OnSliderChange('amps_ped_max_value', this.value)" oninput="OnSliderChange('amps_ped_max_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('amps_ped_max', 'amps_ped_max_value')">+</button></span>
                         </div>
                 </div>
                 <div class="card-text">
@@ -600,15 +600,15 @@
         "SL": "sl_cb",
         "SL_SPORT": "sl_sport",
         "SL_DRIVE": "sl_drive",
-        "SL_PEDO": "sl_pedo",
+        "SL_PED": "sl_ped",
         "AMPS": "amps_cb",
         "AMPS_SPORT": "amps_sport",
         "AMPS_DRIVE": "amps_drive",
-        "AMPS_PEDO": "amps_pedo",
+        "AMPS_PED": "amps_ped",
         "AMPS_MAX": "amps_max_cb",
         "AMPS_SPORT_MAX": "amps_sport_max",
         "AMPS_DRIVE_MAX": "amps_drive_max",
-        "AMPS_PEDO_MAX": "amps_pedo_max",
+        "AMPS_PED_MAX": "amps_ped_max",
 
         "AMPS_BRAKE_MIN": "amps_brake_min",
         "AMPS_BRAKE_MAX": "amps_brake_max",
@@ -815,21 +815,21 @@
         GetForm(forms.BLM_ALM).disabled = true;
     }
 
-    function Pedo_To_Eco(cb) {
+    function Ped_To_Eco(cb) {
         if (!GetFormValue(forms.SL)) {
-            CheckForm(forms.SL_PEDO, cb);
+            CheckForm(forms.SL_PED, cb);
         }
         if (!GetFormValue(forms.AMPS)) {
-            CheckForm(forms.AMPS_PEDO, cb);
+            CheckForm(forms.AMPS_PED, cb);
         }
         if (!GetFormValue(forms.AMPS_MAX)) {
-            CheckForm(forms.AMPS_PEDO_MAX, cb);
+            CheckForm(forms.AMPS_PED_MAX, cb);
         }
         ChangeForm(forms.PNB, cb.checked);
         if (cb.checked) {
-            ChangeForm(forms.SL_PEDO, "15", false);
-            ChangeForm(forms.AMPS_PEDO, "13000", false);
-            ChangeForm(forms.AMPS_PEDO_MAX, "26000", false);
+            ChangeForm(forms.SL_PED, "15", false);
+            ChangeForm(forms.AMPS_PED, "13000", false);
+            ChangeForm(forms.AMPS_PED_MAX, "26000", false);
         }
     }
 
@@ -846,11 +846,11 @@
         ChangeForm(forms.SL, false);
         ChangeForm(forms.SL_SPORT, "25", false);
         ChangeForm(forms.SL_DRIVE, "20", false);
-        ChangeForm(forms.SL_PEDO, "5", false);
+        ChangeForm(forms.SL_PED, "5", false);
         ChangeForm(forms.AMPS, false);
         ChangeForm(forms.AMPS_MAX, false);
-        ChangeForm(forms.AMPS_PEDO, "7000", false);
-        ChangeForm(forms.AMPS_PEDO_MAX, "8000", false);
+        ChangeForm(forms.AMPS_PED, "7000", false);
+        ChangeForm(forms.AMPS_PED_MAX, "8000", false);
         ChangeForm(forms.AMPS_BRAKE_MIN, "8000", false);
 		
         ChangeForm(forms.AMMETER, false);
