@@ -26,6 +26,10 @@ class NbPatcher(BasePatcher):
         super().__init__(data)
 
     def disable_motor_ntc(self):
+        '''
+        Creator/Author: NandTek
+        Description: Disables error 41, which is thrown when motor NTC is missing
+        '''
         sig = self.asm('movs r0, #0x29')
         ofs = FindPattern(self.data, sig) + len(sig)
         pre = self.data[ofs:ofs+4]
