@@ -12,6 +12,37 @@ class MiPatcher(BasePatcher):
     def __init__(self, data):
         super().__init__(data)
 
+        self.defaults = {
+            "1s": {
+                "speed_limit_ped": 5,
+                "speed_limit_drive": 20,
+                "speed_limit_sport": 25,
+                "ampere_ped": 7000,
+                "ampere_drive": 15000,
+                "ampere_sport": 20000,
+                "ampere_ped_max": 8000,
+                "ampere_drive_max": 28000,
+                "ampere_sport_max": 35000,
+                "ampere_brake_min": 8000,
+                "ampere_brake_max": 52000,
+                "volt_limit": 43.01,
+                "current_raising_coeff": 300,
+                "motor_start_speed": 5.0,
+                "shutdown_time": 3.0,
+                "cc_delay": 5.0,
+                "wheel_speed_const": 1.0,
+                "wheel_size": 8.5
+            },
+            "pro2": {
+            },
+            "lite": {
+            },
+            "3": {
+            },
+            "4pro": {
+            }
+        }
+
     def remove_modellock(self):
         '''
         Creator/Author: NandTek
