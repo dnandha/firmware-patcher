@@ -367,13 +367,16 @@ def patch_firmware():
         return f'Some of the patches (patcher.{inspect.trace()[-2][3]}()) could not be applied. Please select unmodified input file.'
 
     if pod in ['Bin', 'Zip']:
-        #filename = f.filename
+        filename = f"ngfw_{dev}_{get_datetime()}"
         mem = io.BytesIO()
         if pod == 'Zip':
             if not zippy.check_valid():
                 return "Error: Invalid input file."
             data_patched = zippy.zip_it('nice'.encode())
-            filename = f"ngfw_{dev}_{get_datetime()}.zip"
+            filename += ".zip"
+        elif pod == 'Bin':
+            filename += ".bin"
+
         mem.write(data_patched)
         mem.seek(0)
 
