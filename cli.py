@@ -31,10 +31,14 @@ from util import SignatureException
 if __name__ == "__main__":
     import sys
     from argparse import ArgumentParser
-    from zippy.zippy import Zippy
+    from zippy import Zippy
 
     parser = ArgumentParser()
     parser.add_argument("type", choices=['mi', 'nb'])
+    parser.add_argument("model", choices=[
+        'f2pro', 'f2plus', 'f2',
+        'g2'
+    ])
     parser.add_argument("infile")
     parser.add_argument("outfile")
     parser.add_argument("patches")
@@ -43,14 +47,13 @@ if __name__ == "__main__":
     def eprint(*args, **kwargs):
         print(*args, file=sys.stderr, **kwargs)
 
-
     with open(args.infile, 'rb') as fp:
         data = fp.read()
 
     mult = 10./8.5  # new while size / old wheel size
 
     if args.type == 'mi':
-        vlt = MiPatcher(data)
+        vlt = MiPatcher(data, args.model)
 
         patches = {
             'dpc': lambda: vlt.dpc(),
@@ -84,10 +87,11 @@ if __name__ == "__main__":
             'kml': lambda: vlt.kers_multi(2, 5, 10),
         }
     elif args.type == 'nb':
-        vlt = NbPatcher(data)
+        vlt = NbPatcher(data, args.model)
 
         patches = {
-            'dmn': lambda: vlt.disable_motor_ntc()
+            'dmn': lambda: vlt.disable_motor_ntc(),
+            'rfm': lambda: vlt.region_free(),
         }
 
     for k in patches:

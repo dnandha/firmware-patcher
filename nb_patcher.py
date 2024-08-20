@@ -22,8 +22,8 @@ from util import FindPattern
 
 
 class NbPatcher(BasePatcher):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, model):
+        super().__init__(data, model)
 
     def disable_motor_ntc(self):
         '''
@@ -37,3 +37,30 @@ class NbPatcher(BasePatcher):
         self.data[ofs:ofs+4] = post
 
         return self.ret_val("disable_motor_ntc", ofs, pre, post)
+
+    def region_free(self):
+        '''
+        Creator/Author: NandTek
+        Description: Set global region
+        '''
+        sig = self.asm('cmp r0, #0x4e')
+        ofs = FindPattern(self.data, sig, start=0x8000) + len(sig)
+
+        if self.model == "f2pro":
+            sig = self.asm('strb.w r4,[r7,#0x4f]')
+            ofs_dst = FindPattern(self.data, sig, start=0x8000)
+            assert ofs_dst == 0x97e6, hex(ofs_dst)
+        elif self.model == "f2plus":
+            sig = self.asm('strb.w r4,[r7,#0x59]')
+            ofs_dst = FindPattern(self.data, sig, start=0x8000)
+            assert ofs_dst == 0x989e, hex(ofs_dst)
+        elif self.model == "f2":
+            sig = self.asm('strb.w r4,[r7,#0x61]')
+            ofs_dst = FindPattern(self.data, sig, start=0x8000)
+            assert ofs_dst == 0x995a, hex(ofs_dst)
+
+        pre = self.data[ofs:ofs+2]
+        post = self.asm(f'b #{ofs_dst-ofs}')
+        self.data[ofs:ofs+2] = post
+
+        return self.ret_val("region_free", ofs, pre, post)

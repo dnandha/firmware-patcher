@@ -8,9 +8,10 @@ MOVW_T3_IMM = [*[None]*5, 11, *[None]*6, 15, 14, 13, 12, None, 10, 9, 8, *[None]
 MOVS_T1_IMM = [*[None]*8, 7, 6, 5, 4, 3, 2, 1, 0]
 
 
+# TODO: use model instead of signature guessing
 class MiPatcher(BasePatcher):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, model):
+        super().__init__(data, model)
 
     def remove_modellock(self):
         '''

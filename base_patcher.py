@@ -22,8 +22,9 @@ import capstone
 
 
 class BasePatcher():
-    def __init__(self, data):
+    def __init__(self, data, model):
         self.data = bytearray(data)
+        self.model = model
         self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
 
