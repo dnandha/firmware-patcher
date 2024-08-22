@@ -616,7 +616,7 @@ class FirmwarePatcher():
         elif b == 0x50:
             reg = 5  # 242
         elif b == 0x80:
-            reg = 8
+            reg = 7  # 022, r7:=1, r8:=0 => active by default
         else:
             raise Exception(f"invalid firmware file: {hex(b)}")
 
@@ -625,7 +625,7 @@ class FirmwarePatcher():
         if b == 0xa4:
             reg2 = 4
         elif b == 0xa5:
-            reg2 = 5 # 022
+            reg2 = 5  # 022
         else:
             raise Exception(f"Invalid firmware file: {hex(b)}")
 
@@ -813,7 +813,15 @@ class FirmwarePatcher():
                 post = bytes(self.ks.asm('NOP.W')[0])
                 self.data[ofs:ofs+4] = post
                 post = self.data[ofs:ofs+4]
-                ret.append([f"rfm{i}", hex(ofs), pre.hex(), post.hex()])
+                ret.append([f"rfm_{i}", hex(ofs), pre.hex(), post.hex()])
+
+            # set CC on
+            sig = self.ks.asm("STRH.W r8,[r5,#0xee]")[0]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('STRH.W r7,[r5,#0xf8]')[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["rfm_cc", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -1199,7 +1207,7 @@ class FirmwarePatcher():
 
 if __name__ == "__main__":
     import sys
-    from zippy.zippy import Zippy
+    from zippy import Zippy
 
     def eprint(*args, **kwargs):
         print(*args, file=sys.stderr, **kwargs)
