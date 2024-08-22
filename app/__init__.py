@@ -259,7 +259,10 @@ def patch(data):
     else:
         remove_kers = flask.request.form.get('remove_kers', None)
         if remove_kers is not None:
-            res.append(("Remove KERS", patcher.remove_kers()))
+            if flask.request.form.get('device') == "4pro":
+                res.append(("Remove KERS", patcher.kers_multi(0, 0, 0)))
+            else:
+                res.append(("Remove KERS", patcher.remove_kers()))
 
     remove_autobrake = flask.request.form.get('remove_autobrake', None)
     if remove_autobrake is not None:
