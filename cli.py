@@ -31,7 +31,7 @@ from util import SignatureException
 if __name__ == "__main__":
     import sys
     from argparse import ArgumentParser
-    from zippy.zippy import Zippy
+    from zippy import Zippy
 
     parser = ArgumentParser()
     parser.add_argument("type", choices=['mi', 'nb'])
@@ -87,7 +87,10 @@ if __name__ == "__main__":
         vlt = NbPatcher(data)
 
         patches = {
-            'dmn': lambda: vlt.disable_motor_ntc()
+            'dmn': lambda: vlt.disable_motor_ntc(),
+            'asc': lambda: vlt.allow_sn_change(),
+            'skc': lambda: vlt.skip_key_check(),
+            'rfm': lambda: vlt.region_free()
         }
 
     for k in patches:
@@ -95,7 +98,7 @@ if __name__ == "__main__":
             continue
         try:
             for desc, ofs, pre, post in patches[k]():
-                print(desc, ofs, pre, post)
+                print(desc, ofs)
                 pre_dis = [' '.join([x.bytes.hex(), x.mnemonic, x.op_str])
                            for x in vlt.cs.disasm(bytes.fromhex(pre), 0)]
                 post_dis = [' '.join([x.bytes.hex(), x.mnemonic, x.op_str])

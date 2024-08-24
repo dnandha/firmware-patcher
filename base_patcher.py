@@ -17,19 +17,24 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from enum import Enum
 import keystone
 import capstone
 
+class PatchGroup(Enum):
+    GENERAL = "general"
+    SPEED = "speed"
+    AMPERE = "ampere"
 
-def patch(label, description, min=None, max=None):
+def patch(label, description, group, min=None, max=None):
     def decorator(func):
         func.label = label
         func.description = description
+        func.group = group
         func.min = min
         func.max = max
         return func
     return decorator
-
 
 class BasePatcher():
     def __init__(self, data):
@@ -76,120 +81,141 @@ class BasePatcher():
         return [(descr, hex(ofs), pre.hex(), post.hex())]
 
     @patch(label="dpc",
-           description="Activate/Deactivate DPC via register.")
+           description="Activate/Deactivate DPC via register.",
+           group=PatchGroup.GENERAL)
     def dpc(self):
         raise NotImplementedError()
 
     @patch(label="remove_kers",
-           description="Deactivates KERS (kinetic energy recuperation system).")
+           description="Deactivates KERS (kinetic energy recuperation system).",
+           group=PatchGroup.GENERAL)
     def remove_kers(self):
         raise NotImplementedError()
 
     @patch(label="remove_autobrake",
-           description="Remove automatic braking at certain speeds.")
+           description="Remove automatic braking at certain speeds.",
+           group=PatchGroup.GENERAL)
     def remove_autobrake(self):
         raise NotImplementedError()
 
     @patch(label="remove_charging_mode",
-           description="Ignore input from charging line.")
+           description="Ignore input from charging line.",
+           group=PatchGroup.GENERAL)
     def remove_charging_mode(self):
         raise NotImplementedError()
 
     @patch(label="brake_light_static",
-           description="Replaces the blinking backlight by a static backlight on braking.")
+           description="Replaces the blinking backlight by a static backlight on braking.",
+           group=PatchGroup.GENERAL)
     def brake_light_static(self):
         raise NotImplementedError()
 
     @patch(label="region_free",
-           description="Remove regional restrictions normally imposed by the serial number.")
+           description="Remove regional restrictions normally imposed by the serial number.",
+           group=PatchGroup.GENERAL)
     def region_free(self):
         raise NotImplementedError()
 
     @patch(label="bms_baudrate",
-           description="Set BMS baudrate, required for OpenSource BMS.")
+           description="Set BMS baudrate to 76800 as required for OpenSource BMS.",
+           group=PatchGroup.GENERAL)
     def bms_baudrate(self, val=76800):
         raise NotImplementedError()
 
     @patch(label="volt_limit",
            description="Change when connecting a custom battery with a different voltage.",
+           group=PatchGroup.GENERAL,
            min=10, max=100)
     def volt_limit(self, volts=43.01):
         raise NotImplementedError()
 
     @patch(label="current_raising_coeff",
            description="Current raising coefficient, defines the increments of current increase.",
+           group=PatchGroup.GENERAL,
            min=0, max=2000)
     def current_raising_coeff(self, coeff):
         raise NotImplementedError()
 
     @patch(label="motor_start_speed",
            description="Minimum required speed before the motor will start.",
+           group=PatchGroup.GENERAL,
            min=0, max=10)
     def motor_start_speed(self, kmh=5.0):
         raise NotImplementedError()
 
     @patch(label="wheel_speed_const",
            description="With different wheels, adjust this to match the GPS speed and torque.",
+           group=PatchGroup.GENERAL,
            min=0.5, max=2)
     def wheel_speed_const(self, factor=1.0):
         raise NotImplementedError()
 
     @patch(label="shutdown_time",
            description="Time you have to press the power button until the device turns off.",
+           group=PatchGroup.GENERAL,
            min=0, max=10)
     def shutdown_time(self, seconds=3.0):
         raise NotImplementedError()
 
     @patch(label="cc_delay",
            description="Time needed for cruise control to kick in.",
+           group=PatchGroup.GENERAL,
            min=0, max=10)
     def cc_delay(self, seconds=5.0):
         raise NotImplementedError()
 
     @patch(label="speed_limit_ped",
            description="Speed limit for pedestrian mode.",
+           group=PatchGroup.SPEED,
            min=0, max=65)
     def speed_limit_ped(self, kmh):
         raise NotImplementedError()
 
     @patch(label="speed_limit_drive",
            description="Speed limit for drive mode.",
+           group=PatchGroup.SPEED,
            min=0, max=65)
     def speed_limit_drive(self, kmh):
         raise NotImplementedError()
 
     @patch(label="speed_limit_sport",
            description="Speed limit for sport mode.",
+           group=PatchGroup.SPEED,
            min=0, max=65)
     def speed_limit_sport(self, kmh):
         raise NotImplementedError()
 
     @patch(label="ampere_ped",
            description="Ampere for pedestrian mode.",
+           group=PatchGroup.AMPERE,
            min=0, max=35000)
     def ampere_ped(self, amps, force=False):
         raise NotImplementedError()
 
     @patch(label="ampere_drive",
            description="Ampere for drive mode.",
+           group=PatchGroup.AMPERE,
            min=0, max=35000)
     def ampere_drive(self, amps, force=True):
         raise NotImplementedError()
 
     @patch(label="ampere_sport",
            description="Ampere for sport mode.",
+           group=PatchGroup.AMPERE,
            min=0, max=35000)
     def ampere_sport(self, amps, force=True):
         raise NotImplementedError()
 
     @patch(label="ampere_max",
            description="Maximum ampere for all three modes.",
+           group=PatchGroup.AMPERE,
            min=0, max=65000)
     def ampere_max(self, amps_ped=None, amps_drive=None, amps_sport=None):
         raise NotImplementedError()
 
     @patch(label="ampere_brake",
            description="Ampere for brake lever.",
+           group=PatchGroup.AMPERE,
            min=0, max=65000)
     def ampere_brake(self, min_=None, max_=None):
         raise NotImplementedError()

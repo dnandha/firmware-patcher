@@ -45,7 +45,7 @@ class MiPatcher(BasePatcher):
 
     def remove_modellock(self):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: (New DRVs only) Removes the check that prevents cross-flashing DRV from another model
         '''
         try:
@@ -68,7 +68,7 @@ class MiPatcher(BasePatcher):
 
     def remove_kers(self):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Alternate (improved) version of No Kers Mod
         '''
         try:
@@ -222,7 +222,7 @@ class MiPatcher(BasePatcher):
 
     def speed_limit_ped(self, kmh):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Speed limit of pedestrian mode
         '''
         ret = []
@@ -414,7 +414,7 @@ class MiPatcher(BasePatcher):
 
     def ampere_ped(self, amps, force=False):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Nominal current of pedestrian mode
         '''
         ret = []
@@ -572,7 +572,7 @@ class MiPatcher(BasePatcher):
 
     def shutdown_time(self, seconds):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Time to press power button before shutdown
         '''
         delay = int(seconds * 200)
@@ -586,7 +586,7 @@ class MiPatcher(BasePatcher):
 
     def ped_noblink(self):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Don't force backlight / blinking in ped mode
         '''
         ret = []
@@ -616,7 +616,7 @@ class MiPatcher(BasePatcher):
     def brake_light_static(self):
         '''
         Creator/Author: SH
-        Description: Old mod version, fixed by NandTek
+        Description: Old mod version, fixed by Turbojeet
         '''
         ret = []
 
@@ -644,7 +644,7 @@ class MiPatcher(BasePatcher):
 
     def brake_light(self):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Alternate (improved) version,
                      instead of changing condition flags (hacky), replace code
         '''
@@ -704,7 +704,7 @@ class MiPatcher(BasePatcher):
 
     def region_free(self):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Remove all region restrictions bound to serial number
         '''
         ret = []
@@ -753,7 +753,7 @@ class MiPatcher(BasePatcher):
 
     def lower_light(self):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Lowers light intensity, for auto-light effect
         '''
         ret = []
@@ -780,7 +780,7 @@ class MiPatcher(BasePatcher):
 
     def ampere_meter(self, shift=8):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Replace dashboard battery bars with amp meter
         '''
         ret = []
@@ -901,7 +901,7 @@ class MiPatcher(BasePatcher):
 
     def button_swap(self):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Switch function of single/double click -> next level hackery! Props if you understand this :)
         '''
         ret = []
@@ -998,7 +998,7 @@ class MiPatcher(BasePatcher):
 
     def fake_uid(self, uid):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Fake MCU UID
         '''
         ret = []
@@ -1080,7 +1080,7 @@ class MiPatcher(BasePatcher):
 
     def kers_multi(self, l0=6, l1=12, l2=20):
         '''
-        Creator/Author: NandTek
+        Creator/Author: Turbojeet
         Description: Set multiplier values for KERS
         '''
         ret = []

@@ -135,6 +135,9 @@ class Zippy():
         compatible_list = ["mi_DRV_STM32F103CxT6"]
         if model != "4pro":
             compatible_list += ["mi_DRV_GD32F103CxT6", "mi_DRV_GD32E103CxT6"]
+
+        compatible_list += ["f2_DRV_AT32F415CxT7", "g2_DRV_AT32F415CxT7"]
+
         data = {
             "schemaVersion": 1,
             "firmware": {
@@ -207,4 +210,4 @@ if __name__ == "__main__":
     zippy.try_extract()
 
     with open(outfile, 'wb') as fp:
-        fp.write(zippy.zip_it("nice".encode(), offline=True, enforce=False))
+        fp.write(zippy.zip_it("nice".encode(), offline=False, enforce=False))

@@ -32,7 +32,7 @@ The mod will then be integrated into the NGFW patcher.
 * Brake Currents
 * (Lever resolution (gas/brake))
 
-### NandTek
+### Turbojeet
 * Shutdown Time
 * No KERS (improved)
 * Current Meter
