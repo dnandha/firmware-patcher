@@ -279,7 +279,7 @@ def patch(data):
     else:
         remove_kers = flask.request.form.get('remove_kers', None)
         if remove_kers is not None:
-            if flask.request.form.get('device') == "4pro":
+            if flask.request.form.get('device') in ["4pro", "f2pro", "f2plus", "f2"]:
                 res.append(("Remove KERS", patcher.kers_multi(0, 0, 0)))
             else:
                 res.append(("Remove KERS", patcher.remove_kers()))
@@ -326,7 +326,10 @@ def patch(data):
 
     rml = flask.request.form.get('rml', None)
     if rml is not None:
-        res.append(("Remove Model Lock", patcher.remove_modellock()))
+        if device in ["f2pro", "f2plus", "f2"]:
+            res.append(("Remove Model Lock", patcher.skip_key_check()))
+        else:
+            res.append(("Remove Model Lock", patcher.remove_modellock()))
 
     blm = flask.request.form.get('blm', None)
     if blm is not None:
