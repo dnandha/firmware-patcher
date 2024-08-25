@@ -47,7 +47,7 @@ class Zippy():
         self.params = params
         self.model = model
 
-    def try_extract(self, decrypt=True):
+    def try_extract(self, decrypt=True, in_memory=True):
         """Extract the first file from a ZIP archive and return its content as bytes."""
 
         file_ = BytesIO(self.data)
@@ -65,10 +65,10 @@ class Zippy():
                 self.data = first_file.read()
                 if not self.decode_model() and decrypt:
                     try:
-                        self.data = self.decrypt()
+                        self.data = self.decrypt(in_memory=in_memory)
                         self.decode_model()
                     except:
-                        pass
+                        raise Exception("Decode error")
 
     def encrypt(self, in_memory=False):
         if in_memory:

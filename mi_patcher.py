@@ -550,7 +550,7 @@ class MiPatcher(BasePatcher):
         elif b == 0x50:
             reg = 5  # 242
         elif b == 0x80:
-            reg = 8
+            reg = 7  # 022, r7:=1, r8:=0 => active by default
         else:
             raise Exception(f"invalid firmware file: {hex(b)}")
 
@@ -559,7 +559,7 @@ class MiPatcher(BasePatcher):
         if b == 0xa4:
             reg2 = 4
         elif b == 0xa5:
-            reg2 = 5 # 022
+            reg2 = 5  # 022
         else:
             raise Exception(f"Invalid firmware file: {hex(b)}")
 
@@ -591,7 +591,7 @@ class MiPatcher(BasePatcher):
         '''
         ret = []
 
-        sig = [0x01, 0x29, None, 0xd0, 0xa1, 0x79, 0x01, 0x29, None, 0xd0, 0x90, 0xf8, 0x34, 0x10, 0x01, 0x29]
+        sig = [0x01, 0x29, None, 0xd0, 0xa1, 0x79, None, 0x29, None, 0xd0, 0x90, 0xf8, 0x34, 0x10, None, 0x29]
         ofs = FindPattern(self.data, sig) + len(sig)
 
         pre = self.data[ofs:ofs+2]
@@ -747,7 +747,15 @@ class MiPatcher(BasePatcher):
                 post = bytes(self.ks.asm('NOP.W')[0])
                 self.data[ofs:ofs+4] = post
                 post = self.data[ofs:ofs+4]
-                ret.append([f"rfm{i}", hex(ofs), pre.hex(), post.hex()])
+                ret.append([f"rfm_{i}", hex(ofs), pre.hex(), post.hex()])
+
+            # set CC on
+            sig = self.ks.asm("STRH.W r8,[r5,#0xee]")[0]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = bytes(self.ks.asm('STRH.W r7,[r5,#0xf8]')[0])
+            self.data[ofs:ofs+4] = post
+            ret.append(["rfm_cc", hex(ofs), pre.hex(), post.hex()])
 
         return ret
 
@@ -1102,6 +1110,7 @@ class MiPatcher(BasePatcher):
             sig = [0x00, 0xeb, 0x40, 0x00, 0x40, 0x00, 0x05, 0xe0, 0x00, 0xeb, 0x40, 0x00, 0x01, 0xe0, 0x00, 0xeb, 0x80, 0x00, 0x80, 0x00]
             ofs = FindPattern(self.data, sig)
         except SignatureException:
+            # 022
             asm = f"""
             nop.w
             nop.w
@@ -1117,7 +1126,6 @@ class MiPatcher(BasePatcher):
             muls  r0, r0, r1
             lsrs    r0, r0, #0xa
             """
-            # 022
             sig = [0x00, 0xeb, 0x40, 0x00, 0xc0, 0xf3, 0x55, 0x20, 0x20, 0x86, 0x0a, 0xe0, 0x00, 0xeb, 0x40, 0x00, 0xc0, 0xf3, 0x15, 0x20, 0x20, 0x86, 0x04, 0xe0, 0x00, 0xeb, 0x80, 0x00, 0xc0, 0xf3, 0x15, 0x20]
             ofs = FindPattern(self.data, sig)
 
