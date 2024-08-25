@@ -9,8 +9,8 @@ MOVS_T1_IMM = [*[None]*8, 7, 6, 5, 4, 3, 2, 1, 0]
 
 
 class MiPatcher(BasePatcher):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, model):
+        super().__init__(data, model)
 
         self.defaults = {
             "1s": {
@@ -1087,6 +1087,7 @@ class MiPatcher(BasePatcher):
 
         try:
             asm = f"""
+            nop
             nop
             movs  r1, #{l0}
             b  MULT

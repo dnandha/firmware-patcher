@@ -49,6 +49,9 @@
         <p class="lead">
             Configure your own NextGen firmware (NGFW) by adjusting the options below. <b>Both V3.0 and V3.1 controllers are supported!</b> By default nothing will be patched, enable patches with the checkbox next to them.
         </p>
+        <p class="lead"><span style="color: red;">New: </span>
+            F2 Series support! More patches and features will be added.
+        </p>
         <p class="text">
         Important notes: This information service is provided free of charge and for personal use only. Commercial use, selling or distributing files, services or parts related to this service is prohibited (see <a href="/disclaimer">disclaimer</a>). If you decide to use any of the information provided here for your project, please add a reference to this site! The source code is available at <a href="https://github.com/dnandha/firmware-patcher">GitHub</a>. 
         </p>
@@ -64,7 +67,10 @@
                 <option value="pro2">Pro2</option>
                 <option value="lite">Lite/Essential</option>
                 <option value="mi3">Mi3</option>
-                <option value="4pro">4 Pro</option>
+                <option value="4pro">4Pro</option>
+                <option value="f2pro">F2Pro</option>
+                <option value="f2plus">F2Plus</option>
+                <option value="f2">F2</option>
             </select>
         </div>
     </div>
@@ -75,10 +81,10 @@
 		<div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="rml">
-                <label class="form-check-label"><b>Remove Model Lock (Latest DRVs)</b></label>
+                <label class="form-check-label"><b>Remove Model Check</b></label>
             </div>
             <div class="card-body">
-                Latest DRVs restrict flashing of DRVs to the ones belonging to the model. This mod removes the model check and allows flashing all DRVs, for example: DRV016 to DRV247/SHFW.
+                Some DRVs restrict flashing of DRVs to the ones belonging to the model. This mod removes checks and allows flashing all DRVs, for example: DRV016 to DRV247/SHFW.
             </div>
         </div>
     </div>
@@ -125,7 +131,7 @@
                 <label class="form-check-label"><b>No KERS</b></label>
             </div>
             <div class="card-body">
-                Deactivates KERS (Improved version: Error 1 fix + KERS-Multiplier=0).
+                Deactivates Kinetic Energy Recovery System (KERS).
             </div>
         </div>
     </div>
@@ -202,33 +208,54 @@
             </div>
         </div>
     </div>
+    <div class="card-group">
+        <div class="card text-center m-1">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="kml" onchange="CheckForm('kml_l0', this);CheckForm('kml_l1', this);CheckForm('kml_l2', this);" onclick="ChangeForm('remove_kers', false);">
+                <label class="form-check-label"><b>Custom KERS</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    <span class="input-group-text">Weak:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l0', 'kml_l0_value')">-</button><input class="form-range" name="kml_l0" type="range" step="1" min="0" max="30" value="6" onchange="OnSliderChange('kml_l0_value', this.value)" oninput="OnSliderChange('kml_l0_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l0', 'kml_l0_value')">+</button></span><div id="kml_l0_value">6</div>
+                    <span class="input-group-text">Middle:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l1', 'kml_l1_value')">-</button><input class="form-range" name="kml_l1" type="range" step="1" min="0" max="30" value="12" onchange="OnSliderChange('kml_l1_value', this.value)" oninput="OnSliderChange('kml_l1_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l1', 'kml_l1_value')">+</button></span><div id="kml_l1_value">12</div>
+                    <span class="input-group-text">Strong:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l2', 'kml_l2_value')">-</button><input class="form-range" name="kml_l2" type="range" step="1" min="0" max="30" value="20" onchange="OnSliderChange('kml_l2_value', this.value)" oninput="OnSliderChange('kml_l2_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l2', 'kml_l2_value')">+</button></span><div id="kml_l2_value">20</div>
+                </div>
+
+                <div class="card-text">
+                    Set the three KERS multiplier levels individually. Set value to "0" to turn KERS off. <b>Note:</b> Overrides <b>No KERS</b> mod!
+                </div>
+            </div>
+        </div>
+    </div>
 
     <br/>
     <h5 class="text-center">Special</h5>
     <div class="card-group text-center">
 		<div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="rfm">
-                <label class="form-check-label"><b>Region-Free</b></label>
+                <input class="form-check-input" type="checkbox" name="eco_mode" onclick="Ped_To_Eco(this)">
+                <label class="form-check-label"><b>Pedestrian -> Eco Mode</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Remove regional restrictions normally imposed by the serial number, such as 20 km/h speed limit, missing cruise control and backlight-on feature. If changing speed limits doesn't have any effect, you might want to enable this mod!<br/>
-                    Effectively converts a european device to an international device.
+                    Replace pedestrian mode with Eco mode. This gives you another driveable mode with slightly reduced consumption at 15 km/h.
+                </div>
+                <div class="card-text">
+                    This is a convenience function! The same effect can be achieved by setting nominal+maximum current and speed limit higher for the pedestrian mode manually.<br/>
                 </div>
             </div>
         </div>
 		<div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="eco_mode" onclick="Ped_To_Eco(this)">
-                <label class="form-check-label"><b>Pedestrian -> ECO Mode</b></label>
+                <input class="form-check-input" type="checkbox" name="pnb">
+                <label class="form-check-label"><b>Pedestrian No-Blink</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Replace pedestrian mode with ECO mode. This gives you another driveable mode with slightly reduced consumption at 15 km/h.
+                    Remove flashing / blinking taillight in pedestrian mode.
                 </div>
                 <div class="card-text">
-                    This is a convenience function! The same effect can be achieved by setting nominal+maximum current and speed limit higher for the pedestrian mode manually.<br/>
+                    Makes the taillight togglable like in every other mode. Can be combined with static brakelight to remove blinking on brake (when region-free).
                 </div>
             </div>
         </div>
@@ -251,17 +278,18 @@
                 </div>
             </div>
         </div>
-		<div class="card">
+        <div class="card">
             <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="pnb">
-                <label class="form-check-label"><b>Pedestrian No-Blink</b></label>
+                <input class="form-check-input" type="checkbox" name="bts">
+                <label class="form-check-label"><b>Button Swap</b></label>
             </div>
             <div class="card-body">
                 <div class="card-title">
-                    Remove flashing / blinking taillight in pedestrian mode.
+                    Swaps the function of single and double button tap.
                 </div>
                 <div class="card-text">
-                    Makes the taillight togglable like in every other mode. Can be combined with static brakelight to remove blinking on brake (when region-free).
+                    A single button tap switches mode, two button taps turn light on/off.<br/>
+                    Useful if you want to be able to switch modes more easily.
                 </div>
             </div>
         </div>
@@ -283,45 +311,23 @@
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="bts">
-                <label class="form-check-label"><b>Button Swap</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-                    Swaps the function of single and double button tap.
-                </div>
-                <div class="card-text">
-                    A single button tap switches mode, two button taps turn light on/off.<br/>
-                    Useful if you want to be able to switch modes more easily.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card-group">
-        <div class="card text-center m-1">
-            <div class="card-header">
-                <input class="form-check-input" type="checkbox" name="kml" onchange="CheckForm('kml_l0', this);CheckForm('kml_l1', this);CheckForm('kml_l2', this);" onclick="ChangeForm('remove_kers', false);">
-                <label class="form-check-label"><b>Custom KERS</b></label>
-            </div>
-            <div class="card-body">
-                <div class="card-title">
-                    <span class="input-group-text">Weak:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l0', 'kml_l0_value')">-</button><input class="form-range" name="kml_l0" type="range" step="1" min="0" max="30" value="6" onchange="OnSliderChange('kml_l0_value', this.value)" oninput="OnSliderChange('kml_l0_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l0', 'kml_l0_value')">+</button></span><div id="kml_l0_value">6</div>
-                    <span class="input-group-text">Middle:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l1', 'kml_l1_value')">-</button><input class="form-range" name="kml_l1" type="range" step="1" min="0" max="30" value="12" onchange="OnSliderChange('kml_l1_value', this.value)" oninput="OnSliderChange('kml_l1_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l1', 'kml_l1_value')">+</button></span><div id="kml_l1_value">12</div>
-                    <span class="input-group-text">Strong:&nbsp;<button type="button" class="btn btn-secondary" onclick="SliderDown('kml_l2', 'kml_l2_value')">-</button><input class="form-range" name="kml_l2" type="range" step="1" min="0" max="30" value="20" onchange="OnSliderChange('kml_l2_value', this.value)" oninput="OnSliderChange('kml_l2_value', this.value)" disabled><button type="button" class="btn btn-primary" onclick="SliderUp('kml_l2', 'kml_l2_value')">+</button></span><div id="kml_l2_value">20</div>
-                </div>
-
-                <div class="card-text">
-                    Set the three KERS multiplier levels individually. Set value to "0" to turn KERS off. <b>Note:</b> Overrides <b>No KERS</b> mod!
-                </div>
-            </div>
-        </div>
     </div>
 
     <br/>
     <h5 class="text-center">Limits</h5>
     <div class="card-group text-center">
+		<div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="rfm">
+                <label class="form-check-label"><b>Region-Free</b></label>
+            </div>
+            <div class="card-body">
+                <div class="card-title">
+                    Remove regional restrictions normally imposed by the serial number, such as 20 km/h speed limit, missing cruise control and backlight-on feature. If changing speed limits doesn't have any effect, you might want to enable this mod!<br/>
+                    Effectively converts a european device to an international device.
+                </div>
+            </div>
+        </div>
         <div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="sl_cb" onchange="CheckForm('sl_sport', this);CheckForm('sl_drive', this); CheckForm('sl_ped', this);" onclick="ChangeForm('eco_mode', false);">
@@ -346,7 +352,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col"><label class="form-check-label">Pedestrian Mode, km/h</label></div>
+                            <div class="col"><label class="form-check-label">Eco / Pedestrian Mode, km/h</label></div>
                             <div class="col" id="sl_ped_value"></div>
                         </div>
                         <div class="row">
@@ -384,7 +390,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col"><label class="form-check-label">Pedestrian Mode, mA</label></div>
+                            <div class="col"><label class="form-check-label">Eco / Pedestrian Mode, mA</label></div>
                             <div class="col" id="amps_ped_value"></div>
                         </div>
                         <div class="row">
@@ -421,7 +427,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col"><label class="form-check-label">Pedestrian Mode, max. mA</label></div>
+                            <div class="col"><label class="form-check-label">Eco / Pedestrian Mode, max. mA</label></div>
                             <div class="col" id="amps_ped_max_value"></div>
                         </div>
                         <div class="row">
@@ -763,6 +769,12 @@
             Preset_Mi3();
         } else if (dev === "4pro") {
             Preset_4Pro();
+        } else if (dev === "f2pro") {
+            Preset_F2();
+        } else if (dev === "f2plus") {
+            Preset_F2();
+        } else if (dev === "f2") {
+            Preset_F2();
         }
     }
 
@@ -815,6 +827,56 @@
         GetForm(forms.BLM_ALM).disabled = true;
     }
 
+    function Preset_F2() {
+        ChangeForm(forms.SL_SPORT, "25", false);
+        ChangeForm(forms.SL_DRIVE, "20", false);
+        ChangeForm(forms.SL_PED, "15", false);
+        ChangeForm(forms.WHEELSIZE, "10.0", false);
+
+        GetForm(forms.BTS).disabled = true;
+        GetForm(forms.BLM).disabled = true;
+        GetForm(forms.DPC).disabled = true;
+        GetForm(forms.MOTOR_START_SPEED+"_cb").disabled = true;
+        GetForm(forms.REMOVE_AUTOBRAKE).disabled = true;
+        GetForm(forms.REMOVE_CHARGING_MODE).disabled = true;
+        GetForm(forms.CC_DELAY+"_cb").disabled = true;
+        GetForm(forms.CRC+"_cb").disabled = true;
+        GetForm(forms.WHEELSIZE+"_cb").disabled = true;
+        GetForm(forms.SHUTDOWN_TIME+"_cb").disabled = true;
+        GetForm(forms.AMPS).disabled = true;
+        GetForm(forms.AMPS_MAX).disabled = true;
+        GetForm(forms.AMPS_BRAKE_MIN+"_cb").disabled = true;
+        GetForm(forms.AMPS_BRAKE_MAX+"_cb").disabled = true;
+        GetForm(forms.AMMETER).disabled = true;
+        GetForm(forms.VOLT+"_cb").disabled = true;
+        GetForm(forms.BAUD).disabled = true;
+        GetForm(forms.ECO_MODE).disabled = true;
+        GetForm(forms.PNB).disabled = true;
+    }
+
+    function Enable_All() {
+        GetForm(forms.RML).disabled = false;
+        GetForm(forms.BTS).disabled = false;
+        GetForm(forms.BLM).disabled = false;
+        GetForm(forms.DPC).disabled = false;
+        GetForm(forms.MOTOR_START_SPEED+"_cb").disabled = false;
+        GetForm(forms.REMOVE_AUTOBRAKE).disabled = false;
+        GetForm(forms.REMOVE_CHARGING_MODE).disabled = false;
+        GetForm(forms.CC_DELAY+"_cb").disabled = false;
+        GetForm(forms.CRC+"_cb").disabled = false;
+        GetForm(forms.WHEELSIZE+"_cb").disabled = false;
+        GetForm(forms.SHUTDOWN_TIME+"_cb").disabled = false;
+        GetForm(forms.AMPS).disabled = false;
+        GetForm(forms.AMPS_MAX).disabled = false;
+        GetForm(forms.AMPS_BRAKE_MIN+"_cb").disabled = false;
+        GetForm(forms.AMPS_BRAKE_MAX+"_cb").disabled = false;
+        GetForm(forms.AMMETER).disabled = false;
+        GetForm(forms.VOLT+"_cb").disabled = false;
+        GetForm(forms.BAUD).disabled = false;
+        GetForm(forms.ECO_MODE).disabled = false;
+        GetForm(forms.PNB).disabled = false;
+    }
+
     function Ped_To_Eco(cb) {
         if (!GetFormValue(forms.SL)) {
             CheckForm(forms.SL_PED, cb);
@@ -834,6 +896,8 @@
     }
 
     function Preset_Default() {
+        Enable_All();
+
         ChangeForm(forms.DPC, false);
         ChangeForm(forms.MOTOR_START_SPEED, "5.0", false);
         ChangeForm(forms.REMOVE_AUTOBRAKE, false);

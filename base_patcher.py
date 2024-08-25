@@ -37,10 +37,12 @@ def patch(label, description, group, min=None, max=None):
     return decorator
 
 class BasePatcher():
-    def __init__(self, data):
+    def __init__(self, data, model):
         self.data = bytearray(data)
         self.ks = keystone.Ks(keystone.KS_ARCH_ARM, keystone.KS_MODE_THUMB)
         self.cs = capstone.Cs(capstone.CS_ARCH_ARM, capstone.CS_MODE_THUMB)
+
+        self.model = model
 
         self.defaults = {
             "dummy": {
@@ -64,7 +66,7 @@ class BasePatcher():
                 "wheel_size": 8.5
             }
         }
-
+    
     def get_defaults(self, device):
         return self.defaults.get(device, {})
 

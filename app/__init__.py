@@ -27,8 +27,9 @@ import inspect
 import io
 import pathlib
 from mi_patcher import MiPatcher
+from nb_patcher import NbPatcher
 from util import SignatureException
-from zip import Zippy
+from zippy import Zippy
 from datetime import datetime
 
 
@@ -158,29 +159,47 @@ def disclaimer():
 def patch(data):
     res = []
 
-    patcher = MiPatcher(data)
+    device = flask.request.form.get('device')
+    if device in ["1s", "pro2", "lite", "3", "4pro"]:
+        patcher = MiPatcher(data, device)
+    elif device in ["f2pro", "f2plus", "f2", "g2"]:
+        patcher = NbPatcher(data, device)
 
     dpc = flask.request.form.get('dpc', None)
     if dpc is not None:
         res.append(("DPC", patcher.dpc()))
 
     sl_sport = flask.request.form.get('sl_sport', None)
-    if sl_sport is not None:
-        sl_sport = int(sl_sport)
-        assert sl_sport >= 0 and sl_sport <= 65, sl_sport
-        res.append((f"Speed-Limit Sport: {sl_sport}km/h", patcher.speed_limit_sport(sl_sport)))
-
     sl_drive = flask.request.form.get('sl_drive', None)
-    if sl_drive is not None:
-        sl_drive = int(sl_drive)
-        assert sl_drive >= 0 and sl_drive <= 65, sl_drive
-        res.append((f"Speed-Limit Drive: {sl_drive}km/h", patcher.speed_limit_drive(sl_drive)))
-
     sl_ped = flask.request.form.get('sl_ped', None)
-    if sl_ped is not None:
-        sl_ped = int(sl_ped)
-        assert sl_ped >= 0 and sl_ped <= 65, sl_ped
-        res.append((f"Speed-Limit Pedestrian: {sl_ped}km/h", patcher.speed_limit_ped(sl_ped)))
+    if device == "f2":
+        if sl_sport is not None and sl_drive is not None and sl_ped is not None:
+            sl_sport = int(sl_sport)
+            assert sl_sport >= 0 and sl_sport <= 65, sl_sport
+            sl_drive = int(sl_drive)
+            assert sl_drive >= 0 and sl_drive <= 65, sl_drive
+            sl_ped = int(sl_ped)
+            assert sl_ped >= 0 and sl_ped <= 65, sl_ped
+            res.append((f"Speed-Limits: {sl_sport}, {sl_drive}, {sl_ped} km/h",
+                        patcher.speed_params(
+                            sl_sport, sl_drive, sl_ped
+                        )))
+
+    else:
+        if sl_sport is not None:
+            sl_sport = int(sl_sport)
+            assert sl_sport >= 0 and sl_sport <= 65, sl_sport
+            res.append((f"Speed-Limit Sport: {sl_sport}km/h", patcher.speed_limit_sport(sl_sport)))
+
+        if sl_drive is not None:
+            sl_drive = int(sl_drive)
+            assert sl_drive >= 0 and sl_drive <= 65, sl_drive
+            res.append((f"Speed-Limit Drive: {sl_drive}km/h", patcher.speed_limit_drive(sl_drive)))
+
+        if sl_ped is not None:
+            sl_ped = int(sl_ped)
+            assert sl_ped >= 0 and sl_ped <= 65, sl_ped
+            res.append((f"Speed-Limit Pedestrian: {sl_ped}km/h", patcher.speed_limit_ped(sl_ped)))
 
     amps_sport = flask.request.form.get('amps_sport', None)
     if amps_sport is not None:
@@ -309,7 +328,7 @@ def patch(data):
     blm = flask.request.form.get('blm', None)
     if blm is not None:
         # TEMPORARY WORKAROUND FOR 4PRO
-        if flask.request.form.get('device') == "4pro":
+        if device == "4pro":
             res.append(("Static Brakelight", patcher.brake_light_static()))
         else:
             res.append(("Static Brakelight", patcher.brake_light()))

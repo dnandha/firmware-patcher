@@ -18,12 +18,12 @@
 #
 
 from base_patcher import BasePatcher
-from util import FindPattern
+from util import FindPattern, SignatureException
 
 
 class NbPatcher(BasePatcher):
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, model):
+        super().__init__(data, model)
 
     def disable_motor_ntc(self):
         '''
@@ -92,7 +92,7 @@ class NbPatcher(BasePatcher):
         post = self.asm(f'b #{ofs_dst-ofs}')
         self.data[ofs:ofs+2] = post
 
-        return self.ret_val("region_free", ofs, pre, post)
+        return self.ret("region_free", ofs, pre, post)
 
     def kers_multi(self, l0=6, l1=12, l2=20):
         '''
@@ -129,6 +129,56 @@ class NbPatcher(BasePatcher):
         ret.append(["kers_multi", hex(ofs), pre.hex(), post.hex()])
 
         return ret
+    
+    def speed_params(self, max_sport=25, max_drive=20, max_eco=15, max_ped=5):
+        '''
+        OP: Turbojeet
+        Description: Set speed parameters, sport and ped limits work best with region free
+        '''
+        ret = []
+
+        sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
+        ofs = FindPattern(self.data, sig) + len(sig)
+        pre = self.data[ofs:ofs+2]
+        post = self.asm(f'movs r1, #{max_ped}')
+        self.data[ofs:ofs+len(post)] = post
+        assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+        ret.append([f"speed_params_ped", hex(ofs), pre.hex(), post.hex()])
+
+        offsets = [0x4, 0xc]
+        registers = ["r11", "r8"]
+        for i in range(2):
+            ofs += offsets[i]
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'mov.w {registers[i]}, #{max_drive}')
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_drive_{i}", hex(ofs), pre.hex(), post.hex()])
+
+
+        sig = [0x0f, 0x20, 0xb8, 0x70, 0x87, 0xf8, 0x03, 0xb0]
+        for i in range(10):
+            try:
+                ofs = FindPattern(self.data, sig, start=ofs+1)
+            except SignatureException:
+                break
+
+            pre = self.data[ofs:ofs+2]
+            post = self.asm(f'movs r0, #{max_eco}')
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_eco_{i}", hex(ofs), pre.hex(), post.hex()])
+            
+            ofs += len(sig)
+            pre = self.data[ofs:ofs+2]
+            post = bytearray(self.asm(f'movs r0, #{max_sport}'))
+            post[-1] = pre[-1]  # copy over register
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_sport_{i}", hex(ofs), pre.hex(), post.hex()])
+
+        return ret
+
 
 #    def region_free(self):
 #        res = []

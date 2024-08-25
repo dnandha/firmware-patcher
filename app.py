@@ -12,7 +12,7 @@ selected_device = st.selectbox("Select your device", device_options)
 
 # Initialize the patcher with dummy data
 data = bytearray(100)  # Example data, replace with actual data
-patcher = MiPatcher(data)
+patcher = MiPatcher(data, selected_device)
 
 # Fetch default values for the selected device
 device_defaults = patcher.get_defaults(selected_device)

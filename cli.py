@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser()
     parser.add_argument("type", choices=['mi', 'nb'])
+    parser.add_argument("model", choices=['1s', 'pro2', 'lite', '3', '4pro', 'f2pro', 'f2plus', 'f2', 'g2'])
     parser.add_argument("infile")
     parser.add_argument("outfile")
     parser.add_argument("patches")
@@ -50,7 +51,7 @@ if __name__ == "__main__":
     mult = 10./8.5  # new while size / old wheel size
 
     if args.type == 'mi':
-        vlt = MiPatcher(data)
+        vlt = MiPatcher(data, args.model)
 
         patches = {
             'dpc': lambda: vlt.dpc(),
@@ -84,7 +85,7 @@ if __name__ == "__main__":
             'kml': lambda: vlt.kers_multi(2, 5, 10),
         }
     elif args.type == 'nb':
-        vlt = NbPatcher(data)
+        vlt = NbPatcher(data, args.model)
 
         patches = {
             'dmn': lambda: vlt.disable_motor_ntc(),
@@ -92,6 +93,7 @@ if __name__ == "__main__":
             'skc': lambda: vlt.skip_key_check(),
             'rfm': lambda: vlt.region_free(),
             'kml': lambda: vlt.kers_multi(2, 5, 10),
+            'spp': lambda: vlt.speed_params(23, 22, 21, 20)
         }
 
     for k in patches:
