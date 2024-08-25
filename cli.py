@@ -90,7 +90,8 @@ if __name__ == "__main__":
             'dmn': lambda: vlt.disable_motor_ntc(),
             'asc': lambda: vlt.allow_sn_change(),
             'skc': lambda: vlt.skip_key_check(),
-            'rfm': lambda: vlt.region_free()
+            'rfm': lambda: vlt.region_free(),
+            'kml': lambda: vlt.kers_multi(2, 5, 10),
         }
 
     for k in patches:

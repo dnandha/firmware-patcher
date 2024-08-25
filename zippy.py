@@ -45,41 +45,7 @@ class Zippy():
         self.name = name
 
         self.params = params
-
-        if model is not None:
-            self.model = model
-        else:
-            self.decode_model()
-
-    def decode_model(self):
-        id_ = None
-        try:
-            id_ = self.data[0x100:0x10f].decode('ascii')
-        except UnicodeDecodeError:
-            try:
-                id_ = self.data[0x400:0x417].decode("ascii")
-            except UnicodeDecodeError:
-                try:
-                    id_ = self.data[0x400:0x40e].decode('ascii')
-                except UnicodeDecodeError:
-                    pass
-
-        self.model = None
-        if id_ is not None:
-            if id_ == "Scooter_MiP2_V0":
-                self.model = "pro2"
-            elif id_ == "Scooter_Mi1S_V0":
-                self.model = "1s"
-            elif id_ == "Scooter_Mi3_V0":
-                self.model = "mi3"
-            elif id_ == "Scooter_Mi4P_ST_F103_V8":
-                self.model = "4pro"
-            return True
-
-        return False
-
-    def check_valid(self):
-        return self.model is not None
+        self.model = model
 
     def try_extract(self, decrypt=True):
         """Extract the first file from a ZIP archive and return its content as bytes."""
@@ -132,11 +98,12 @@ class Zippy():
 
     @staticmethod
     def get_v3(name, model, md5, md5e, enforce):
-        compatible_list = ["mi_DRV_STM32F103CxT6"]
-        if model != "4pro":
-            compatible_list += ["mi_DRV_GD32F103CxT6", "mi_DRV_GD32E103CxT6"]
-
-        compatible_list += ["f2_DRV_AT32F415CxT7", "g2_DRV_AT32F415CxT7"]
+        if model in ["1s", "pro2", "lite", "3"]:
+            compatible_list = ["mi_DRV_STM32F103CxT6"]
+            if model != "4pro":
+                compatible_list += ["mi_DRV_GD32F103CxT6", "mi_DRV_GD32E103CxT6"]
+        elif model in ["f2", "f2plus", "f2pro", "g2"]:
+            compatible_list += ["f2_DRV_AT32F415CxT7", "g2_DRV_AT32F415CxT7"]
 
         data = {
             "schemaVersion": 1,
