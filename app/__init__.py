@@ -172,7 +172,7 @@ def patch(data):
     sl_sport = flask.request.form.get('sl_sport', None)
     sl_drive = flask.request.form.get('sl_drive', None)
     sl_ped = flask.request.form.get('sl_ped', None)
-    if device == "f2":
+    if device in ["f2", "f2plus", "f2pro", "g2"]:
         if sl_sport is not None and sl_drive is not None and sl_ped is not None:
             sl_sport = int(sl_sport)
             assert sl_sport >= 0 and sl_sport <= 65, sl_sport
