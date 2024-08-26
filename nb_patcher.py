@@ -179,6 +179,15 @@ class NbPatcher(BasePatcher):
 
         return ret
 
+    def dpc(self):
+        sig = [0xaa, 0xf8, 0xec, 0x60, 0x42, 0x46]
+        ofs = FindPattern(self.data, sig)
+
+        pre = self.data[ofs:ofs+4]
+        post = self.asm('strh.w r1, [r10, #0xec]')
+        self.data[ofs:ofs+4] = post
+
+        return self.ret("dpc", ofs, pre, post)
 
 #    def region_free(self):
 #        res = []

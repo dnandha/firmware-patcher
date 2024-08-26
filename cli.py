@@ -93,7 +93,8 @@ if __name__ == "__main__":
             'skc': lambda: vlt.skip_key_check(),
             'rfm': lambda: vlt.region_free(),
             'kml': lambda: vlt.kers_multi(2, 5, 10),
-            'spp': lambda: vlt.speed_params(23, 22, 21, 20)
+            'spp': lambda: vlt.speed_params(23, 22, 21, 20),
+            'dpc': lambda: vlt.dpc(),
         }
 
     for k in patches:
