@@ -396,8 +396,6 @@ def patch_firmware():
         filename = f"ngfw_{dev}_{get_datetime()}"
         mem = io.BytesIO()
         if pod == 'Zip':
-            if not zippy.check_valid():
-                return "Error: Invalid input file."
             data_patched = zippy.zip_it('nice'.encode())
             filename += ".zip"
         elif pod == 'Bin':

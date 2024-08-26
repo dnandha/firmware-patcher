@@ -98,6 +98,7 @@ class Zippy():
 
     @staticmethod
     def get_v3(name, model, md5, md5e, enforce):
+        compatible_list = []
         if model in ["1s", "pro2", "lite", "3"]:
             compatible_list = ["mi_DRV_STM32F103CxT6"]
             if model != "4pro":
