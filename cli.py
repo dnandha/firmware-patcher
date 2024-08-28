@@ -95,6 +95,7 @@ if __name__ == "__main__":
             'kml': lambda: vlt.kers_multi(2, 5, 10),
             'spp': lambda: vlt.speed_params(23, 22, 21, 20),
             'dpc': lambda: vlt.dpc(),
+            'rab': lambda: vlt.remove_autobrake(),
         }
 
     for k in patches:

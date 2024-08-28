@@ -193,6 +193,19 @@ class NbPatcher(BasePatcher):
 
         return res
 
+    def remove_autobrake(self):
+        sig = [ 0x1a, 0x68, 0x90, 0x42, 0x30, 0xda ]
+        ofs = FindPattern(self.data, sig) + 4
+        
+        sig = [ 0x9a, 0xf8, 0x13, 0x00, 0x10, 0xb1, 0x01, 0x28, 0x34, 0xd1, 0x0f, 0xe0 ]
+        ofs_dst  = FindPattern(self.data, sig, start=ofs)
+
+        pre = self.data[ofs:ofs+2]
+        post = self.asm(f'b #{ofs_dst-ofs}')
+        self.data[ofs:ofs+2] = post
+
+        return self.ret("remove_autobrake", ofs, pre, post)
+
 #    def region_free(self):
 #        res = []
 #
