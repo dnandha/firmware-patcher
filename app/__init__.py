@@ -159,11 +159,13 @@ def disclaimer():
 def patch(data):
     res = []
 
+    is_nb = False
     device = flask.request.form.get('device')
     if device in ["1s", "pro2", "lite", "3", "4pro"]:
         patcher = MiPatcher(data, device)
     elif device in ["f2pro", "f2plus", "f2", "g2"]:
         patcher = NbPatcher(data, device)
+        is_nb = True
 
     dpc = flask.request.form.get('dpc', None)
     if dpc is not None:
@@ -172,7 +174,7 @@ def patch(data):
     sl_sport = flask.request.form.get('sl_sport', None)
     sl_drive = flask.request.form.get('sl_drive', None)
     sl_ped = flask.request.form.get('sl_ped', None)
-    if device in ["f2", "f2plus", "f2pro", "g2"]:
+    if is_nb:
         if sl_sport is not None and sl_drive is not None and sl_ped is not None:
             sl_sport = int(sl_sport)
             assert sl_sport >= 0 and sl_sport <= 65, sl_sport
@@ -184,7 +186,6 @@ def patch(data):
                         patcher.speed_params(
                             sl_sport, sl_drive, sl_ped
                         )))
-
     else:
         if sl_sport is not None:
             sl_sport = int(sl_sport)
@@ -279,7 +280,7 @@ def patch(data):
     else:
         remove_kers = flask.request.form.get('remove_kers', None)
         if remove_kers is not None:
-            if flask.request.form.get('device') in ["4pro", "f2pro", "f2plus", "f2"]:
+            if device == "4pro" or is_nb:
                 res.append(("Remove KERS", patcher.kers_multi(0, 0, 0)))
             else:
                 res.append(("Remove KERS", patcher.remove_kers()))
@@ -297,7 +298,7 @@ def patch(data):
         wheelsize = float(wheelsize)
         assert wheelsize >= 0 and wheelsize <= 100
         old_wheel = 8.5
-        if flask.request.form.get('device') == "4pro":
+        if device == "4pro":
             old_wheel = 10.0
         mult = wheelsize/old_wheel
         res.append((f"Wheel Size: {wheelsize}\"", patcher.wheel_speed_const(mult)))
@@ -326,10 +327,14 @@ def patch(data):
 
     rml = flask.request.form.get('rml', None)
     if rml is not None:
-        if device in ["f2pro", "f2plus", "f2"]:
+        if is_nb:
             res.append(("Remove Model Lock", patcher.skip_key_check()))
         else:
             res.append(("Remove Model Lock", patcher.remove_modellock()))
+
+    dmn = flask.request.form.get('dmn', None)
+    if dmn is not None:
+        res.append(("Disable motor NTC", patcher.disable_motor_ntc()))
 
     blm = flask.request.form.get('blm', None)
     if blm is not None:

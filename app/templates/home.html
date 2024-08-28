@@ -71,6 +71,7 @@
                 <option value="f2pro">F2Pro</option>
                 <option value="f2plus">F2Plus</option>
                 <option value="f2">F2</option>
+                <option value="g2">G2</option>
             </select>
         </div>
     </div>
@@ -81,10 +82,19 @@
 		<div class="card">
             <div class="card-header">
                 <input class="form-check-input" type="checkbox" name="rml">
-                <label class="form-check-label"><b>Remove Model Check</b></label>
+                <label class="form-check-label"><b>Remove Model Check / Compat Patch</b></label>
             </div>
             <div class="card-body">
-                Some DRVs restrict flashing of DRVs to the ones belonging to the model. This mod removes checks and allows flashing all DRVs, for example: DRV016 to DRV247/SHFW.
+                Some DRVs restrict flashing of DRVs to the ones belonging to the model. This mod removes checks and allows flashing all DRVs (for example: DRV016 to DRV247/SHFW).
+            </div>
+        </div>
+		<div class="card">
+            <div class="card-header">
+                <input class="form-check-input" type="checkbox" name="dmn">
+                <label class="form-check-label"><b>Disable Motor NTC (AT32)</b></label>
+            </div>
+            <div class="card-body">
+                Disables error 41 when the motor temperature sensor is returning zero / low values. This allows running the firmware on models without a motor NTC.
             </div>
         </div>
     </div>
@@ -95,7 +105,7 @@
         <div class="card">
             <div class="card-header">
                 <input class="form-check-input" name="dpc" type="checkbox">
-                <label class="form-check-label"><b>DPC</b></label>
+                <label class="form-check-label"><b>Direct Power Control (DPC)</b></label>
             </div>
             <div class="card-body">
                 Activate/Deactivate DPC via register. Direct Power Control (DPC) ignores speed limits.
@@ -583,7 +593,8 @@
             <p class="text">
             Thanks to the modders at ScooterHacking.org. Many patches are an adaptation of the mods available at https://pro2.cfw.sh/.<br/>
             Thanks to the German and Spanish communities for additional testing.<br/>
-            Thanks to Encryptize for contributing 4 Pro support!<br/>
+            Thanks to Encryptize for contributing 4 Pro support.<br/>
+            Thanks to WallyCZ and Encryptize for the awesome colab!<br/>
             Based on BotoX <a href="https://github.com/BotoX/xiaomi-m365-firmware-patcher" target="_blank">firmware patcher</a>.
             </p>
 	    </div>
@@ -622,6 +633,7 @@
         "AMMETER": "ammeter",
         "RFM": "rfm",
         "RML": "rml",
+        "DMN": "dmn",
         "BLM": "blm",
         "BLM_ALM": "blm_alm",
 
@@ -775,6 +787,8 @@
             Preset_F2();
         } else if (dev === "f2") {
             Preset_F2();
+        } else if (dev === "g2") {
+            Preset_G2();
         }
     }
 
@@ -784,6 +798,7 @@
         ChangeForm(forms.AMPS_SPORT_MAX, "35000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
         ChangeForm(forms.AMPS_BRAKE_MAX, "52000", false);
+        GetForm(forms.DMN).disabled = true;
     }
 
     function Preset_Pro2() {
@@ -792,6 +807,7 @@
         ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "32000", false);
         ChangeForm(forms.AMPS_BRAKE_MAX, "52000", false);
+        GetForm(forms.DMN).disabled = true;
     }
 
     function Preset_Lite() {
@@ -804,6 +820,7 @@
         ChangeForm(forms.AMPS_BRAKE_MAX, "22000", false);
 
         GetForm(forms.RFM).disabled = true;
+        GetForm(forms.DMN).disabled = true;
     }
 
     function Preset_Mi3() {
@@ -812,6 +829,7 @@
         ChangeForm(forms.AMPS_SPORT_MAX, "55000", false);
         ChangeForm(forms.AMPS_DRIVE_MAX, "28000", false);
         ChangeForm(forms.AMPS_BRAKE_MAX, "47000", false);
+        GetForm(forms.DMN).disabled = true;
     }
 
     function Preset_4Pro() {
@@ -822,6 +840,7 @@
         ChangeForm(forms.AMPS_BRAKE_MAX, "57000", false);
         ChangeForm(forms.WHEELSIZE, "10.0", false);
 
+        GetForm(forms.DMN).disabled = true;
         GetForm(forms.RML).disabled = true;
         GetForm(forms.BTS).disabled = true;
         GetForm(forms.BLM_ALM).disabled = true;
@@ -851,7 +870,37 @@
         GetForm(forms.PNB).disabled = true;
     }
 
+    function Preset_G2() {
+        ChangeForm(forms.SL_SPORT, "25", false);
+        ChangeForm(forms.SL_DRIVE, "20", false);
+        ChangeForm(forms.SL_PED, "15", false);
+        ChangeForm(forms.WHEELSIZE, "10.0", false);
+
+        GetForm(forms.DPC).disabled = true;
+        GetForm(forms.REMOVE_AUTOBRAKE).disabled = true;
+        GetForm(forms.REMOVE_KERS).disabled = true;
+        GetForm(forms.BTS).disabled = true;
+        GetForm(forms.BLM).disabled = true;
+        GetForm(forms.MOTOR_START_SPEED+"_cb").disabled = true;
+        GetForm(forms.REMOVE_CHARGING_MODE).disabled = true;
+        GetForm(forms.CRC+"_cb").disabled = true;
+        GetForm(forms.CC_DELAY+"_cb").disabled = true;
+        GetForm(forms.KML).disabled = true;
+        GetForm(forms.WHEELSIZE+"_cb").disabled = true;
+        GetForm(forms.SHUTDOWN_TIME+"_cb").disabled = true;
+        GetForm(forms.AMPS).disabled = true;
+        GetForm(forms.AMPS_MAX).disabled = true;
+        GetForm(forms.AMPS_BRAKE_MIN+"_cb").disabled = true;
+        GetForm(forms.AMPS_BRAKE_MAX+"_cb").disabled = true;
+        GetForm(forms.AMMETER).disabled = true;
+        GetForm(forms.VOLT+"_cb").disabled = true;
+        GetForm(forms.BAUD).disabled = true;
+        GetForm(forms.ECO_MODE).disabled = true;
+        GetForm(forms.PNB).disabled = true;
+    }
+
     function Enable_All() {
+        GetForm(forms.DMN).disabled = false;
         GetForm(forms.RML).disabled = false;
         GetForm(forms.BTS).disabled = false;
         GetForm(forms.BLM).disabled = false;
