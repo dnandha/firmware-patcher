@@ -103,8 +103,11 @@ class Zippy():
             compatible_list = ["mi_DRV_STM32F103CxT6"]
             if model != "4pro":
                 compatible_list += ["mi_DRV_GD32F103CxT6", "mi_DRV_GD32E103CxT6"]
-        elif model in ["f2", "f2plus", "f2pro", "g2"]:
-            compatible_list += ["f2_DRV_AT32F415CxT7", "g2_DRV_AT32F415CxT7"]
+        elif model in ["f2", "f2plus", "f2pro"]:
+            model = "f2"
+            compatible_list += ["f2_DRV_AT32F415CxT7"]
+        elif model in ["g2"]:
+            compatible_list += ["g2_DRV_AT32F415CxT7"]
 
         data = {
             "schemaVersion": 1,
