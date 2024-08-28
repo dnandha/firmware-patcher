@@ -205,6 +205,26 @@ class NbPatcher(BasePatcher):
         self.data[ofs:ofs+2] = post
 
         return self.ret("remove_autobrake", ofs, pre, post)
+    
+    def cc_delay(self, seconds=5):
+        res = []
+
+        sig = self.asm('mov.w r1, #1000')
+        ofs = FindPattern(self.data, sig, start=0x2000)
+        pre = self.data[ofs:ofs+4]
+        post = self.asm(f'mov.w r1, #{seconds*200}')
+        self.data[ofs:ofs+4] = post
+        res += self.ret("cc_delay", ofs, pre, post)
+
+        # cc mode = 1, temp fix
+        sig = self.asm('strh.w r5,[r0,#0x42]')
+        ofs = FindPattern(self.data, sig, start=ofs)
+        pre = self.data[ofs:ofs+4]
+        post = self.asm('strh.w r6,[r0,#0x112]')
+        self.data[ofs:ofs+4] = post
+        res += self.ret("tmp_cc_mode_1", ofs, pre, post)
+
+        return res
 
 #    def region_free(self):
 #        res = []
