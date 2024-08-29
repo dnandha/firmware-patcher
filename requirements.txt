@@ -1,3 +1,4 @@
 keystone-engine
 flask
 capstone
+git+https://github.com/scooterhacking/NinebotTEA.git
