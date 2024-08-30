@@ -17,9 +17,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 ######
-# Zip.py is a wrapper for XiaoTea
-# (https://github.com/BotoX/xiaomi-m365-firmware-patcher/tree/master/xiaotea)
-#####
 
 import zipfile
 import hashlib
@@ -29,6 +26,7 @@ import json
 from urllib import request
 import os
 from io import BytesIO
+import fasttea
 
 
 ROOTPATH = os.path.dirname(os.path.dirname(
@@ -61,7 +59,7 @@ class Zippy():
                     pass
         return id_
 
-    def try_extract(self, decrypt=True, in_memory=True):
+    def try_extract(self, decrypt=True):
         """Extract the first file from a ZIP archive and return its content as bytes."""
 
         file_ = BytesIO(self.data)
@@ -79,36 +77,16 @@ class Zippy():
                 self.data = first_file.read()
                 if not self.decode_model() and decrypt:
                     try:
-                        self.data = self.decrypt(in_memory=in_memory)
+                        self.data = self.decrypt()
                         self.decode_model()
                     except:
                         raise Exception("Decode error")
 
-    def encrypt(self, in_memory=False):
-        if in_memory:
-            url = 'https://github.com/BotoX/xiaomi-m365-firmware-patcher/raw/master/xiaotea/xiaotea.py'
-            response = request.urlopen(url)
-            data = response.read()
-            txt = data.decode('utf-8')
-            xt = types.ModuleType('XT')
-            exec(txt, xt.__dict__)
-            return xt.XiaoTea().encrypt(self.data)
-        else:
-            from xiaotea import XiaoTea
-            return XiaoTea().encrypt(self.data)
+    def encrypt(self):
+        return fasttea.encrypt(bytes(self.data))
 
-    def decrypt(self, in_memory=False):
-        if in_memory:
-            url = 'https://github.com/BotoX/xiaomi-m365-firmware-patcher/raw/master/xiaotea/xiaotea.py'
-            response = request.urlopen(url)
-            data = response.read()
-            txt = data.decode('utf-8')
-            xt = types.ModuleType('XT')
-            exec(txt, xt.__dict__)
-            return xt.XiaoTea().decrypt(self.data)
-        else:
-            from xiaotea import XiaoTea
-            return XiaoTea().decrypt(self.data)
+    def decrypt(self):
+        return fasttea.decrypt(bytes(self.data))
 
     @staticmethod
     def get_v3(name, model, md5, md5e, enforce):
@@ -140,7 +118,7 @@ class Zippy():
         }
         return json.dumps(data)
 
-    def zip_it(self, comment, offline=False, enforce=True):
+    def zip_it(self, comment, enforce=True):
         md5 = hashlib.md5()
         md5.update(self.data)
 
@@ -149,7 +127,7 @@ class Zippy():
 
         zip_file.writestr('FIRM.bin', self.data)
 
-        enc_data = self.encrypt(in_memory=not offline)
+        enc_data = self.encrypt()
         zip_file.writestr('FIRM.bin.enc', enc_data)
         md5e = hashlib.md5()
         md5e.update(enc_data)

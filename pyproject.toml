@@ -10,6 +10,7 @@ python = "^3.10"
 keystone-engine = "^0.9.2"
 capstone = "^5.0.1"
 flask = "^3.0.3"
+fasttea = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 

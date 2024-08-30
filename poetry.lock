@@ -54,6 +54,96 @@ files = [
 ]
 
 [[package]]
+name = "fasttea"
+version = "1.0.1"
+description = "Fast XiaoTea encryption and decryption"
+optional = false
+python-versions = "*"
+files = [
+    {file = "fasttea-1.0.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:001560f00b6dc5e6bdaee2a52bb852b42bfa7107e9083fc163623ba6f622f210"},
+    {file = "fasttea-1.0.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:a00a4ce789bc3181a4464d2e3fdcf7c04885fe0aed0c8cf17555a695738d862e"},
+    {file = "fasttea-1.0.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b8492b967735f4e58c50578ee4183e9b2b9ea72a338fe2d1d3574065e5ddb86f"},
+    {file = "fasttea-1.0.1-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:ad2cea22721286d9108cfdb7d3083363f3cc90555fdbb6930972bea977daad5d"},
+    {file = "fasttea-1.0.1-cp310-cp310-musllinux_1_2_i686.whl", hash = "sha256:33cf2fdad105b7dc288e53ef1043d13e869657fba46aa1a121c8bed42cbbdfe7"},
+    {file = "fasttea-1.0.1-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:7502b401b5c98dd85e7681c71c99bcbb4b21fd0c096ff966222125f72c9d2392"},
+    {file = "fasttea-1.0.1-cp310-cp310-win32.whl", hash = "sha256:91fc21984cfcd10fd46340534f3c53cae093688f1d50e497e6bbc7de4e940543"},
+    {file = "fasttea-1.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:7a33645d7f71cf42a10aee05215c0eee7bec6f96fc4f18c34e6042b287da1dd1"},
+    {file = "fasttea-1.0.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:962574358413f64440a531650d444dfaba535f4f333da0ac1acea4eb5ab5d383"},
+    {file = "fasttea-1.0.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:cce6ad83a35fd05b7a865c35c803974b8a1fdf7f159ac392562ce9718596cdb1"},
+    {file = "fasttea-1.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:54e33a21821e2ef2968c4907af87fecbd314f292eacf573f21e1f7305ba9428b"},
+    {file = "fasttea-1.0.1-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:0b45ef9356aeadef64ce3b0a43035b2a8ee1ed1e6a730cc0ed3d9ec9c6e04872"},
+    {file = "fasttea-1.0.1-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:e9702e21410218439d670c087e0bef0ceaa9fbd98fd658bd427481bd0e90c814"},
+    {file = "fasttea-1.0.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:3277fd60c94feca67fb907e01f9b4dfacba2c899b7e5b2792393742a58f7e4df"},
+    {file = "fasttea-1.0.1-cp311-cp311-win32.whl", hash = "sha256:21335079471515055cddf3b574c9c03f6e246289424c14bebafaf3e786b0cae5"},
+    {file = "fasttea-1.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:8a6616ae754547f2728dcd5c0006e4bf3254bf2a30f1a24acd6adb64eb63ba66"},
+    {file = "fasttea-1.0.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:0ec50559f1a9a9a568cbc585e4e73fe4399162ba846a7f4c54a6a49cfcba8f1a"},
+    {file = "fasttea-1.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:adfc52eb0f0bb88a806677c8d17c1c200befcbd3dacfcc5e74f4c5b2b1b524dd"},
+    {file = "fasttea-1.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:899c767dcd62288d63d76db6074a0a00a28d77af7592a3427d5c2c93333378a1"},
+    {file = "fasttea-1.0.1-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5fbed96bf5c39dd02742c5f08bf7a4fda03a36a358f493f35da1a23661593ef8"},
+    {file = "fasttea-1.0.1-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:c3ee25b824dfaa7f761155a4bebdcb6fd3ac7fe491b3d8f8c2a19335032535b2"},
+    {file = "fasttea-1.0.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:f0f6f455c70da7c20ec78b0262a436966e453a4f7056f6c8237212f09a19d77e"},
+    {file = "fasttea-1.0.1-cp312-cp312-win32.whl", hash = "sha256:89788ec75ecda19965eb6fb8fd816edd16c1b6cfe18da2d48f1bae33c333a1b0"},
+    {file = "fasttea-1.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:70b09b004ad0a4438ed995fc5924d561cb25625bc02ea4f77d855d1b9ef328d8"},
+    {file = "fasttea-1.0.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:1698a6c77b7ca3d017851d1c37b0abce879b4e8648beaa07d53df9f366eb96f3"},
+    {file = "fasttea-1.0.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:42c4cda514eb4c6686ba2832976b9aec137045319429bbb3b25c3a0f50c54557"},
+    {file = "fasttea-1.0.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2824604266bfeab6c7f85b4b9afe5a0618bba751080c3d9f841b52c65a055550"},
+    {file = "fasttea-1.0.1-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fb636ad726d30899492db012dd311e34f5c8f8fb5636f021f37bca651bfa812c"},
+    {file = "fasttea-1.0.1-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:5c641d06dd26ab6f5cc42a920c1ef037b580d5056fa15bc72ab5ee3d03a73ba9"},
+    {file = "fasttea-1.0.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:2087eeaca91d9c74a1b1f18e13c656e54028994bcb14c5f21dc2ae4dd9bf5eb0"},
+    {file = "fasttea-1.0.1-cp313-cp313-win32.whl", hash = "sha256:cff532a87b0a12ac59c1918081202d3550b305712950668b98249629d31e8084"},
+    {file = "fasttea-1.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:19b41b4dca9d375dff864a55aad544104896e9d13ef49154601b410dd060480f"},
+    {file = "fasttea-1.0.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:210214eab9c5b279bc55d98ce0bfcef26794a823bde30c05602cff3078d6aa46"},
+    {file = "fasttea-1.0.1-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:810fce1a42441a386e3d2d1b13ee0c659f88f08eb7dc52865a33223952c48a49"},
+    {file = "fasttea-1.0.1-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6b5cb8d9eeb84529ef0991bdbdca28f474c452a2cab7c89682226ba4efcef743"},
+    {file = "fasttea-1.0.1-cp36-cp36m-musllinux_1_2_i686.whl", hash = "sha256:1f31b4adb190c8bb8ad9adef08437a4929ec0be842dd4dcbf20861082030f57d"},
+    {file = "fasttea-1.0.1-cp36-cp36m-musllinux_1_2_x86_64.whl", hash = "sha256:8d02e0535b65efb24c082e2fd7be4d9c00a3e2e1f5890ca18f0831ee81bb9e8d"},
+    {file = "fasttea-1.0.1-cp36-cp36m-win32.whl", hash = "sha256:bb626ee3807dc81b60cacb63b3b5fd06bb8e896ef300958e97a2037ba70a3265"},
+    {file = "fasttea-1.0.1-cp36-cp36m-win_amd64.whl", hash = "sha256:bba802f4c865884752717177a97934db43a3a0af683a9e3a50c1ad86262da24c"},
+    {file = "fasttea-1.0.1-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:f7a11634a9d51b9c98cb6ff703e71f41de4afe4992b23c44accf9547e7b10ba7"},
+    {file = "fasttea-1.0.1-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bf0712aed4e59f422ea674ae428794fb4659f9c65eabacd95667de0be5821f26"},
+    {file = "fasttea-1.0.1-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:b94ac7bbb84395a27bd04e56a0e58259287c5920ad5bfb807c72ef7ec20c7716"},
+    {file = "fasttea-1.0.1-cp37-cp37m-musllinux_1_2_i686.whl", hash = "sha256:e70b40d4ad68a5b85da5363280ea5e258e62854b85c406c27053d94c1373453d"},
+    {file = "fasttea-1.0.1-cp37-cp37m-musllinux_1_2_x86_64.whl", hash = "sha256:c4bcbc5c03dbda49140fae36578cdfed853901454da4d30ec4ddeec2fce4dfed"},
+    {file = "fasttea-1.0.1-cp37-cp37m-win32.whl", hash = "sha256:3759def17eb31aca6e82949b7c81d91f0c7980e650930f4344816e7952eb3b6b"},
+    {file = "fasttea-1.0.1-cp37-cp37m-win_amd64.whl", hash = "sha256:32b5af0d93833e38e9eb0598e7fbf35785ff8f0394fe3fabd60e51aff776e349"},
+    {file = "fasttea-1.0.1-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:3b7a50a09401b21ed40ef6aaeec0052aa5bad87c3473928dc4d67dd4edc27a65"},
+    {file = "fasttea-1.0.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:5bdc011eee8d2aa49c7fe4604bebc24c81517a6fe367660a3a38c11780335c72"},
+    {file = "fasttea-1.0.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5c144344dad26d1edbe7032d2f4aa51bb919f84d269390195688a0816347f64c"},
+    {file = "fasttea-1.0.1-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2aae2048e9552ee67f36c5f80edad5195d68ba88fdd638658334639e4e667419"},
+    {file = "fasttea-1.0.1-cp38-cp38-musllinux_1_2_i686.whl", hash = "sha256:067fcbcba41089ed6a5894fdb40c71263aba83e408a635fa446b9d7056ee3875"},
+    {file = "fasttea-1.0.1-cp38-cp38-musllinux_1_2_x86_64.whl", hash = "sha256:ef8a9623ba11b917e9e05eecd5ad4332f39021e282b419338fee9f96c7b72b34"},
+    {file = "fasttea-1.0.1-cp38-cp38-win32.whl", hash = "sha256:9dacd8ccaa848cd5159a0bc2a563ff6d98feb8ae7d8db0bcec61ea7e094c3e4e"},
+    {file = "fasttea-1.0.1-cp38-cp38-win_amd64.whl", hash = "sha256:c22c9e105e467d2902759e211fb2e4637dc35eec2b0e47ac6417fbd3b86cb04f"},
+    {file = "fasttea-1.0.1-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:3b9e0892e55b683b56249a71c0329e972522a96c7b2d4c0e24a54604cafd6a16"},
+    {file = "fasttea-1.0.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:1e37cf2bc821ee61ac517f9bbc903988f46de1dcecf11c8551751cd345751f57"},
+    {file = "fasttea-1.0.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a476cea1abae2207107e75bf8a4214d6652839faf832077d0a079b9b9eb794b6"},
+    {file = "fasttea-1.0.1-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2b7c8b14e457734b5ddc96df19fa4242d25f4d59a425cd67d0ac3f923e946a98"},
+    {file = "fasttea-1.0.1-cp39-cp39-musllinux_1_2_i686.whl", hash = "sha256:edfcf6ddbcd1f69d87c531906283d10370a62fd8e2a31072487f42ac696489f5"},
+    {file = "fasttea-1.0.1-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:c0dc5afa0d6fa552d41bf0fa924e7e00e39d2acb8938d17b53d9663278b2857d"},
+    {file = "fasttea-1.0.1-cp39-cp39-win32.whl", hash = "sha256:26bae900b52c1266cec7cb2b7ca4e742702d6fac1df9561b6e3ab58af9585a56"},
+    {file = "fasttea-1.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:a9a6131153d783816182eee0e4e77c0b69c675a11ee9bd206da373e1f197f360"},
+    {file = "fasttea-1.0.1-pp310-pypy310_pp73-macosx_10_15_x86_64.whl", hash = "sha256:4f23a69083c221b67fb37ed3ce86c2628679b9d3b9cb07b40127a13ef7cfa44c"},
+    {file = "fasttea-1.0.1-pp310-pypy310_pp73-macosx_11_0_arm64.whl", hash = "sha256:f2dfb3fb48565ac609fdf9f7f89230554a07b941d5fcaac1de983607c906bb8a"},
+    {file = "fasttea-1.0.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cbc8805fd78c1b05591959e66e89befa28acbf391f3ce1e506d07591f7300534"},
+    {file = "fasttea-1.0.1-pp310-pypy310_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8efece98075da6146e40f9724554d0c19e11cfeaf3a9fd08e76be0965a442322"},
+    {file = "fasttea-1.0.1-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:12505afee1d60958eabc937eba89f681e9b7f032b00286a03ff4a21c838b2aca"},
+    {file = "fasttea-1.0.1-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:d14070db42cd60c4dda932567f778ebb777b08ac31e5ef785e60ff76fd0530ea"},
+    {file = "fasttea-1.0.1-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ac40f6bc7150b2b0be2eda3e9a32e29cf609117307db59ff230a907bcedee720"},
+    {file = "fasttea-1.0.1-pp37-pypy37_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5025fff129bf84a63fa8fa6760790763b8890002a9d5e0776d2ad47c944d9294"},
+    {file = "fasttea-1.0.1-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:1979c1e104c6a6736096446b87916709e748a0a1de85b7922eb046c5f3a70f58"},
+    {file = "fasttea-1.0.1-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:35a41bb51be2631f902f091070193a3e171bc4fc542c66efee9079ba4b5a1931"},
+    {file = "fasttea-1.0.1-pp38-pypy38_pp73-macosx_11_0_arm64.whl", hash = "sha256:43f1ac4b69f452d66c14c10f4384ecfb4f96e03a20af6e3974c35bf87aa29455"},
+    {file = "fasttea-1.0.1-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fbf7b5a39aec97a4dfca25f304667663afb097d7e4da234b050194b2eeeb8bc6"},
+    {file = "fasttea-1.0.1-pp38-pypy38_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e21a8d6372e70b37d9d8810d869bcda797cd6253f16f22a731960d989fe5f40e"},
+    {file = "fasttea-1.0.1-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:ac96cac7603765089317020f74c31faa7178291da23560537bedc75aa66bba61"},
+    {file = "fasttea-1.0.1-pp39-pypy39_pp73-macosx_10_15_x86_64.whl", hash = "sha256:157bb6e997c68ef6df7cc42b45fc127490aa7d282b4401e5618d411c52de25f3"},
+    {file = "fasttea-1.0.1-pp39-pypy39_pp73-macosx_11_0_arm64.whl", hash = "sha256:85675f3860f65bc62ef3944155f04f84c9d085236f53b9a0aba576a504a6f0e6"},
+    {file = "fasttea-1.0.1-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1edf0b132359fce0b4da0be8803a262e9a7031c8347a39fcbf0a32e12757335e"},
+    {file = "fasttea-1.0.1-pp39-pypy39_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:46dc8b6d56daeb10c0fee1ae0a45f9dbd3b024d301da4112348b96e39611c038"},
+    {file = "fasttea-1.0.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:3a1cbda6cbbc650755eac45d0b4c6e125734f0cc9800c1c06cf467044f6ed843"},
+]
+
+[[package]]
 name = "flask"
 version = "3.0.3"
 description = "A simple framework for building complex web applications."
@@ -207,4 +297,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "dd1533c07af9272c2085cab2a7c55d9f3afe10891296fb93e37fa5f228dd1777"
+content-hash = "1a0a2812555b67d6a6d9f5efe570823169ab0ff3baeb014df33d9a7448f74f87"
