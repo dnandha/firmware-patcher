@@ -47,6 +47,20 @@ class Zippy():
         self.params = params
         self.model = model
 
+    def decode_model(self):
+        id_ = None
+        try:
+            id_ = self.data[0x100:0x10f].decode('ascii')
+        except UnicodeDecodeError:
+            try:
+                id_ = self.data[0x400:0x417].decode("ascii")
+            except UnicodeDecodeError:
+                try:
+                    id_ = self.data[0x400:0x40e].decode('ascii')
+                except UnicodeDecodeError:
+                    pass
+        return id_
+
     def try_extract(self, decrypt=True, in_memory=True):
         """Extract the first file from a ZIP archive and return its content as bytes."""
 
