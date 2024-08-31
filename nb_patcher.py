@@ -170,6 +170,27 @@ class NbPatcher(BasePatcher):
             self.data[ofs:ofs+len(post)] = post
             assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
             ret.append([f"speed_params_sport", hex(ofs), pre.hex(), post.hex()])
+
+            # G2 has fancy additional checks
+            sig = [ 0xdf, 0xf8, 0x14, 0xa1, 0x45, 0x4b, 0x4f, 0xf0, 0x32, 0x09 ]
+            ofs = FindPattern(self.data, sig)
+            sig = [ 0x58, 0x49, 0x08, 0x68, 0x43, 0xf6, 0x58, 0x62 ]
+            ofs_dst = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+6]
+            post = self.asm(f'''ldrb       r0,[r3,#0xc]
+                                strh       r0,[r4,#0x26]
+                                b          #{ofs_dst-ofs}''')
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_fix1", hex(ofs), pre.hex(), post.hex()])
+
+            sig = [ 0x08, 0xd0, 0xa2, 0xf8, 0xc8, 0x00 ]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+2]
+            post = self.asm('nop')
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_fix2", hex(ofs), pre.hex(), post.hex()])
         else:
             sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
             ofs = FindPattern(self.data, sig) + len(sig)
