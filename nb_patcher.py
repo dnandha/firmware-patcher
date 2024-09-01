@@ -249,15 +249,23 @@ class NbPatcher(BasePatcher):
         return res
 
     def remove_autobrake(self):
-        sig = [ 0x1a, 0x68, 0x90, 0x42, 0x30, 0xda ]
-        ofs = FindPattern(self.data, sig) + 4
-        
-        sig = [ 0x9a, 0xf8, 0x13, 0x00, 0x10, 0xb1, 0x01, 0x28, 0x34, 0xd1, 0x0f, 0xe0 ]
-        ofs_dst  = FindPattern(self.data, sig, start=ofs)
+        if self.model == "g2":
+            sig = [ 0x58, 0x49, 0x08, 0x68, 0x43, 0xf6, 0x58, 0x62, 0x90, 0x42, 0x1a, 0xdd ]
+            ofs = FindPattern(self.data, sig) + len(sig) - 2
+            pre = self.data[ofs:ofs+2]
+            post = pre.copy()
+            post[1] = 0xe0
+            self.data[ofs:ofs+2] = post
+        else:
+            sig = [ 0x1a, 0x68, 0x90, 0x42, 0x30, 0xda ]
+            ofs = FindPattern(self.data, sig) + 4
+            
+            sig = [ 0x9a, 0xf8, 0x13, 0x00, 0x10, 0xb1, 0x01, 0x28, 0x34, 0xd1, 0x0f, 0xe0 ]
+            ofs_dst  = FindPattern(self.data, sig, start=ofs)
 
-        pre = self.data[ofs:ofs+2]
-        post = self.asm(f'b #{ofs_dst-ofs}')
-        self.data[ofs:ofs+2] = post
+            pre = self.data[ofs:ofs+2]
+            post = self.asm(f'b #{ofs_dst-ofs}')
+            self.data[ofs:ofs+2] = post
 
         return self.ret("remove_autobrake", ofs, pre, post)
     
