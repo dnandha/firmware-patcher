@@ -108,7 +108,8 @@
                 <label class="form-check-label"><b>Direct Power Control (DPC)</b></label>
             </div>
             <div class="card-body">
-                Activate/Deactivate DPC via register. Direct Power Control (DPC) ignores speed limits.
+                Activate/Deactivate DPC via register. Direct Power Control (DPC) ignores speed limits.<br/>
+                Note on 4Pro & F2/G2: This option permanently enables DPC.
             </div>
         </div>
         <div class="card">
@@ -875,7 +876,6 @@
         ChangeForm(forms.SL_PED, "15", false);
         ChangeForm(forms.WHEELSIZE, "10.0", false);
 
-        GetForm(forms.DPC).disabled = true;
         GetForm(forms.REMOVE_KERS).disabled = true;
         GetForm(forms.BTS).disabled = true;
         GetForm(forms.BLM).disabled = true;
