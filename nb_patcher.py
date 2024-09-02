@@ -28,14 +28,14 @@ class NbPatcher(BasePatcher):
     def disable_motor_ntc(self):
         '''
         OP: Turbojeet
-        Description: Disables error 41, which is thrown when motor NTC is missing
+        Description: Disables error 40/41, which is thrown when motor NTC is missing
         '''
-        sig = self.asm('movs r0, #0x29')
-        ofs = FindPattern(self.data, sig) + len(sig)
-        pre = self.data[ofs:ofs+4]
-        post = self.asm('nop.w')
-        self.data[ofs:ofs+4] = post
+        sig = [ 0xf6, 0xf7, None, 0xf9, 0xf6, 0xf7, None, 0xfa ]
 
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+8]
+        post = self.asm('nop.w\nnop.w')
+        self.data[ofs:ofs+8] = post
         return self.ret("disable_motor_ntc", ofs, pre, post)
     
     def skip_key_check(self):
@@ -237,14 +237,29 @@ class NbPatcher(BasePatcher):
     def dpc(self):
         res = []
 
+        if self.model == "g2":
+            sig = [ 0x90, 0xfb, 0xf2, 0xf0, 0x09, 0x68 ]
+            ofs = FindPattern(self.data, sig) - 2
+            pre = self.data[ofs:ofs+2]
+            post = self.asm('b #0x6')
+            self.data[ofs:ofs+2] = post
+            return self.ret("dpc", ofs, pre, post)
+
         sig = [0xaa, 0xf8, 0xec, 0x60, 0x42, 0x46]
         ofs = FindPattern(self.data, sig)
 
         pre = self.data[ofs:ofs+4]
         post = self.asm('nop.w')
         self.data[ofs:ofs+4] = post
-
         res += self.ret("dpc_nop", ofs, pre, post)
+
+        # temp fix, set to 1 instead of 0
+        sig = self.asm('strh.w r5,[r0,#0x40]')
+        ofs = FindPattern(self.data, sig, start=ofs)
+        pre = self.data[ofs:ofs+4]
+        post = self.asm('strh.w r6,[r0,#0x1e]')
+        self.data[ofs:ofs+4] = post
+        res += self.ret("tmp_dpc_1", ofs, pre, post)
 
         return res
 
