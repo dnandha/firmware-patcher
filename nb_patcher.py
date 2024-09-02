@@ -289,6 +289,21 @@ class NbPatcher(BasePatcher):
 
         return res
 
+    def remove_charging_mode(self):
+        if self.model == "g2":
+            sig = [0xE8, 0x7B, 0x20, 0xB9, 0xA8, 0x79, 0x10, 0xB9]
+            ofs = FindPattern(self.data, sig) - 4
+            pre = self.data[ofs:ofs+4]
+            post = self.asm("nop.w")
+            self.data[ofs:ofs+4] = post
+        else:
+            sig = [0x78, 0x8A, 0x28, 0xB1, 0x86, 0xF8, 0x38, 0x40]
+            ofs = FindPattern(self.data, sig) + 2
+            pre = self.data[ofs:ofs+2]
+            post = self.asm("nop")
+            self.data[ofs:ofs+2] = post
+        return [("no_charge", hex(ofs), pre.hex(), post.hex())]
+
 #    def region_free(self):
 #        res = []
 #
