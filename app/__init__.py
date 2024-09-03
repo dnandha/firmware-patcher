@@ -280,7 +280,7 @@ def patch(data):
     else:
         remove_kers = flask.request.form.get('remove_kers', None)
         if remove_kers is not None:
-            if device == "4pro" or is_nb:
+            if device == "4pro" or (is_nb and device != "g2"):
                 res.append(("Remove KERS", patcher.kers_multi(0, 0, 0)))
             else:
                 res.append(("Remove KERS", patcher.remove_kers()))

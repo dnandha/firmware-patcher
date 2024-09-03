@@ -97,6 +97,8 @@ if __name__ == "__main__":
             'dpc': lambda: vlt.dpc(),
             'rab': lambda: vlt.remove_autobrake(),
             'ccd': lambda: vlt.cc_delay(2),
+            'rcm': lambda: vlt.remove_charging_mode(),
+            'rks': lambda: vlt.remove_kers(),
         }
 
     for k in patches:

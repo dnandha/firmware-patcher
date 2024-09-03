@@ -319,6 +319,20 @@ class NbPatcher(BasePatcher):
             self.data[ofs:ofs+2] = post
         return [("no_charge", hex(ofs), pre.hex(), post.hex())]
 
+    def remove_kers(self):
+        if self.model == "g2":
+            sig = [ 0x0f, 0x4a, 0xb2, 0xf8, 0xf6, 0x30, 0x73, 0xb1 ]
+            ofs = FindPattern(self.data, sig) + len(sig) - 2
+
+            sig = [ 0x00, 0x20, 0x08, 0x85, 0x70, 0x47 ]
+            ofs_dst = FindPattern(self.data, sig, start=ofs)
+
+            pre = self.data[ofs:ofs+2]
+            post = self.asm(f"b #{ofs_dst-ofs}")
+            self.data[ofs:ofs+2] = post
+
+            return self.ret("remove_kers", ofs, pre, post)
+
 #    def region_free(self):
 #        res = []
 #
