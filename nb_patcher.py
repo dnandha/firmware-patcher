@@ -337,7 +337,12 @@ class NbPatcher(BasePatcher):
 
     def ampere_eco(self, amps, force=True):
         if self.model == "g2":
-            raise NotImplementedError()
+            sig = [ 0x4f, 0xf4, 0xfa, 0x51, 0x01, 0x2a, 0x10, 0xd0 ]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'movw r1, #{amps}')
+            self.data[ofs:ofs+4] = post
+            return self.ret("ampere_eco", ofs, pre, post)
 
         sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
         ofs = FindPattern(self.data, sig) + len(sig) + 8
@@ -348,7 +353,12 @@ class NbPatcher(BasePatcher):
 
     def ampere_drive(self, amps, force=True):
         if self.model == "g2":
-            raise NotImplementedError()
+            sig = [ 0x44, 0xf2, 0x68, 0x20, 0xa0, 0x67 ]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'movw r0, #{amps}')
+            self.data[ofs:ofs+4] = post
+            return self.ret("ampere_drive", ofs, pre, post)
 
         sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
         ofs = FindPattern(self.data, sig) + len(sig) + 30
@@ -361,7 +371,21 @@ class NbPatcher(BasePatcher):
         res = []
 
         if self.model == "g2":
-            raise NotImplementedError()
+            sig = [ 0xfc, 0xf7, 0x0a, 0xfa, 0x45, 0xf6, 0xb4, 0x71, 0x01, 0x28, 0x0a, 0xd0 ]
+            ofs = FindPattern(self.data, sig) + len(sig) - 2
+            if force:
+                pre = self.data[ofs:ofs+2]
+                post = pre.copy()
+                post[1] = 0xe0
+                self.data[ofs:ofs+2] = post
+                res += self.ret("ampere_sport_force", ofs, pre, post)
+            ofs -= 6
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'movw r1, #{amps}')
+            self.data[ofs:ofs+4] = post
+            res += self.ret("ampere_sport", ofs, pre, post)
+
+            return res
 
         ofs = 0x8000
         for i in range(20):
