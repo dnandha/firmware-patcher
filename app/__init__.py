@@ -205,19 +205,19 @@ def patch(data):
     amps_sport = flask.request.form.get('amps_sport', None)
     if amps_sport is not None:
         amps_sport = int(amps_sport)
-        assert amps_sport >= 5000 and amps_sport <= 35000, amps_sport
+        assert amps_sport >= 5000 and amps_sport <= 40000, amps_sport
         res.append((f"Current Sport: {amps_sport}mA", patcher.ampere_sport(amps_sport)))
 
     amps_drive = flask.request.form.get('amps_drive', None)
     if amps_drive is not None:
         amps_drive = int(amps_drive)
-        assert amps_drive >= 5000 and amps_drive <= 35000, amps_drive
+        assert amps_drive >= 5000 and amps_drive <= 40000, amps_drive
         res.append((f"Current Drive: {amps_drive}mA", patcher.ampere_drive(amps_drive)))
 
     amps_ped = flask.request.form.get('amps_ped', None)
     if amps_ped is not None:
         amps_ped = int(amps_ped)
-        assert amps_ped >= 5000 and amps_ped <= 35000, amps_ped
+        assert amps_ped >= 5000 and amps_ped <= 40000, amps_ped
         res.append((f"Current Pedestrian: {amps_ped}mA", patcher.ampere_ped(amps_ped)))
 
     amps_sport_max = flask.request.form.get('amps_sport_max', None)
@@ -225,16 +225,16 @@ def patch(data):
     amps_ped_max = flask.request.form.get('amps_ped_max', None)
     if amps_ped_max is not None:
         amps_ped_max = int(amps_ped_max)
-        assert amps_ped_max >= 5000 and amps_ped_max <= 65000, amps_ped_max
+        assert amps_ped_max >= 5000 and amps_ped_max <= 80000, amps_ped_max
         if amps_sport_max is not None:
             amps_sport_max = int(amps_sport_max)
-            assert amps_sport_max >= 5000 and amps_sport_max <= 65000, amps_sport_max
+            assert amps_sport_max >= 5000 and amps_sport_max <= 80000, amps_sport_max
             # if drive_max is missing, use sport_max instead (lite)
             if amps_drive_max is not None:
                 amps_drive_max = int(amps_drive_max)
             else:
                 amps_drive_max = amps_sport_max
-            assert amps_drive_max >= 5000 and amps_drive_max <= 65000, amps_drive_max
+            assert amps_drive_max >= 5000 and amps_drive_max <= 80000, amps_drive_max
         res.append((f"Max-Currents Pedestrian/Drive/Sport: {amps_ped_max}mA/{amps_drive_max}mA/{amps_sport_max}mA",
                     patcher.ampere_max(amps_ped_max, amps_drive_max, amps_sport_max)))
 

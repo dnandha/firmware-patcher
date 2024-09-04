@@ -96,9 +96,13 @@ if __name__ == "__main__":
             'spp': lambda: vlt.speed_params(23, 22, 21, 20),
             'dpc': lambda: vlt.dpc(),
             'rab': lambda: vlt.remove_autobrake(),
-            'ccd': lambda: vlt.cc_delay(2),
+            'ccd': lambda: vlt.cc_delay(3),
             'rcm': lambda: vlt.remove_charging_mode(),
             'rks': lambda: vlt.remove_kers(),
+            'amp': lambda: vlt.ampere_ped(5000),
+            'ame': lambda: vlt.ampere_eco(10000),
+            'amd': lambda: vlt.ampere_drive(20000),
+            'ams': lambda: vlt.ampere_sport(30000),
         }
 
     for k in patches:

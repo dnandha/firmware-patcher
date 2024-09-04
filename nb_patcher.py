@@ -67,7 +67,7 @@ class NbPatcher(BasePatcher):
         self.data[ofs:ofs+4] = post
 
         return self.ret("allow_sn_change", ofs, pre, post)
-    
+
     def region_free(self):
         '''
         OP: Turbojeet
@@ -87,16 +87,13 @@ class NbPatcher(BasePatcher):
         else:
             sig = self.asm('cmp r0, #0x4e')
             ofs = FindPattern(self.data, sig, start=0x8000) + len(sig)
-
             if self.model == "f2pro":
                 sig = self.asm('strb.w r4,[r7,#0x4f]')
-                ofs_dst = FindPattern(self.data, sig, start=0x8000)
             elif self.model == "f2plus":
                 sig = self.asm('strb.w r4,[r7,#0x59]')
-                ofs_dst = FindPattern(self.data, sig, start=0x8000)
             elif self.model == "f2":
                 sig = self.asm('strb.w r4,[r7,#0x61]')
-                ofs_dst = FindPattern(self.data, sig, start=0x8000)
+            ofs_dst = FindPattern(self.data, sig, start=0x8000)
 
             pre = self.data[ofs:ofs+2]
             post = self.asm(f'b #{ofs_dst-ofs}')
@@ -334,6 +331,56 @@ class NbPatcher(BasePatcher):
             self.data[ofs:ofs+2] = post
 
             return self.ret("remove_kers", ofs, pre, post)
+
+    def ampere_ped(self, amps, force=False):
+        return self.ampere_eco(amps, force)
+
+    def ampere_eco(self, amps, force=True):
+        if self.model == "g2":
+            raise NotImplementedError()
+
+        sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
+        ofs = FindPattern(self.data, sig) + len(sig) + 8
+        pre = self.data[ofs:ofs+4]
+        post = self.asm(f'movw r12, #{amps}')
+        self.data[ofs:ofs+4] = post
+        return self.ret("ampere_eco", ofs, pre, post)
+
+    def ampere_drive(self, amps, force=True):
+        if self.model == "g2":
+            raise NotImplementedError()
+
+        sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
+        ofs = FindPattern(self.data, sig) + len(sig) + 30
+        pre = self.data[ofs:ofs+4]
+        post = self.asm(f'movw r9, #{amps}')
+        self.data[ofs:ofs+4] = post
+        return self.ret("ampere_drive", ofs, pre, post)
+
+    def ampere_sport(self, amps, force=True):
+        res = []
+
+        if self.model == "g2":
+            raise NotImplementedError()
+
+        ofs = 0x8000
+        for i in range(20):
+            sig = [ None, 0x71, 0xc7, 0xf8, 0x10, 0xc0 ]
+            try:
+                ofs = FindPattern(self.data, sig, start=ofs+1)
+                sig = [0xb8, 0x61]
+                ofs = FindPattern(self.data, sig, start=ofs+1) - 4
+            except SignatureException:
+                break
+
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'movw r0, #{amps}')
+            self.data[ofs:ofs+4] = post
+            res += self.ret(f"ampere_sport_{i}", ofs, pre, post)
+
+
+        return res
+
 
 #    def region_free(self):
 #        res = []
