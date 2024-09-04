@@ -287,10 +287,12 @@ class NbPatcher(BasePatcher):
     def cc_delay(self, seconds=5):
         res = []
 
+        delay = int(seconds * 200)
+
         sig = self.asm('mov.w r1, #1000')
         ofs = FindPattern(self.data, sig, start=0x2000)
         pre = self.data[ofs:ofs+4]
-        post = self.asm(f'mov.w r1, #{seconds*200}')
+        post = self.asm(f'mov.w r1, #{delay}')
         self.data[ofs:ofs+4] = post
         res += self.ret("cc_delay", ofs, pre, post)
 
