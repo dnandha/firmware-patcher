@@ -407,7 +407,12 @@ class NbPatcher(BasePatcher):
 
     def ampere_max_eco(self, amps):
         if self.model == "g2":
-            raise NotImplementedError("Not supported on G2")
+            sig = [ None, 0x49, 0x49, 0x42, 0x41, 0x62 ]
+            ofs = FindPattern(self.data, sig) + len(sig)
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'movw r1, #{amps}')
+            self.data[ofs:ofs+4] = post
+            return self.ret("ampere_max_eco", ofs, pre, post)
         
         sig = [ 0x47, 0xf2, 0x30, 0x50, 0x60, 0x61, 0xd1, 0xe0 ]
         ofs = FindPattern(self.data, sig)
@@ -418,7 +423,12 @@ class NbPatcher(BasePatcher):
 
     def ampere_max_drive(self, amps):
         if self.model == "g2":
-            raise NotImplementedError("Not supported on G2")
+            sig = [ 0x8f, 0x49, 0x49, 0x42, 0x41, 0x62 ]
+            ofs = FindPattern(self.data, sig) + len(sig) + 6
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'movw r1, #{amps}')
+            self.data[ofs:ofs+4] = post
+            return self.ret("ampere_max_drive", ofs, pre, post)
 
         sig = [ 0x49, 0xf6, 0x40, 0x40, 0x60, 0x61 ]
         ofs = FindPattern(self.data, sig)
@@ -432,7 +442,12 @@ class NbPatcher(BasePatcher):
         Description: Set max current for sport mode, requires acceleration mode to be set to 2
         '''
         if self.model == "g2":
-            raise NotImplementedError("Not supported on G2")
+            sig = [ 0x80, 0xc7, 0xfe, 0xff, 0x70, 0x11, 0x01, 0x00, 0x18, 0x02, 0xff, 0xff ]
+            ofs = FindPattern(self.data, sig)
+            pre = self.data[ofs:ofs+4]
+            post = int.to_bytes((-amps), 4, byteorder='little', signed=True)
+            self.data[ofs:ofs+4] = post
+            return self.ret("ampere_max_sport", ofs, pre, post)
 
         sig = [ 0x40, 0x19, 0x01, 0x00, 0x80, 0x97, 0x06, 0x00, 0x00, 0xca, 0x08, 0x00 ]
         ofs = FindPattern(self.data, sig)

@@ -115,6 +115,8 @@ if __name__ == "__main__":
         try:
             for desc, ofs, pre, post in patches[k]():
                 print(desc, ofs)
+                print("<<", pre)
+                print(">>", post)
                 pre_dis = [' '.join([x.bytes.hex(), x.mnemonic, x.op_str])
                            for x in vlt.cs.disasm(bytes.fromhex(pre), 0)]
                 post_dis = [' '.join([x.bytes.hex(), x.mnemonic, x.op_str])
