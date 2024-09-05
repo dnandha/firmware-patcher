@@ -77,7 +77,7 @@ if __name__ == "__main__":
             'amm': lambda: vlt.ampere_meter(shift=8),
             'lrb': lambda: vlt.lever_resolution(brake=0x9c),
             'bud': lambda: vlt.bms_baudrate(76800),
-            'vlt': lambda: vlt.volt_limit(43.01),
+            'vlt': lambda: vlt.volt_limit(56.01),
             'pnb': lambda: vlt.ped_noblink(),
             'bts': lambda: vlt.button_swap(),
             'fud': lambda: vlt.fake_uid("0102030405060708090A0B0C"),
@@ -103,6 +103,10 @@ if __name__ == "__main__":
             'ame': lambda: vlt.ampere_eco(10000),
             'amd': lambda: vlt.ampere_drive(20000),
             'ams': lambda: vlt.ampere_sport(30000),
+            'mme': lambda: vlt.ampere_max_eco(20000),
+            'mmd': lambda: vlt.ampere_max_drive(40000),
+            'mms': lambda: vlt.ampere_max_sport(60000),
+            'bud': lambda: vlt.bms_baudrate(76800),
         }
 
     for k in patches:

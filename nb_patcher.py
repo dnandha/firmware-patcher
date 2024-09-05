@@ -405,6 +405,54 @@ class NbPatcher(BasePatcher):
 
         return res
 
+    def ampere_max_eco(self, amps):
+        if self.model == "g2":
+            raise NotImplementedError("Not supported on G2")
+        
+        sig = [ 0x47, 0xf2, 0x30, 0x50, 0x60, 0x61, 0xd1, 0xe0 ]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = self.asm(f'movw r0, #{amps}')
+        self.data[ofs:ofs+4] = post
+        return self.ret("ampere_max_eco", ofs, pre, post)
+
+    def ampere_max_drive(self, amps):
+        if self.model == "g2":
+            raise NotImplementedError("Not supported on G2")
+
+        sig = [ 0x49, 0xf6, 0x40, 0x40, 0x60, 0x61 ]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = self.asm(f'movw r0, #{amps}')
+        self.data[ofs:ofs+4] = post
+        return self.ret("ampere_max_drive", ofs, pre, post)
+
+    def ampere_max_sport(self, amps):
+        '''
+        Description: Set max current for sport mode, requires acceleration mode to be set to 2
+        '''
+        if self.model == "g2":
+            raise NotImplementedError("Not supported on G2")
+
+        sig = [ 0x40, 0x19, 0x01, 0x00, 0x80, 0x97, 0x06, 0x00, 0x00, 0xca, 0x08, 0x00 ]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = amps.to_bytes(4, byteorder='little')
+        self.data[ofs:ofs+4] = post
+        return self.ret("ampere_max_sport", ofs, pre, post)
+
+    def bms_baudrate(self, val):
+        if self.model == "g2":
+            raise NotImplementedError("Not supported on G2")
+
+        sig = [ 0x4f, 0xf4, 0xe1, 0x30, 0x03, 0x90, 0x00, 0x21, 0xad, 0xf8, 0x10, 0x10 ]
+        ofs = FindPattern(self.data, sig)
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm('MOV.W R0,#{}'.format(val))[0])
+        self.data[ofs:ofs+4] = post
+
+        return self.ret("bms_baudrate", ofs, pre, post)
+
 
 #    def region_free(self):
 #        res = []
