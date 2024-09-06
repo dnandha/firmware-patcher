@@ -17,6 +17,7 @@ The mod will then be integrated into the NGFW patcher.
 * DRV319
 * DRV321
 * DRV022 (Experimental)
+* DRV0037 (Experimental)
 * DRV176 (Experimental)
 * DRV1415 (Experimental)
 
