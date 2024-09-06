@@ -73,6 +73,7 @@ class NbPatcher(BasePatcher):
         OP: Turbojeet
         Description: Set global region
         '''
+        res = []
 
         if self.model == "g2":
             sig = [ 0x18, 0x78, 0xff, 0x21, 0x03, 0x24, 0x30, 0x28, 0x05, 0xd1 ]
@@ -84,6 +85,23 @@ class NbPatcher(BasePatcher):
             pre = self.data[ofs:ofs+2]
             post = self.asm(f"b #{ofs_dst-ofs}")
             self.data[ofs:ofs+2] = post
+            res += self.ret("region_free", ofs, pre, post)
+        elif self.model in ["4max", "4plus"]:
+            sig = [ 0x34, 0x2b, 0x0e, 0xd1, 0x90, 0xf8, 0x01, 0xc0 ]
+            ofs = FindPattern(self.data, sig) + 2
+            pre = self.data[ofs:ofs+2]
+            
+            sig = [ 0x04, 0x20, 0x87, 0xf8, 0x42, 0x00, 0x95, 0xe0 ]
+            ofs_dst = FindPattern(self.data, sig, start=ofs)
+            post = self.asm(f"b #{ofs_dst-ofs}")
+            self.data[ofs:ofs+2] = post
+            res += self.ret("region_free_0", ofs, pre, post)
+
+            if self.model == "4max":
+                pre = self.data[ofs_dst:ofs_dst+2]
+                post = self.asm("movs r0, #0x6")
+                self.data[ofs_dst:ofs_dst+2] = post
+                res += self.ret("region_free_1", ofs_dst, pre, post)
         else:
             sig = self.asm('cmp r0, #0x4e')
             ofs = FindPattern(self.data, sig, start=0x8000) + len(sig)
@@ -98,8 +116,9 @@ class NbPatcher(BasePatcher):
             pre = self.data[ofs:ofs+2]
             post = self.asm(f'b #{ofs_dst-ofs}')
             self.data[ofs:ofs+2] = post
+            res += self.ret("region_free", ofs, pre, post)
 
-        return self.ret("region_free", ofs, pre, post)
+        return res
 
     def kers_multi(self, l0=6, l1=12, l2=20):
         '''
@@ -137,7 +156,7 @@ class NbPatcher(BasePatcher):
 
         return ret
     
-    def speed_params(self, max_sport=25, max_drive=20, max_eco=15, max_ped=5):
+    def speed_params(self, max_sport=25, max_drive=20, max_eco=15, max_ped=10):
         '''
         OP: Turbojeet
         Description: Set speed parameters, sport and ped limits work best with region free
@@ -188,6 +207,29 @@ class NbPatcher(BasePatcher):
             self.data[ofs:ofs+len(post)] = post
             assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
             ret.append([f"speed_params_fix2", hex(ofs), pre.hex(), post.hex()])
+        elif self.model in ["4max", "4plus"]:
+            sig = [ 0x87, 0xf8, 0x43, 0x50, 0x03, 0x78, 0xff, 0x24 ]
+            ofs = FindPattern(self.data, sig) + len(sig)
+            pre = self.data[ofs:ofs+2]
+            post = self.asm(f'movs r2, #{max_ped}')
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_ped", hex(ofs), pre.hex(), post.hex()])
+
+            sig = [ 0x87, 0xf8, 0x42, 0x40, 0x27, 0x48, 0x90, 0xf8, 0x42, 0xb0 ]
+            ofs = FindPattern(self.data, sig) + len(sig)
+            pre = self.data[ofs:ofs+2]
+            post = self.asm(f'movs r4, #{max_drive}')
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_drive", hex(ofs), pre.hex(), post.hex()])
+
+            ofs += 12
+            pre = self.data[ofs:ofs+4]
+            post = self.asm(f'movw r10, #{max_sport}')
+            self.data[ofs:ofs+len(post)] = post
+            assert len(post) == len(pre), f"{len(post)}, {len(pre)}"
+            ret.append([f"speed_params_sport", hex(ofs), pre.hex(), post.hex()])
         else:
             sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
             ofs = FindPattern(self.data, sig) + len(sig)
@@ -267,6 +309,15 @@ class NbPatcher(BasePatcher):
             pre = self.data[ofs:ofs+2]
             post = pre.copy()
             post[1] = 0xe0
+            self.data[ofs:ofs+2] = post
+        elif self.model in ["4max", "4plus"]:
+            sig = [ 0x38, 0x7b, 0xf8, 0xf7, 0x7f, 0xf8, 0xb0, 0xee, 0x4c, 0x8a ]
+            ofs = FindPattern(self.data, sig)
+
+            sig = [ 0x70, 0x6f, 0xb0, 0x67, 0xb9, 0xf9, 0x64, 0x10, 0x05, 0x29, 0x12, 0xdc ]
+            ofs_dst = FindPattern(self.data, sig, start=ofs)
+            pre = self.data[ofs:ofs+2]
+            post = self.asm(f'b #{ofs_dst-ofs}')
             self.data[ofs:ofs+2] = post
         else:
             sig = [ 0x1a, 0x68, 0x90, 0x42, 0x30, 0xda ]

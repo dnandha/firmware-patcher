@@ -68,9 +68,11 @@
                 <option value="lite">Lite/Essential</option>
                 <option value="mi3">Mi3</option>
                 <option value="4pro">4Pro</option>
-                <option value="f2pro">F2Pro</option>
-                <option value="f2plus">F2Plus</option>
+                <option value="4plus">4ProPlus</option>
+                <option value="4max">4ProMax</option>
                 <option value="f2">F2</option>
+                <option value="f2plus">F2Plus</option>
+                <option value="f2pro">F2Pro</option>
                 <option value="g2">G2</option>
             </select>
         </div>
@@ -782,6 +784,10 @@
             Preset_Mi3();
         } else if (dev === "4pro") {
             Preset_4Pro();
+        } else if (dev === "4plus") {
+            Preset_4ProPlus();
+        } else if (dev === "4max") {
+            Preset_4ProMax();
         } else if (dev === "f2pro") {
             Preset_F2Pro();
         } else if (dev === "f2plus") {
@@ -845,6 +851,18 @@
         GetForm(forms.RML).disabled = true;
         GetForm(forms.BTS).disabled = true;
         GetForm(forms.BLM_ALM).disabled = true;
+    }
+
+    function Preset_4ProPlus() {
+        Preset_4ProMax();
+    }
+
+    function Preset_4ProMax() {
+        DisableAll(true);
+
+        GetForm(forms.RFM).disabled = false;
+        GetForm(forms.SL).disabled = false;
+        GetForm(forms.REMOVE_AUTOBRAKE).disabled = false;
     }
 
     function Preset_F2Pro() {
@@ -917,28 +935,30 @@
         GetForm(forms.PNB).disabled = true;
     }
 
-    function Enable_All() {
-        GetForm(forms.DMN).disabled = false;
-        GetForm(forms.RML).disabled = false;
-        GetForm(forms.BTS).disabled = false;
-        GetForm(forms.BLM).disabled = false;
-        GetForm(forms.DPC).disabled = false;
-        GetForm(forms.MOTOR_START_SPEED+"_cb").disabled = false;
-        GetForm(forms.REMOVE_AUTOBRAKE).disabled = false;
-        GetForm(forms.REMOVE_CHARGING_MODE).disabled = false;
-        GetForm(forms.CC_DELAY+"_cb").disabled = false;
-        GetForm(forms.CRC+"_cb").disabled = false;
-        GetForm(forms.WHEELSIZE+"_cb").disabled = false;
-        GetForm(forms.SHUTDOWN_TIME+"_cb").disabled = false;
-        GetForm(forms.AMPS).disabled = false;
-        GetForm(forms.AMPS_MAX).disabled = false;
-        GetForm(forms.AMPS_BRAKE_MIN+"_cb").disabled = false;
-        GetForm(forms.AMPS_BRAKE_MAX+"_cb").disabled = false;
-        GetForm(forms.AMMETER).disabled = false;
-        GetForm(forms.VOLT+"_cb").disabled = false;
-        GetForm(forms.BAUD).disabled = false;
-        GetForm(forms.ECO_MODE).disabled = false;
-        GetForm(forms.PNB).disabled = false;
+    function DisableAll(disable) {
+        GetForm(forms.DMN).disabled = disable;
+        GetForm(forms.RML).disabled = disable;
+        GetForm(forms.BTS).disabled = disable;
+        GetForm(forms.BLM).disabled = disable;
+        GetForm(forms.DPC).disabled = disable;
+        GetForm(forms.MOTOR_START_SPEED+"_cb").disabled = disable;
+        GetForm(forms.REMOVE_AUTOBRAKE).disabled = disable;
+        GetForm(forms.REMOVE_CHARGING_MODE).disabled = disable;
+        GetForm(forms.REMOVE_KERS).disabled = disable;
+        GetForm(forms.CC_DELAY+"_cb").disabled = disable;
+        GetForm(forms.CRC+"_cb").disabled = disable;
+        GetForm(forms.WHEELSIZE+"_cb").disabled = disable;
+        GetForm(forms.SHUTDOWN_TIME+"_cb").disabled = disable;
+        GetForm(forms.AMPS).disabled = disable;
+        GetForm(forms.AMPS_MAX).disabled = disable;
+        GetForm(forms.AMPS_BRAKE_MIN+"_cb").disabled = disable;
+        GetForm(forms.AMPS_BRAKE_MAX+"_cb").disabled = disable;
+        GetForm(forms.AMMETER).disabled = disable;
+        GetForm(forms.VOLT+"_cb").disabled = disable;
+        GetForm(forms.BAUD).disabled = disable;
+        GetForm(forms.ECO_MODE).disabled = disable;
+        GetForm(forms.PNB).disabled = disable;
+        GetForm(forms.KML).disabled = disable;
     }
 
     function Ped_To_Eco(cb) {
@@ -960,7 +980,7 @@
     }
 
     function Preset_Default() {
-        Enable_All();
+        DisableAll(false);
 
         ChangeForm(forms.DPC, false);
         ChangeForm(forms.MOTOR_START_SPEED, "5.0", false);

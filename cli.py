@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser()
     parser.add_argument("type", choices=['mi', 'nb'])
-    parser.add_argument("model", choices=['1s', 'pro2', 'lite', '3', '4pro', 'f2pro', 'f2plus', 'f2', 'g2'])
+    parser.add_argument("model", choices=['1s', 'pro2', 'lite', '3', '4pro', '4plus', '4max', 'f2pro', 'f2plus', 'f2', 'g2'])
     parser.add_argument("infile")
     parser.add_argument("outfile")
     parser.add_argument("patches")
@@ -93,7 +93,7 @@ if __name__ == "__main__":
             'skc': lambda: vlt.skip_key_check(),
             'rfm': lambda: vlt.region_free(),
             'kml': lambda: vlt.kers_multi(2, 5, 10),
-            'spp': lambda: vlt.speed_params(23, 22, 21, 20),
+            'slp': lambda: vlt.speed_params(23, 22, 21, 20),
             'dpc': lambda: vlt.dpc(),
             'rab': lambda: vlt.remove_autobrake(),
             'ccd': lambda: vlt.cc_delay(3),
