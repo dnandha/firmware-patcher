@@ -51,12 +51,9 @@ class Zippy():
             id_ = self.data[0x100:0x10f].decode('ascii')
         except UnicodeDecodeError:
             try:
-                id_ = self.data[0x400:0x417].decode("ascii")
+                id_ = self.data[0x400:0x40e].decode("ascii")
             except UnicodeDecodeError:
-                try:
-                    id_ = self.data[0x400:0x40e].decode('ascii')
-                except UnicodeDecodeError:
-                    pass
+                pass
         return id_
 
     def try_extract(self, decrypt=True):
@@ -72,13 +69,13 @@ class Zippy():
             if not file_list:
                 raise ValueError("The ZIP file is empty.")
             # Extract the first file (assuming non-directory)
-            first_file_name = file_list[0]
-            with zip_ref.open(first_file_name) as first_file:
+            esc_file = next((name for name in file_list if name.startswith('EC_ESC_Driver') or name.endswith(".enc")), file_list[0])
+            with zip_ref.open(esc_file) as first_file:
                 self.data = first_file.read()
                 if not self.decode_model() and decrypt:
                     try:
                         self.data = self.decrypt()
-                        self.decode_model()
+                        id_ = self.decode_model()
                     except:
                         raise Exception("Decode error")
 
