@@ -519,6 +519,14 @@ class NbPatcher(BasePatcher):
 
         return self.ret("bms_baudrate", ofs, pre, post)
 
+    def volt_limit(self, volts):
+        sig = [0x91, 0x42, 0x04, 0xD3, None, 0x68, 0x41, 0xF2, None, None, 0x88, 0x42, 0x06, 0xD9]
+        ofs = FindPattern(self.data, sig) + 6
+        pre = self.data[ofs:ofs+4]
+        post = bytes(self.ks.asm(f"MOVW R1,#{int(volts*100)}")[0])
+        self.data[ofs:ofs+4] = post
+
+        return self.ret("volt_limit", ofs, pre, post)
 
 #    def region_free(self):
 #        res = []

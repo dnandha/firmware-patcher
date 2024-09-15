@@ -860,10 +860,13 @@
     function Preset_4ProMax() {
         DisableAll(true);
 
+        ChangeForm(forms.VOLT, "60.01", false);
+
         GetForm(forms.RFM).disabled = false;
         GetForm(forms.SL).disabled = false;
         GetForm(forms.REMOVE_AUTOBRAKE).disabled = false;
         GetForm(forms.REMOVE_CHARGING_MODE).disabled = false;
+        GetForm(forms.VOLT+"_cb").disabled = false;
     }
 
     function Preset_F2Pro() {
@@ -892,6 +895,7 @@
         ChangeForm(forms.AMPS_DRIVE_MAX, "40000", false);
         ChangeForm(forms.AMPS_SPORT_MAX, "72000", false);
         ChangeForm(forms.WHEELSIZE, "10.0", false);
+        ChangeForm(forms.VOLT, "45.01", false);
 
         GetForm(forms.BTS).disabled = true;
         GetForm(forms.BLM).disabled = true;
@@ -902,7 +906,6 @@
         GetForm(forms.AMPS_BRAKE_MIN+"_cb").disabled = true;
         GetForm(forms.AMPS_BRAKE_MAX+"_cb").disabled = true;
         GetForm(forms.AMMETER).disabled = true;
-        GetForm(forms.VOLT+"_cb").disabled = true;
         GetForm(forms.ECO_MODE).disabled = true;
         GetForm(forms.PNB).disabled = true;
     }
@@ -918,6 +921,7 @@
         ChangeForm(forms.AMPS_DRIVE_MAX, "55000", false);
         ChangeForm(forms.AMPS_SPORT_MAX, "80000", false);
         ChangeForm(forms.WHEELSIZE, "10.0", false);
+        ChangeForm(forms.VOLT, "45.01", false);
 
         GetForm(forms.BTS).disabled = true;
         GetForm(forms.BLM).disabled = true;
@@ -930,7 +934,6 @@
         GetForm(forms.AMPS_BRAKE_MIN+"_cb").disabled = true;
         GetForm(forms.AMPS_BRAKE_MAX+"_cb").disabled = true;
         GetForm(forms.AMMETER).disabled = true;
-        GetForm(forms.VOLT+"_cb").disabled = true;
         GetForm(forms.BAUD).disabled = true;
         GetForm(forms.ECO_MODE).disabled = true;
         GetForm(forms.PNB).disabled = true;
