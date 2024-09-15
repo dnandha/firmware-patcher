@@ -387,34 +387,30 @@ class NbPatcher(BasePatcher):
         return self.ampere_eco(amps, force)
 
     def ampere_eco(self, amps, force=True):
+        reg = 12
         if self.model == "g2":
             sig = [ 0x4f, 0xf4, 0xfa, 0x51, 0x01, 0x2a, 0x10, 0xd0 ]
             ofs = FindPattern(self.data, sig)
-            pre = self.data[ofs:ofs+4]
-            post = self.asm(f'movw r1, #{amps}')
-            self.data[ofs:ofs+4] = post
-            return self.ret("ampere_eco", ofs, pre, post)
-
-        sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
-        ofs = FindPattern(self.data, sig) + len(sig) + 8
+            reg = 1
+        else:
+            sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
+            ofs = FindPattern(self.data, sig) + len(sig) + 8
         pre = self.data[ofs:ofs+4]
-        post = self.asm(f'movw r12, #{amps}')
+        post = self.asm(f'movw r{reg}, #{amps}')
         self.data[ofs:ofs+4] = post
         return self.ret("ampere_eco", ofs, pre, post)
 
     def ampere_drive(self, amps, force=True):
+        reg = 9
         if self.model == "g2":
             sig = [ 0x44, 0xf2, 0x68, 0x20, 0xa0, 0x67 ]
             ofs = FindPattern(self.data, sig)
-            pre = self.data[ofs:ofs+4]
-            post = self.asm(f'movw r0, #{amps}')
-            self.data[ofs:ofs+4] = post
-            return self.ret("ampere_drive", ofs, pre, post)
-
-        sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
-        ofs = FindPattern(self.data, sig) + len(sig) + 30
+            reg = 0
+        else:
+            sig = [0x19, 0x48, 0x90, 0xf8, 0x4f, 0x00, 0x17, 0x4f, 0x1c, 0x4a, 0x1c, 0x4b]
+            ofs = FindPattern(self.data, sig) + len(sig) + 30
         pre = self.data[ofs:ofs+4]
-        post = self.asm(f'movw r9, #{amps}')
+        post = self.asm(f'movw r{reg}, #{amps}')
         self.data[ofs:ofs+4] = post
         return self.ret("ampere_drive", ofs, pre, post)
 
@@ -457,34 +453,30 @@ class NbPatcher(BasePatcher):
         return res
 
     def ampere_max_eco(self, amps):
+        reg = 0
         if self.model == "g2":
             sig = [ None, 0x49, 0x49, 0x42, 0x41, 0x62 ]
             ofs = FindPattern(self.data, sig) + len(sig)
-            pre = self.data[ofs:ofs+4]
-            post = self.asm(f'movw r1, #{amps}')
-            self.data[ofs:ofs+4] = post
-            return self.ret("ampere_max_eco", ofs, pre, post)
-        
-        sig = [ 0x47, 0xf2, 0x30, 0x50, 0x60, 0x61, 0xd1, 0xe0 ]
-        ofs = FindPattern(self.data, sig)
+            reg = 1
+        else:
+            sig = [ 0x47, 0xf2, 0x30, 0x50, 0x60, 0x61, 0xd1, 0xe0 ]
+            ofs = FindPattern(self.data, sig)
         pre = self.data[ofs:ofs+4]
-        post = self.asm(f'movw r0, #{amps}')
+        post = self.asm(f'movw r{reg}, #{amps}')
         self.data[ofs:ofs+4] = post
         return self.ret("ampere_max_eco", ofs, pre, post)
 
     def ampere_max_drive(self, amps):
+        reg = 0
         if self.model == "g2":
             sig = [ 0x8f, 0x49, 0x49, 0x42, 0x41, 0x62 ]
             ofs = FindPattern(self.data, sig) + len(sig) + 6
-            pre = self.data[ofs:ofs+4]
-            post = self.asm(f'movw r1, #{amps}')
-            self.data[ofs:ofs+4] = post
-            return self.ret("ampere_max_drive", ofs, pre, post)
-
-        sig = [ 0x49, 0xf6, 0x40, 0x40, 0x60, 0x61 ]
-        ofs = FindPattern(self.data, sig)
+            reg = 1
+        else:
+            sig = [ 0x49, 0xf6, 0x40, 0x40, 0x60, 0x61 ]
+            ofs = FindPattern(self.data, sig)
         pre = self.data[ofs:ofs+4]
-        post = self.asm(f'movw r0, #{amps}')
+        post = self.asm(f'movw r{reg}, #{amps}')
         self.data[ofs:ofs+4] = post
         return self.ret("ampere_max_drive", ofs, pre, post)
 
@@ -495,15 +487,12 @@ class NbPatcher(BasePatcher):
         if self.model == "g2":
             sig = [ 0x80, 0xc7, 0xfe, 0xff, 0x70, 0x11, 0x01, 0x00, 0x18, 0x02, 0xff, 0xff ]
             ofs = FindPattern(self.data, sig)
-            pre = self.data[ofs:ofs+4]
             post = int.to_bytes((-amps), 4, byteorder='little', signed=True)
-            self.data[ofs:ofs+4] = post
-            return self.ret("ampere_max_sport", ofs, pre, post)
-
-        sig = [ 0x40, 0x19, 0x01, 0x00, 0x80, 0x97, 0x06, 0x00, 0x00, 0xca, 0x08, 0x00 ]
-        ofs = FindPattern(self.data, sig)
+        else:
+            sig = [ 0x40, 0x19, 0x01, 0x00, 0x80, 0x97, 0x06, 0x00, 0x00, 0xca, 0x08, 0x00 ]
+            ofs = FindPattern(self.data, sig)
+            post = amps.to_bytes(4, byteorder='little')
         pre = self.data[ofs:ofs+4]
-        post = amps.to_bytes(4, byteorder='little')
         self.data[ofs:ofs+4] = post
         return self.ret("ampere_max_sport", ofs, pre, post)
 
