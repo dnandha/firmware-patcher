@@ -37,7 +37,7 @@ class MiPatcher(BasePatcher):
             },
             "lite": {
             },
-            "3": {
+            "mi3": {
             },
             "4pro": {
             }

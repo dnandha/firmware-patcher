@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     parser = ArgumentParser()
     parser.add_argument("type", choices=['mi', 'nb'])
-    parser.add_argument("model", choices=['1s', 'pro2', 'lite', '3', '4pro', '4plus', '4max', 'f2pro', 'f2plus', 'f2', 'g2'])
+    parser.add_argument("model", choices=['1s', 'pro2', 'lite', 'mi3', '4pro', '4plus', '4max', 'f2pro', 'f2plus', 'f2', 'g2'])
     parser.add_argument("infile")
     parser.add_argument("outfile")
     parser.add_argument("patches")
