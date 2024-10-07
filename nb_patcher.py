@@ -345,12 +345,21 @@ class NbPatcher(BasePatcher):
         res += self.ret("cc_delay", ofs, pre, post)
 
         # cc mode = 1, temp fix
-        sig = self.asm('strh.w r5,[r0,#0x42]')
-        ofs = FindPattern(self.data, sig, start=ofs)
-        pre = self.data[ofs:ofs+4]
-        post = self.asm('strh.w r6,[r0,#0x112]')
-        self.data[ofs:ofs+4] = post
-        res += self.ret("tmp_cc_mode_1", ofs, pre, post)
+        # Todo: Move this into own patch
+        try:
+            if self.model in ["4max", "4plus"]:
+                sig = self.asm('strh.w r6,[r8,#0xee]')
+                post = self.asm('strh.w r6,[r8,#0xf8]')
+            else:
+                sig = self.asm('strh.w r5,[r0,#0x42]')
+                post = self.asm('strh.w r6,[r0,#0x112]')
+
+            ofs = FindPattern(self.data, sig, start=ofs)
+            pre = self.data[ofs:ofs+4]
+            self.data[ofs:ofs+4] = post
+            res += self.ret("tmp_cc_mode_1", ofs, pre, post)
+        except SignatureException:
+            pass
 
         return res
 
