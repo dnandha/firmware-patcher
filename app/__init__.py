@@ -387,7 +387,7 @@ def patch_firmware():
     f = flask.request.files['filename']
 
     fname = f.filename.lower()
-    if not (fname.endswith(".bin") or fname.endswith(".zip")):
+    if not fname.endswith((".bin", ".zip", ".bin.enc")):
         return "Wrong file selected.", 400
 
     data = f.read()
@@ -398,6 +398,8 @@ def patch_firmware():
     pod = flask.request.form.get('patch', None)
 
     zippy = Zippy(data, model=dev)
+    if fname.endswith(".bin.enc"):
+        zippy.data = zippy.decrypt()
     zippy.try_extract()
 
     try:
