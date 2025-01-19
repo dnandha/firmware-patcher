@@ -43,11 +43,11 @@ class NbPatcher(BasePatcher):
         OP: WallyCZ
         Description: Skips key check
         '''
-        sig = [0x40, 0x1c, 0x10, 0x28, None, 0xdb, 0x00, 0x20, None, 0x4b]
+        sig = [0x40, 0x1c, 0x10, 0x28, None, 0xdb, 0x00, 0x20]
         ofs = FindPattern(self.data, sig) + 6
 
-        sig = [0xf2, 0xdb, 0x0c, 0xb9, 0x86, 0xf8, 0x05]
-        ofs_dst = FindPattern(self.data, sig, start=ofs) + 2
+        sig = [0xdb, 0x0c, 0xb9, None, 0xf8, 0x05]
+        ofs_dst = FindPattern(self.data, sig, start=ofs) + 1
 
         pre = self.data[ofs:ofs+2]
         post = self.asm(f'b #{ofs_dst-ofs}')
